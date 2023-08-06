@@ -1,0 +1,17 @@
+displayName: "Mapping Utilities"
+
+name: "mapping-utilities"
+
+author: "ApsZoldat"
+
+main: "mu.MapUtilitiesMod"
+
+description: "empty"
+
+version: 1.0
+
+minGameVersion: 145
+
+java: true
+
+hidden: true

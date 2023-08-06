@@ -1,6 +1,8 @@
 package mu;
 
-public class MapUtilitiesMod extends Mod{
+import mindustry.mod.Mod;
+
+public class MapUtilitiesMod extends Mod {
     public MapUtilitiesMod(){
 
     }

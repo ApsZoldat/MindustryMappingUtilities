@@ -9,6 +9,7 @@ import mindustry.game.EventType;
 import mindustry.mod.Mod;
 import mindustry.ui.dialogs.MapPlayDialog;
 import mu.reflect.ui.RulesDialog;
+import mu.reflect.ui.SettingsDialog;
 
 import static mindustry.Vars.ui;
 
@@ -19,6 +20,8 @@ public class MapUtilitiesMod extends Mod {
             RulesDialog.change(Reflect.get(infoDialog, "ruleInfo"));
             MapPlayDialog playDialog = Reflect.get(ui.custom, "dialog");
             RulesDialog.change(Reflect.get(playDialog, "dialog"));
+
+            SettingsDialog.change(ui.settings);
         });
     }
 }

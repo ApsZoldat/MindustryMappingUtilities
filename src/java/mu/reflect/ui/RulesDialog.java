@@ -23,6 +23,7 @@ import mindustry.graphics.Pal;
 import mindustry.ui.dialogs.CustomRulesDialog;
 
 import static mindustry.Vars.ui;
+import static arc.Core.settings;
 
 public class RulesDialog{
     public static void change(CustomRulesDialog dialog){
@@ -30,9 +31,18 @@ public class RulesDialog{
     }
 
     private static void setup(CustomRulesDialog dialog){
-        Reflect.invoke(dialog, "title", new String[]{"@rules.hidden_rules_general"}, String.class);
         Rules rules = Reflect.get(dialog, "rules");
         Table main = Reflect.get(CustomRulesDialog.class, dialog, "main");
+
+        if (settings.getBool("editor_rules_search")) addSearchBar(main, rules);
+        if (settings.getBool("editor_hidden_rules")){
+            Reflect.invoke(dialog, "title", new String[]{"@rules.hidden_rules_general"}, String.class);
+            addHiddenRules(main, rules);
+        }
+        if (settings.getBool("editor_rules_info")) addInfoButtons(main);
+    }
+
+    private static void addHiddenRules(Table main, Rules rules) {
         main.defaults().left().growX();
         check(main, "@rules.pvp_auto_pause", value -> rules.pvpAutoPause = value, () -> rules.pvpAutoPause);
         check(main, "@rules.can_game_over", value -> rules.canGameOver = value, () -> rules.canGameOver);
@@ -60,9 +70,7 @@ public class RulesDialog{
         text(main, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission));
         check(main, "@rules.border_darkness", value -> rules.borderDarkness = value, () -> rules.borderDarkness);
         check(main, "@rules.disable_outside_area", value -> rules.disableOutsideArea = value, () -> rules.disableOutsideArea);
-
         addTeamRules(main, rules);
-        addInfoButtons(main);
     }
 
     private static void addTeamRules(Table main, Rules rules) {
@@ -137,6 +145,10 @@ public class RulesDialog{
         table.add(elem).row();
 
         cell.setElement(table);
+    }
+
+    private static void addSearchBar(Table main, Rules rules){
+        return; // TODO
     }
 
     private static void numberi(Table main, String text, Intc cons, Intp prov, Boolp condition, int min, int max){

@@ -1,13 +1,10 @@
 package mu.reflect.ui;
 
-import arc.Core;
 import arc.func.*;
 import arc.graphics.Color;
 import arc.scene.Element;
-import arc.scene.ui.CheckBox;
 import arc.scene.ui.Image;
 import arc.scene.ui.Label;
-import arc.scene.ui.TextField;
 import arc.scene.ui.layout.Cell;
 import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
@@ -21,25 +18,36 @@ import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
 import mindustry.ui.dialogs.CustomRulesDialog;
+import mu.ui.RulesSearchDialog;
 
-import static mindustry.Vars.ui;
-import static arc.Core.settings;
+import static arc.Core.*;
+import static mindustry.Vars.*;
+import static mu.MUVars.*;
 
 public class RulesDialog{
     public static void change(CustomRulesDialog dialog){
         dialog.shown(() -> setup(dialog));
     }
 
-    private static void setup(CustomRulesDialog dialog){
-        Rules rules = Reflect.get(dialog, "rules");
+    public static void setup(CustomRulesDialog dialog){
+        boolean isSearch = (dialog instanceof RulesSearchDialog);
+
+        Rules rules = Reflect.get(CustomRulesDialog.class, dialog, "rules");
         Table main = Reflect.get(CustomRulesDialog.class, dialog, "main");
 
-        if (settings.getBool("editor_rules_search")) addSearchBar(main, rules);
-        if (settings.getBool("editor_hidden_rules")){
+        if(settings.getBool("editor_rules_search") && !isSearch){
+            if(dialog.buttons.find("search") == null){
+                String text = bundle.get("search");
+                if(text.endsWith(":")) text = text.substring(0, text.length() - 1);
+                Prov<Rules> resetter = Reflect.get(CustomRulesDialog.class, dialog, "resetter");
+                dialog.buttons.button(text, Icon.zoom, () -> searchDialog.show(rules, resetter)).size(210f, 64f).name("search");
+            }
+        }
+        if(settings.getBool("editor_hidden_rules")){
             Reflect.invoke(dialog, "title", new String[]{"@rules.hidden_rules_general"}, String.class);
             addHiddenRules(main, rules);
         }
-        if (settings.getBool("editor_rules_info")) addInfoButtons(main);
+        if(settings.getBool("editor_rules_info")) addInfoButtons(main);
     }
 
     private static void addHiddenRules(Table main, Rules rules) {
@@ -63,7 +71,7 @@ public class RulesDialog{
         main.table(table -> {
             table.left();
             colorPick(table, "@rules.clouds_color", rules.cloudColor::set, () -> rules.dynamicColor);
-            table.button(Icon.info, () -> ui.showInfo("[accent]" + Core.bundle.get("rules.clouds_color") + "\n\n[]" + Core.bundle.get("rules.clouds_color.info"))).padLeft(5).fillY().row();
+            table.button(Icon.info, () -> ui.showInfo("[accent]" + bundle.get("rules.clouds_color") + "\n\n[]" + bundle.get("rules.clouds_color.info"))).padLeft(5).fillY().row();
         }).row();
 
         text(main, "@rules.mode_name", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
@@ -76,12 +84,12 @@ public class RulesDialog{
     private static void addTeamRules(Table main, Rules rules) {
         Seq<Collapser> collapsers = new Seq<>();
         main.getCells().each(cell -> {
-            if (cell.get() instanceof Collapser){
+            if(cell.get() instanceof Collapser){
                 collapsers.add((Collapser)cell.get());
             }
         });
 
-        for (int i = 0; i < Team.baseTeams.length; i++){
+        for(int i = 0; i < Team.baseTeams.length; i++){
             Rules.TeamRule teamRules =  rules.teams.get(Team.baseTeams[i]);
 
             Table table = Reflect.get(collapsers.get(i), "table");
@@ -102,38 +110,57 @@ public class RulesDialog{
             var elem = cell.get();
 
             // Going through all cells in collapser table then
-            if (elem instanceof Collapser){
+            if(elem instanceof Collapser){
                 Table table = Reflect.get(elem, "table");
                 table.getCells().each(cell2 -> {
                     var elem2 = cell2.get();
 
-                    if (elem2 instanceof Collapser) return;
-                    String infoText = getBundleKeyForRule(elem2);
-                    if (infoText != null) addInfoButton(cell2, infoText);
+                    if(elem2 instanceof Collapser) return;
+                    String labelText = getLabelText(elem2);
+                    String infoText = getInfoText(labelText);
+                    if(infoText != null) addInfoButton(cell2, infoText);
                 });
             }else{
-                String infoText = getBundleKeyForRule(elem);
-                if (infoText != null) addInfoButton(cell, infoText);
+                String labelText = getLabelText(elem);
+                String infoText = getInfoText(labelText);
+                if(infoText != null) addInfoButton(cell, infoText);
             }
         });
     }
 
-    // Gets bundle key for rule change element, returns null if no info text found for this rule
+    /* Get label text for a rule element
+    Any non-collapser table that has a label inside it is a rule element
+    ifelement isn't a rule element, returns null*/
     @Nullable
-    private static String getBundleKeyForRule(Element elem){
-        if (elem instanceof Table){
-            boolean isField = ((Table) elem).getCells().contains(checkCell -> checkCell.get() instanceof TextField);
-            if ((!isField && !(elem instanceof CheckBox))) return null;
-            Cell<?> cell = ((Table) elem).getCells().find(checkCell -> checkCell.get() instanceof Label);
-            if (cell == null) return null;
-            String bundleKey = Core.bundle.getProperties().findKey(((Label)cell.get()).getText().toString(), false);
-            if (bundleKey == null) return null;
+    public static String getLabelText(Element elem, boolean first){
+        if(first && (elem instanceof Label || elem instanceof Collapser)) return null;
 
-            if (!Core.bundle.has(bundleKey + ".info")) return null;
-            return bundleKey;
-        }else{
-            return null;
+        if(elem instanceof Table){
+            for(Cell<?> cell : ((Table)elem).getCells()){
+                String text = getLabelText(cell.get(), false);
+                if(text != null) return text;
+            }
+        }else if(elem instanceof Label){
+            return ((Label)elem).getText().toString();
         }
+        return null;
+    }
+
+    @Nullable
+    public static String getLabelText(Element elem){
+        return getLabelText(elem, true);
+    }
+
+    /* Gets info string for rule text
+    If it isn't present in bundle, returns null*/
+    @Nullable
+    private static String getInfoText(String text){
+        if(text == null) return null;
+        String bundleKey = bundle.getProperties().findKey((text), false);
+        if(bundleKey == null) return null;
+
+        if(!bundle.has(bundleKey + ".info")) return null;
+        return bundleKey;
     }
 
     private static void addInfoButton(Cell<?> cell, String bundleKey){
@@ -141,26 +168,10 @@ public class RulesDialog{
         Table table = new Table();
         table.left().defaults().fillX().left();
 
-        table.button(Icon.infoSmall, () -> ui.showInfo("[accent]" + Core.bundle.get(bundleKey) + "\n\n[]" + Core.bundle.get(bundleKey + ".info"))).padRight(5);
+        table.button(Icon.infoSmall, () -> ui.showInfo("[accent]" + bundle.get(bundleKey) + "\n\n[]" + bundle.get(bundleKey + ".info"))).padRight(5);
         table.add(elem).row();
 
         cell.setElement(table);
-    }
-
-    private static void addSearchBar(Table main, Rules rules){
-        return; // TODO
-    }
-
-    private static void numberi(Table main, String text, Intc cons, Intp prov, Boolp condition, int min, int max){
-        main.table(table -> {
-            table.left();
-            table.add(text).left().padRight(5)
-                    .update(a -> a.setColor(condition.get() ? Color.white : Color.gray));
-            table.field(String.valueOf(prov.get()), s -> cons.get(Strings.parseInt(s)))
-                    .update(a -> a.setDisabled(!condition.get()))
-                    .padRight(100f)
-                    .valid(value -> Strings.parseInt(value) >= min && Strings.parseInt(value) <= max).width(120f).left();
-        }).padTop(0).row();
     }
 
     private static void number(Table main, String text, boolean integer, Floatc cons, Floatp prov, Boolp condition, float min, float max){
@@ -178,22 +189,6 @@ public class RulesDialog{
 
     private static void number(Table main, String text, Floatc cons, Floatp prov){
         number(main, text, false, cons, prov, () -> true, 0, Float.MAX_VALUE);
-    }
-
-    private static void number(Table main, String text, Floatc cons, Floatp prov, float min, float max){
-        number(main, text, false, cons, prov, () -> true, min, max);
-    }
-
-    private static void number(Table main, String text, boolean integer, Floatc cons, Floatp prov, Boolp condition){
-        number(main, text, integer, cons, prov, condition, 0, Float.MAX_VALUE);
-    }
-
-    private static void number(Table main, String text, Floatc cons, Floatp prov, Boolp condition){
-        number(main, text, false, cons, prov, condition, 0, Float.MAX_VALUE);
-    }
-
-    private static void numberi(Table main, String text, Intc cons, Intp prov, int min, int max){
-        numberi(main, text, cons, prov, () -> true, min, max);
     }
 
     private static void check(Table main, String text, Boolc cons, Boolp prov, Boolp condition){

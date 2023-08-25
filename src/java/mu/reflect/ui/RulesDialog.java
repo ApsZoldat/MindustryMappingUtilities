@@ -3,6 +3,7 @@ package mu.reflect.ui;
 import arc.func.*;
 import arc.graphics.Color;
 import arc.scene.Element;
+import arc.scene.ui.Button;
 import arc.scene.ui.Image;
 import arc.scene.ui.Label;
 import arc.scene.ui.layout.Cell;
@@ -20,9 +21,10 @@ import mindustry.graphics.Pal;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mu.ui.RulesSearchDialog;
 
-import static arc.Core.*;
-import static mindustry.Vars.*;
-import static mu.MUVars.*;
+import static arc.Core.bundle;
+import static arc.Core.settings;
+import static mindustry.Vars.ui;
+import static mu.MUVars.searchDialog;
 
 public class RulesDialog{
     public static void change(CustomRulesDialog dialog){
@@ -40,8 +42,29 @@ public class RulesDialog{
                 String text = bundle.get("search");
                 if(text.endsWith(":")) text = text.substring(0, text.length() - 1);
                 Prov<Rules> resetter = Reflect.get(CustomRulesDialog.class, dialog, "resetter");
-                dialog.buttons.button(text, Icon.zoom, () -> searchDialog.show(rules, resetter)).size(210f, 64f).name("search");
+                dialog.buttons.button(text, Icon.zoom, () -> {searchDialog.show(rules, resetter); dialog.hide();}).size(210f, 64f).name("search");
+            }else{
+                // Update button listener
+                Button button = dialog.buttons.find("search");
+                button.getListeners().clear();
+                Prov<Rules> resetter = Reflect.get(CustomRulesDialog.class, dialog, "resetter");
+                button.clicked(() -> {searchDialog.show(rules, resetter); dialog.hide();});
             }
+        }
+        // Removing search button
+        if(!settings.getBool("editor_rules_search") && dialog.buttons.find("search") != null && !isSearch){
+            Seq<Button> buttons = new Seq<>();
+
+            for(var elem : dialog.buttons.getChildren()){
+                if(elem.name == null){
+                    buttons.add((Button)elem);
+                }else if(!elem.name.equals("search")){
+                    buttons.add((Button)elem);
+                }
+            }
+
+            dialog.buttons.clear();
+            buttons.each(dialog.buttons::add);
         }
         if(settings.getBool("editor_hidden_rules")){
             Reflect.invoke(dialog, "title", new String[]{"@rules.hidden_rules_general"}, String.class);
@@ -130,13 +153,13 @@ public class RulesDialog{
 
     /* Get label text for a rule element
     Any non-collapser table that has a label inside it is a rule element
-    ifelement isn't a rule element, returns null*/
+    if element isn't a rule element, returns null*/
     @Nullable
     public static String getLabelText(Element elem, boolean first){
         if(first && (elem instanceof Label || elem instanceof Collapser)) return null;
 
         if(elem instanceof Table){
-            for(Cell<?> cell : ((Table)elem).getCells()){
+            for(var cell : ((Table)elem).getCells()){
                 String text = getLabelText(cell.get(), false);
                 if(text != null) return text;
             }

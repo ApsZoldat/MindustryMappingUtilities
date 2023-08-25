@@ -1,11 +1,14 @@
 package mu.ui;
 
-import arc.scene.event.VisibilityListener;
+import arc.scene.ui.Image;
+import arc.scene.ui.TextButton;
 import arc.scene.ui.TextField;
+import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
 import arc.util.Reflect;
 import mindustry.gen.Icon;
 import mindustry.graphics.Pal;
+import mindustry.ui.Styles;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mu.reflect.ui.RulesDialog;
 
@@ -15,17 +18,11 @@ public class RulesSearchDialog extends CustomRulesDialog{
 
     public RulesSearchDialog(){
         super();
-        // Add clear listener to the beginning of listeners sequence
-        this.getListeners().insert(0, new VisibilityListener(){
-            @Override
-            public boolean shown(){
-                Table main = getMain();
-                if(main != null) getMain().clear();
-                return false;
-            }
-        });
         RulesDialog.change(this);
-        shown(this::addSearchBar);
+        shown(() -> {
+            if(!searchText.isEmpty()) search(searchText);
+            addSearchBar();
+        });
     }
 
     private void addSearchBar(){
@@ -72,10 +69,40 @@ public class RulesSearchDialog extends CustomRulesDialog{
         resultsTable.left().defaults().fillX().left().pad(5);
         buildMain();
         Table main = getMain();
-        main.getCells().each(cell -> {
+
+        Collapser collapser = (Collapser)main.getCells().find(cell -> cell.get() instanceof Collapser).get();
+        boolean includeCollapsers = ((Table)Reflect.get(collapser, "table")).getCells().contains(cell -> {
             String labelText = RulesDialog.getLabelText(cell.get());
-            if(labelText == null) return;
-            if(hasWordsParts(labelText, text)) resultsTable.add(cell.get()).row();
+            if(labelText == null) return false;
+            return hasWordsParts(labelText, text);
+        });
+
+        main.getCells().each(cell -> {
+            // Adding team rules buttons with collapsers
+            if(cell.get() instanceof Collapser){
+                if(includeCollapsers){
+                    Table newTable = new Table();
+                    newTable.left().defaults().fillX().left().pad(5);
+                    ((Table)Reflect.get(Collapser.class, cell.get(), "table")).getCells().each(cell2 -> {
+                        String labelText = RulesDialog.getLabelText(cell2.get());
+                        if(labelText == null) return;
+                        if(hasWordsParts(labelText, text)) newTable.add(cell2.get()).row();
+                    });
+
+                    Collapser newCollapser = new Collapser(newTable, true);
+                    TextButton prevButton = (TextButton)(main.getCells().get(main.getCells().indexOf(cell) - 1).get());
+
+                    resultsTable.button(prevButton.getText().toString(), Icon.downOpen, Styles.togglet, () -> newCollapser.toggle(false)).marginLeft(14f).width(260f).height(55f).update(t -> {
+                        ((Image)t.getChildren().get(1)).setDrawable(!newCollapser.isCollapsed() ? Icon.upOpen : Icon.downOpen);
+                        t.setChecked(!newCollapser.isCollapsed());
+                    }).row();
+                    resultsTable.add(newCollapser).row();
+                }
+            }else{
+                String labelText = RulesDialog.getLabelText(cell.get());
+                if(labelText == null) return;
+                if(hasWordsParts(labelText, text)) resultsTable.add(cell.get()).row();
+            }
         });
         addSearchBar();
     }

@@ -3,22 +3,28 @@ package mu.modifying.ui;
 import arc.func.*;
 import arc.graphics.Color;
 import arc.scene.Element;
+import arc.scene.event.HandCursorListener;
 import arc.scene.ui.Button;
 import arc.scene.ui.Image;
 import arc.scene.ui.Label;
+import arc.scene.ui.TextButton;
 import arc.scene.ui.layout.Cell;
 import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
+import arc.scene.utils.Elem;
 import arc.struct.Seq;
 import arc.util.Nullable;
 import arc.util.Reflect;
 import arc.util.Strings;
+import mindustry.ctype.ContentType;
 import mindustry.game.Rules;
 import mindustry.game.Team;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
 import mindustry.ui.dialogs.CustomRulesDialog;
+import mindustry.world.Block;
+import mu.ui.ContentSelectionDialog;
 import mu.ui.RulesSearchDialog;
 
 import static arc.Core.bundle;
@@ -47,6 +53,7 @@ public class RulesDialog{
                 // Update button listener
                 Button button = dialog.buttons.find("search");
                 button.getListeners().clear();
+                button.addListener(new HandCursorListener());
                 Prov<Rules> resetter = Reflect.get(CustomRulesDialog.class, dialog, "resetter");
                 button.clicked(() -> {searchDialog.show(rules, resetter); dialog.hide();});
             }
@@ -65,6 +72,10 @@ public class RulesDialog{
 
             dialog.buttons.clear();
             buttons.each(dialog.buttons::add);
+        }
+
+        if(settings.getBool("editor_better_content_dialogs")){
+            upgradeContentDialogs(main, rules);
         }
         if(settings.getBool("editor_hidden_rules")){
             addHiddenRules(main, rules);
@@ -97,7 +108,6 @@ public class RulesDialog{
         main.table(table -> {
             table.left();
             colorPick(table, "@rules.clouds_color", rules.cloudColor::set, () -> rules.dynamicColor);
-            table.button(Icon.info, () -> ui.showInfo("[accent]" + bundle.get("rules.clouds_color") + "\n\n[]" + bundle.get("rules.clouds_color.info"))).padLeft(5).fillY().row();
         }).row();
 
         text(main, "@rules.mode_name", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
@@ -154,6 +164,26 @@ public class RulesDialog{
         });
     }
 
+    @SuppressWarnings("unchecked")
+    private static void upgradeContentDialogs(Table main, Rules rules){
+        main.getCells().each(cell -> {
+            if(cell.get() instanceof TextButton){
+                String text = getLabelText(cell.get());
+                if(text == null) return;
+                String bundleKey = bundle.getProperties().findKey((text), false);
+                if(bundleKey == null) return;
+
+                ContentSelectionDialog<?> dialog;
+                if(bundleKey.equals("bannedblocks")){
+                    dialog = new ContentSelectionDialog<>("@bannedblocks", ContentType.block, rules.bannedBlocks, Block::canBeBuilt);
+                }else if(bundleKey.equals("bannedunits")){
+                    dialog = new ContentSelectionDialog<>("@bannedunits", ContentType.unit, rules.bannedUnits, u -> !u.isHidden());
+                }else return;
+                cell.setElement(Elem.newButton(text, dialog::show));
+            }
+        });
+    }
+
     /* Get label text for a rule element
     Any non-collapser table that has a label inside it is a rule element
     if element isn't a rule element, returns null*/
@@ -194,7 +224,7 @@ public class RulesDialog{
         Table table = new Table();
         table.left().defaults().fillX().left();
 
-        table.button(Icon.infoSmall, () -> ui.showInfo("[accent]" + bundle.get(bundleKey) + "\n\n[]" + bundle.get(bundleKey + ".info"))).padRight(5);
+        table.button(Icon.infoSmall, () -> ui.showInfo("[accent]" + bundle.get(bundleKey) + "\n\n[]" + bundle.get(bundleKey + ".info"))).padRight(5).fillY();
         table.add(elem).row();
 
         cell.setElement(table);

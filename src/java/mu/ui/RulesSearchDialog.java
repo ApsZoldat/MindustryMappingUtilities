@@ -10,7 +10,7 @@ import mindustry.gen.Icon;
 import mindustry.graphics.Pal;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.CustomRulesDialog;
-import mu.reflect.ui.RulesDialog;
+import mu.modifying.ui.RulesDialog;
 
 public class RulesSearchDialog extends CustomRulesDialog{
     private Table resultsTable;
@@ -18,7 +18,7 @@ public class RulesSearchDialog extends CustomRulesDialog{
 
     public RulesSearchDialog(){
         super();
-        RulesDialog.change(this);
+        RulesDialog.modify(this);
         shown(() -> {
             if(!searchText.isEmpty()) search(searchText);
             addSearchBar();

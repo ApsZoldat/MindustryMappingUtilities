@@ -1,4 +1,4 @@
-package mu.reflect.ui;
+package mu.modifying.ui;
 
 import arc.func.*;
 import arc.graphics.Color;
@@ -27,7 +27,7 @@ import static mindustry.Vars.ui;
 import static mu.MUVars.searchDialog;
 
 public class RulesDialog{
-    public static void change(CustomRulesDialog dialog){
+    public static void modify(CustomRulesDialog dialog){
         dialog.shown(() -> setup(dialog));
     }
 
@@ -67,14 +67,17 @@ public class RulesDialog{
             buttons.each(dialog.buttons::add);
         }
         if(settings.getBool("editor_hidden_rules")){
-            Reflect.invoke(dialog, "title", new String[]{"@rules.hidden_rules_general"}, String.class);
             addHiddenRules(main, rules);
         }
         if(settings.getBool("editor_rules_info")) addInfoButtons(main);
     }
 
-    private static void addHiddenRules(Table main, Rules rules) {
+    private static void addHiddenRules(Table main, Rules rules){
         main.defaults().left().growX();
+        main.add("@rules.hidden_rules_team").color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);
+        main.row();
+        main.image().color(Pal.accent).height(3f).padRight(100f).padBottom(20);
+        main.row();
         check(main, "@rules.pvp_auto_pause", value -> rules.pvpAutoPause = value, () -> rules.pvpAutoPause);
         check(main, "@rules.can_game_over", value -> rules.canGameOver = value, () -> rules.canGameOver);
         check(main, "@rules.possession_allowed", value -> rules.possessionAllowed = value, () -> rules.possessionAllowed);
@@ -104,7 +107,7 @@ public class RulesDialog{
         addTeamRules(main, rules);
     }
 
-    private static void addTeamRules(Table main, Rules rules) {
+    private static void addTeamRules(Table main, Rules rules){
         Seq<Collapser> collapsers = new Seq<>();
         main.getCells().each(cell -> {
             if(cell.get() instanceof Collapser){

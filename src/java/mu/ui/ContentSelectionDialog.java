@@ -19,6 +19,7 @@ import mindustry.ui.Styles;
 import mindustry.ui.dialogs.BaseDialog;
 
 import static mindustry.Vars.content;
+import static arc.Core.settings;
 
 public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDialog{
     private final ContentType type;
@@ -29,6 +30,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
 
     private Table selectedTable;
     private Table deselectedTable;
+    private Seq<T> contentSelection;
 
     public ContentSelectionDialog(String title, ContentType type, Boolf<T> pred){
         super(title);
@@ -61,6 +63,9 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
         cont.row();
         if(!Core.graphics.isPortrait()) cell.colspan(2);
 
+        contentSelection = content.<T>getBy(type).select(pred);
+        if(!searchText.isEmpty()) contentSelection.removeAll(content -> !content.localizedName.toLowerCase().contains(searchText.toLowerCase()));
+
         cont.table(table -> {
             if(isRevealedBlocks){
                 table.add("@revealed_content").color(Pal.accent).padBottom(-1).top().row();
@@ -71,9 +76,9 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
             }
             table.pane(table2 -> selectedTable = table2).fill().expand().row();
             table.button("@addall", Icon.add, () -> {
-                contentSet.addAll(content.<T>getBy(type).select(pred));
+                contentSet.addAll(contentSelection);
                 rebuildTables();
-            }).disabled(button -> contentSet.size == content.<T>getBy(type).count(pred)).padTop(10f).bottom().fillX();
+            }).disabled(button -> contentSet.toSeq().containsAll(contentSelection)).padTop(10f).bottom().fillX();
         }).fill().expandY().uniform();
         if(Core.graphics.isPortrait()) cont.row();
         var cell2 = cont.table(table -> {
@@ -86,9 +91,14 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
             }
             table.pane(table2 -> deselectedTable = table2).fill().expand().row();
             table.button("@addall", Icon.add, () -> {
-                contentSet.clear();
+                contentSet.removeAll(contentSelection);
                 rebuildTables();
-            }).disabled(button -> contentSet.isEmpty()).padTop(10f).bottom().fillX();
+            }).disabled(button -> {
+                Seq<T> array = content.getBy(type);
+                array = array.copy();
+                array.removeAll(contentSet.toSeq());
+                return array.containsAll(contentSelection);
+            }).padTop(10f).bottom().fillX();
         }).fill().expandY().uniform();
         if(Core.graphics.isPortrait()){
             cell2.padTop(10f);
@@ -100,6 +110,8 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
     }
 
     private void rebuildTables(){
+        contentSelection = content.<T>getBy(type).select(pred);
+        if(!searchText.isEmpty()) contentSelection.removeAll(content -> !content.localizedName.toLowerCase().contains(searchText.toLowerCase()));
         rebuildTable(selectedTable, true);
         rebuildTable(deselectedTable, false);
     }
@@ -107,8 +119,9 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
     private void rebuildTable(Table table, boolean isSelected){
         table.clear();
 
+        int cols = settings.getInt("editor_better_content_dialogs_columns");
         if((isSelected && contentSet.isEmpty()) || (!isSelected && contentSet.size == content.<T>getBy(type).count(pred))){
-            table.add("@empty").width(8 * 50f).padBottom(5f).get().setAlignment(Align.center);
+            table.add("@empty").width(cols * 50f).padBottom(5f).get().setAlignment(Align.center);
         }else{
             Seq<T> array;
             if(!isSelected){
@@ -123,10 +136,11 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
             if(!searchText.isEmpty()) array.removeAll(content -> !content.localizedName.toLowerCase().contains(searchText.toLowerCase()));
 
             if(array.isEmpty()){
-                table.add("@empty").width(8 * 50f).padBottom(5f).get().setAlignment(Align.center);
+                table.add("@empty").width(cols * 50f).padBottom(5f).get().setAlignment(Align.center);
                 return;
             }
             int i = 0;
+            boolean requiresPad = true;
 
             for(T content : array){
                 TextureRegion region = content.uiIcon;
@@ -144,9 +158,13 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                 });
                 table.add(button).size(50f).tooltip(content.localizedName);
 
-                if(++i % 8 == 0){
+                if(++i % cols == 0){
                     table.row();
+                    requiresPad = false;
                 }
+            }
+            if(requiresPad){
+                table.add("").padRight(50f * (cols - i));
             }
         }
     }

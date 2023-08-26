@@ -14,8 +14,9 @@ public class SettingsDialog{
             table.checkPref("editor_hidden_rules", true);
             table.checkPref("editor_rules_info", true);
             table.checkPref("editor_rules_search", true);
-            table.checkPref("editor_better_content_dialogs", true);
             table.checkPref("editor_revealed_blocks", true);
+            table.checkPref("editor_better_content_dialogs", true);
+            table.sliderPref("editor_better_content_dialogs_columns", 8, 4, 16, Integer::toString);
         });
     }
 

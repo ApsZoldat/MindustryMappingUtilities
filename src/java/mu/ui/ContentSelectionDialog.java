@@ -9,6 +9,7 @@ import arc.scene.ui.ImageButton;
 import arc.scene.ui.layout.Table;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
+import arc.util.Align;
 import mindustry.ctype.ContentType;
 import mindustry.ctype.UnlockableContent;
 import mindustry.gen.Icon;
@@ -21,18 +22,20 @@ import static mindustry.Vars.content;
 
 public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDialog{
     private final ContentType type;
-    private final ObjectSet<T> contentSet;
+    private ObjectSet<T> contentSet;
     private final Boolf<T> pred;
     public boolean isRevealedBlocks;
+    private String searchText;
 
     private Table selectedTable;
     private Table deselectedTable;
 
-    public ContentSelectionDialog(String title, ContentType type, ObjectSet<T> contentSet, Boolf<T> pred){
+    public ContentSelectionDialog(String title, ContentType type, Boolf<T> pred){
         super(title);
         this.type = type;
-        this.contentSet = contentSet;
         this.pred = pred;
+        isRevealedBlocks = false;
+        searchText = "";
 
         selectedTable = new Table();
         deselectedTable = new Table();
@@ -42,39 +45,56 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
         shown(this::build);
     }
 
+    public void show(ObjectSet<T> contentSet){
+        this.contentSet = contentSet;
+        show();
+    }
+
     public void build(){
         cont.clear();
+
+        var cell = cont.table(table -> {
+            table.image(Icon.zoom).padRight(5f);
+            table.label(() -> "@search");
+            table.field(searchText, value -> {searchText = value; rebuildTables();}).get();
+        });
+        cont.row();
+        if(!Core.graphics.isPortrait()) cell.colspan(2);
+
         cont.table(table -> {
             if(isRevealedBlocks){
-                table.add("@revealed_content").color(Pal.accent).padBottom(-1);
+                table.add("@revealed_content").color(Pal.accent).padBottom(-1).top().row();
+                table.image().color(Pal.accent).height(3f).padBottom(5f).fillX().expandX().top().row();
             }else{
-                table.add("@banned_content").color(Color.valueOf("f25555")).padBottom(-1);
+                table.add("@banned_content").color(Color.valueOf("f25555")).padBottom(-1).top().row();
+                table.image().color(Color.valueOf("f25555")).height(3f).padBottom(5f).fillX().expandX().top().row();
             }
-            table.row();
-            table.image().color(isRevealedBlocks ? Pal.accent : Color.valueOf("f25555")).height(3f).padBottom(20).fillX();
-            table.row();
-            table.pane(table2 -> selectedTable = table2).fillX().fillY().row();
+            table.pane(table2 -> selectedTable = table2).fill().expand().row();
             table.button("@addall", Icon.add, () -> {
                 contentSet.addAll(content.<T>getBy(type).select(pred));
                 rebuildTables();
-            }).bottom().fillX();
-        }).top();
+            }).disabled(button -> contentSet.size == content.<T>getBy(type).count(pred)).padTop(10f).bottom().fillX();
+        }).fill().expandY().uniform();
         if(Core.graphics.isPortrait()) cont.row();
-        cont.table(table -> {
+        var cell2 = cont.table(table -> {
             if(isRevealedBlocks){
-                table.add("@unrevealed_content").color(Color.valueOf("f25555")).padBottom(-1);
+                table.add("@unrevealed_content").color(Color.valueOf("f25555")).padBottom(-1).top().row();
+                table.image().color(Color.valueOf("f25555")).height(3f).padBottom(5f).fillX().top().row();
             }else{
-                table.add("@unbanned_content").color(Pal.accent).padBottom(-1);
+                table.add("@unbanned_content").color(Pal.accent).padBottom(-1).top().row();
+                table.image().color(Pal.accent).height(3f).padBottom(5f).fillX().top().row();
             }
-            table.row();
-            table.image().color(isRevealedBlocks ? Color.valueOf("f25555") : Pal.accent).height(3f).padBottom(20).fillX();
-            table.row();
-            table.pane(table2 -> deselectedTable = table2).fillX().fillY().row();
+            table.pane(table2 -> deselectedTable = table2).fill().expand().row();
             table.button("@addall", Icon.add, () -> {
-                contentSet.removeAll(content.<T>getBy(type).select(pred));
+                contentSet.clear();
                 rebuildTables();
-            }).bottom().fillX();
-        }).top();
+            }).disabled(button -> contentSet.isEmpty()).padTop(10f).bottom().fillX();
+        }).fill().expandY().uniform();
+        if(Core.graphics.isPortrait()){
+            cell2.padTop(10f);
+        }else{
+            cell2.padLeft(10f);
+        }
 
         rebuildTables();
     }
@@ -86,24 +106,29 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
 
     private void rebuildTable(Table table, boolean isSelected){
         table.clear();
-        table.margin(10f);
 
-        if((isSelected && contentSet.isEmpty()) || (!isSelected && contentSet.size == content.<T>getBy(type).count((pred)))){
-            table.add("@empty");
+        if((isSelected && contentSet.isEmpty()) || (!isSelected && contentSet.size == content.<T>getBy(type).count(pred))){
+            table.add("@empty").width(8 * 50f).padBottom(5f).get().setAlignment(Align.center);
         }else{
             Seq<T> array;
             if(!isSelected){
                 array = content.getBy(type);
+                array = array.copy();
                 array.removeAll(contentSet.toSeq());
             }else{
                 array = contentSet.toSeq();
             }
             array.sort();
+            array.removeAll(content -> !pred.get(content));
+            if(!searchText.isEmpty()) array.removeAll(content -> !content.localizedName.toLowerCase().contains(searchText.toLowerCase()));
 
+            if(array.isEmpty()){
+                table.add("@empty").width(8 * 50f).padBottom(5f).get().setAlignment(Align.center);
+                return;
+            }
             int i = 0;
 
             for(T content : array){
-                if(!pred.get(content)) continue;
                 TextureRegion region = content.uiIcon;
 
                 ImageButton button = new ImageButton(Tex.whiteui, Styles.squarei);

@@ -22,6 +22,7 @@ import mindustry.game.Team;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
+import mindustry.type.UnitType;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.world.Block;
 import mu.ui.ContentSelectionDialog;
@@ -33,6 +34,9 @@ import static mindustry.Vars.ui;
 import static mu.MUVars.searchDialog;
 
 public class RulesDialog{
+    private static final ContentSelectionDialog<Block> bannedBlocksDialog = new ContentSelectionDialog<>("@bannedblocks", ContentType.block, Block::canBeBuilt);
+    private static final ContentSelectionDialog<UnitType> bannedUnitsDialog = new ContentSelectionDialog<>("@bannedunits", ContentType.unit, u -> !u.isHidden());
+
     public static void modify(CustomRulesDialog dialog){
         dialog.shown(() -> setup(dialog));
     }
@@ -74,12 +78,8 @@ public class RulesDialog{
             buttons.each(dialog.buttons::add);
         }
 
-        if(settings.getBool("editor_better_content_dialogs")){
-            upgradeContentDialogs(main, rules);
-        }
-        if(settings.getBool("editor_hidden_rules")){
-            addHiddenRules(main, rules);
-        }
+        if(settings.getBool("editor_better_content_dialogs")) upgradeContentDialogs(main, rules);
+        if(settings.getBool("editor_hidden_rules")) addHiddenRules(main, rules);
         if(settings.getBool("editor_rules_info")) addInfoButtons(main);
     }
 
@@ -172,14 +172,14 @@ public class RulesDialog{
                 if(text == null) return;
                 String bundleKey = bundle.getProperties().findKey((text), false);
                 if(bundleKey == null) return;
+                if(!bundleKey.equals("bannedblocks") && !bundleKey.equals("bannedunits")) return;
 
                 ContentSelectionDialog<?> dialog;
                 if(bundleKey.equals("bannedblocks")){
-                    dialog = new ContentSelectionDialog<>("@bannedblocks", ContentType.block, rules.bannedBlocks, Block::canBeBuilt);
-                }else if(bundleKey.equals("bannedunits")){
-                    dialog = new ContentSelectionDialog<>("@bannedunits", ContentType.unit, rules.bannedUnits, u -> !u.isHidden());
-                }else return;
-                cell.setElement(Elem.newButton(text, dialog::show));
+                    cell.setElement(Elem.newButton(text, () -> bannedBlocksDialog.show(rules.bannedBlocks)));
+                }else{
+                    cell.setElement(Elem.newButton(text, () -> bannedUnitsDialog.show(rules.bannedUnits)));
+                }
             }
         });
     }

@@ -82,7 +82,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                             }
                             terrainCategory = false;
                             rebuildTables();
-                        }).size(50f).update(i -> i.setChecked(selectedCategory == category)).padLeft(4f);
+                        }).size(45f).update(i -> i.setChecked(selectedCategory == category)).padLeft(4f);
                     }
                     table2.add("").padRight(4f);
                     if (isRevealedBlocks){
@@ -90,7 +90,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                             terrainCategory = !terrainCategory;
                             selectedCategory = null;
                             rebuildTables();
-                        }).size(50f).update(i -> i.setChecked(terrainCategory)).padLeft(4f).padRight(6f);
+                        }).size(45f).update(i -> i.setChecked(terrainCategory)).padLeft(8f);
                     }
                 }).center();
             }

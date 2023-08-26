@@ -85,7 +85,7 @@ public class RulesDialog{
 
     private static void addHiddenRules(Table main, Rules rules){
         main.defaults().left().growX();
-        main.add("@rules.hidden_rules_team").color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);
+        main.add("@rules.hidden_rules_general").color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);
         main.row();
         main.image().color(Pal.accent).height(3f).padRight(100f).padBottom(20);
         main.row();
@@ -174,7 +174,6 @@ public class RulesDialog{
                 if(bundleKey == null) return;
                 if(!bundleKey.equals("bannedblocks") && !bundleKey.equals("bannedunits")) return;
 
-                ContentSelectionDialog<?> dialog;
                 if(bundleKey.equals("bannedblocks")){
                     cell.setElement(Elem.newButton(text, () -> bannedBlocksDialog.show(rules.bannedBlocks)));
                 }else{

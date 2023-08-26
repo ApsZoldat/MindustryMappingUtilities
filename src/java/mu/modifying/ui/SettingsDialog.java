@@ -10,6 +10,8 @@ import static mindustry.ui.dialogs.SettingsMenuDialog.SettingsTable.Setting;
 public class SettingsDialog{
     public static void modify(SettingsMenuDialog dialog){
         ui.settings.addCategory("@settings.editor", Icon.editor, table -> {
+            table.pref(new Title("@category.general"));
+            table.sliderPref("editor_content_buttons_size", 50, 30, 80, i -> i + "px");
             table.pref(new Title("@settings.rules_dialog"));
             table.checkPref("editor_hidden_rules", true);
             table.checkPref("editor_rules_info", true);
@@ -31,7 +33,7 @@ public class SettingsDialog{
         public void add(SettingsMenuDialog.SettingsTable table){
             table.add(title).color(Pal.accent).padTop(20).padRight(100f).padBottom(-3).left().pad(5);
             table.row();
-            table.image().color(Pal.accent).height(3f).padRight(100f).padBottom(20).left().fillX().padBottom(2f);
+            table.image().color(Pal.accent).height(3f).padRight(100f).padBottom(20).left().fillX().padBottom(5f);
             table.row();
         }
     }

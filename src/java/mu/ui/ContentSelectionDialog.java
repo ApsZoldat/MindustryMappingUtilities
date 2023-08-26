@@ -10,7 +10,6 @@ import arc.scene.ui.layout.Table;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
 import arc.util.Align;
-import arc.util.Log;
 import mindustry.ctype.ContentType;
 import mindustry.ctype.UnlockableContent;
 import mindustry.gen.Icon;
@@ -22,9 +21,9 @@ import mindustry.ui.dialogs.BaseDialog;
 import mindustry.world.Block;
 import mindustry.world.meta.BuildVisibility;
 
+import static arc.Core.settings;
 import static mindustry.Vars.content;
 import static mindustry.Vars.ui;
-import static arc.Core.settings;
 
 public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDialog{
     private final ContentType type;
@@ -151,7 +150,6 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
         contentSelection = content.<T>getBy(type).select(pred);
         if(!searchText.isEmpty()) contentSelection.removeAll(content -> !content.localizedName.toLowerCase().contains(searchText.toLowerCase()));
         if(type == ContentType.block){
-            Log.info(selectedCategory);
             contentSelection.removeAll(content -> {
                 if(terrainCategory) return ((Block)content).buildVisibility != BuildVisibility.hidden;
                 return selectedCategory != null && ((Block)content).category != selectedCategory;

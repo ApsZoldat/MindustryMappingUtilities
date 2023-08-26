@@ -13,6 +13,7 @@ import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
 import arc.scene.utils.Elem;
 import arc.struct.Seq;
+import arc.util.Log;
 import arc.util.Nullable;
 import arc.util.Reflect;
 import arc.util.Strings;
@@ -36,6 +37,8 @@ import static mu.MUVars.searchDialog;
 public class RulesDialog{
     private static final ContentSelectionDialog<Block> bannedBlocksDialog = new ContentSelectionDialog<>("@bannedblocks", ContentType.block, Block::canBeBuilt);
     private static final ContentSelectionDialog<UnitType> bannedUnitsDialog = new ContentSelectionDialog<>("@bannedunits", ContentType.unit, u -> !u.isHidden());
+    private static final ContentSelectionDialog<Block> revealedBlocksDialog = new ContentSelectionDialog<>("@rules.revealed_blocks", ContentType.block, u -> true);
+    static { revealedBlocksDialog.isRevealedBlocks = true; }
 
     public static void modify(CustomRulesDialog dialog){
         dialog.shown(() -> setup(dialog));
@@ -80,6 +83,9 @@ public class RulesDialog{
 
         if(settings.getBool("editor_better_content_dialogs")) upgradeContentDialogs(main, rules);
         if(settings.getBool("editor_hidden_rules")) addHiddenRules(main, rules);
+        if(settings.getBool("editor_revealed_blocks")) {
+            var cell = main.button("@rules.revealed_blocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).left().width(300f).fillX();
+        }
         if(settings.getBool("editor_rules_info")) addInfoButtons(main);
     }
 
@@ -224,7 +230,9 @@ public class RulesDialog{
         table.left().defaults().fillX().left();
 
         table.button(Icon.infoSmall, () -> ui.showInfo("[accent]" + bundle.get(bundleKey) + "\n\n[]" + bundle.get(bundleKey + ".info"))).padRight(5).fillY();
-        table.add(elem).row();
+        var newCell = table.add(elem);
+        if(cell.maxWidth() != 0) newCell.width(300f);
+        table.row();
 
         cell.setElement(table);
     }

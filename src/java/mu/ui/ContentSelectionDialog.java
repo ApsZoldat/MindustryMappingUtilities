@@ -16,6 +16,7 @@ import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
 import mindustry.type.Category;
+import mindustry.type.Planet;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.world.Block;
@@ -33,6 +34,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
     private String searchText;
     private Category selectedCategory;
     private boolean terrainCategory;
+    private Planet selectedPlanet;
 
     private Table selectedTable;
     private Table deselectedTable;
@@ -50,6 +52,35 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
         deselectedTable = new Table();
 
         addCloseButton();
+
+        buttons.button("@rules.title.planet", Icon.planet, () -> {
+            BaseDialog dialog = new BaseDialog("@rules.title.planet");
+            dialog.cont.pane(table -> {
+                int i = 1;
+                table.button("@clear", Icon.none, Styles.togglet, () -> {
+                            selectedPlanet = null;
+                            dialog.hide();
+                            rebuildTables();
+                        }).marginLeft(14f).padBottom(5f).width(220f).height(55f).checked(selectedPlanet == null)
+                        .update(b -> b.setChecked(selectedPlanet == null)).get().getChildren().get(1);
+                for (Planet planet : content.planets()) {
+                    if(!planet.accessible) continue;
+                    table.button(planet.localizedName, Icon.planet, Styles.togglet, () -> {
+                                selectedPlanet = planet;
+                                dialog.hide();
+                                rebuildTables();
+                            }).marginLeft(14f).padBottom(5f).width(220f).height(55f).checked(selectedPlanet == planet)
+                            .update(b -> b.setChecked(selectedPlanet == planet)).get().getChildren().get(1).setColor(planet.iconColor);
+                    i += 1;
+                    if (i % 3 == 0) {
+                        table.row();
+                    }
+                }
+            });
+
+            dialog.addCloseButton();
+            dialog.show();
+        });
 
         shown(this::build);
     }
@@ -72,6 +103,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                     field.setText("");
                     rebuildTables();
                 }).padLeft(20f);
+                table2.label(() -> selectedPlanet != null ? "@rules.title.planet" + ": " + selectedPlanet.localizedName : "").padLeft(10f);
             });
             if(type == ContentType.block){
                 table.row();
@@ -160,6 +192,10 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                 return selectedCategory != null && ((Block)content).category != selectedCategory;
             });
         }
+        if(selectedPlanet != null) contentSelection.removeAll(content -> {
+            if(selectedPlanet.getContentType() == null) return false;
+            return content.techNode.planet != selectedPlanet;
+        });
 
         rebuildTable(selectedTable, true);
         rebuildTable(deselectedTable, false);

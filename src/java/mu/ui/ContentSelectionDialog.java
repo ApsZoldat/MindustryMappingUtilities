@@ -66,7 +66,12 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
             table.table(table2 -> {
                 table2.image(Icon.zoom).padRight(5f);
                 table2.label(() -> "@search");
-                table2.field(searchText, value -> {searchText = value; rebuildTables();});
+                var field = table2.field(searchText, value -> {searchText = value; rebuildTables();}).get();
+                table2.button(Icon.none, () -> {
+                    searchText = "";
+                    field.setText("");
+                    rebuildTables();
+                }).padLeft(20f);
             });
             if(type == ContentType.block){
                 table.row();

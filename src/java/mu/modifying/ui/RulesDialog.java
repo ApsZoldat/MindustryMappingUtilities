@@ -2,6 +2,7 @@ package mu.modifying.ui;
 
 import arc.func.*;
 import arc.graphics.Color;
+import arc.math.geom.Plane;
 import arc.scene.Element;
 import arc.scene.event.HandCursorListener;
 import arc.scene.ui.Button;
@@ -12,8 +13,7 @@ import arc.scene.ui.layout.Cell;
 import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
 import arc.scene.utils.Elem;
-import arc.struct.Seq;
-import arc.util.Log;
+import arc.struct.Seq;;
 import arc.util.Nullable;
 import arc.util.Reflect;
 import arc.util.Strings;
@@ -27,6 +27,7 @@ import mindustry.type.UnitType;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.world.Block;
 import mu.ui.ContentSelectionDialog;
+import mu.ui.PlanetBackgroundDialog;
 import mu.ui.RulesSearchDialog;
 
 import static arc.Core.bundle;
@@ -39,6 +40,7 @@ public class RulesDialog{
     private static final ContentSelectionDialog<UnitType> bannedUnitsDialog = new ContentSelectionDialog<>("@bannedunits", ContentType.unit, u -> !u.isHidden());
     private static final ContentSelectionDialog<Block> revealedBlocksDialog = new ContentSelectionDialog<>("@rules.revealed_blocks", ContentType.block, u -> true);
     static { revealedBlocksDialog.isRevealedBlocks = true; }
+    private static final PlanetBackgroundDialog planetBackgroundDialog = new PlanetBackgroundDialog();
 
     public static void modify(CustomRulesDialog dialog){
         dialog.shown(() -> setup(dialog));
@@ -84,7 +86,10 @@ public class RulesDialog{
         if(settings.getBool("editor_better_content_dialogs")) upgradeContentDialogs(main, rules);
         if(settings.getBool("editor_hidden_rules")) addHiddenRules(main, rules);
         if(settings.getBool("editor_revealed_blocks")) {
-            var cell = main.button("@rules.revealed_blocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).left().width(300f).fillX();
+            main.button("@rules.revealed_blocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).left().width(300f).fillX().row();
+        }
+        if(settings.getBool("editor_planet_background")) {
+            main.button("@rules.planet_background", () -> planetBackgroundDialog.show(rules)).left().width(300f).fillX().row();
         }
         if(settings.getBool("editor_rules_info")) addInfoButtons(main);
     }

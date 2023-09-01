@@ -6,7 +6,21 @@ author: "ApsZoldat"
 
 main: "mu.MapUtilitiesMod"
 
-description: "empty"
+description: 
+    '''
+    Small Mindustry mod improving map editor convenience and possibilities
+    Maps created with this mod are fully compatible with vanilla
+
+    Improvements:
+
+    - More Rules Available
+    - Planet Background Editing
+
+    Check README.md in GitHub repo for more detailed information about the mod
+
+    ! Work In Progress !
+    More map making tools will be added in future
+    '''
 
 version: 1.0
 

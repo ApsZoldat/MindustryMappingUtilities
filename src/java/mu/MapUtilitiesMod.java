@@ -21,7 +21,7 @@ public class MapUtilitiesMod extends Mod{
             MapPlayDialog playDialog = Reflect.get(ui.custom, "dialog");
             RulesDialog.modify(Reflect.get(playDialog, "dialog"));
 
-            SettingsDialog.modify(ui.settings);
+            SettingsDialog.modify();
 
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
         });

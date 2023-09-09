@@ -8,7 +8,7 @@ import static mindustry.Vars.ui;
 import static mindustry.ui.dialogs.SettingsMenuDialog.SettingsTable.Setting;
 
 public class SettingsDialog{
-    public static void modify(SettingsMenuDialog dialog){
+    public static void modify(){
         ui.settings.addCategory("@settings.editor", Icon.editor, table -> {
             table.pref(new Title("@category.general"));
             table.checkPref("mu_check_for_updates", true);

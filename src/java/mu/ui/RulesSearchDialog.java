@@ -43,6 +43,8 @@ public class RulesSearchDialog extends CustomRulesDialog{
         return Reflect.get(CustomRulesDialog.class, this, "main");
     }
 
+    // Used by Reflect.invoke
+    @SuppressWarnings("unused")
     void title(String text){
         Table main = getMain();
         main.add(text).color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);

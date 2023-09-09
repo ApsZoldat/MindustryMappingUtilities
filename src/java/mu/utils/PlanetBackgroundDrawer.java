@@ -1,13 +1,14 @@
 package mu.utils;
 
-import arc.graphics.*;
+import arc.graphics.Color;
+import arc.graphics.Texture;
 import arc.graphics.gl.FrameBuffer;
 import arc.util.Nullable;
 import mindustry.graphics.g3d.PlanetParams;
 import mindustry.graphics.g3d.PlanetRenderer;
 
-import static mindustry.Vars.*;
-import static arc.Core.*;
+import static arc.Core.camera;
+import static arc.Core.graphics;
 
 public class PlanetBackgroundDrawer{
     static private @Nullable FrameBuffer backgroundBuffer;

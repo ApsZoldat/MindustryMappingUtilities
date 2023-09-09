@@ -2,7 +2,6 @@ package mu.modifying.ui;
 
 import arc.func.*;
 import arc.graphics.Color;
-import arc.math.geom.Plane;
 import arc.scene.Element;
 import arc.scene.event.HandCursorListener;
 import arc.scene.ui.Button;
@@ -13,7 +12,7 @@ import arc.scene.ui.layout.Cell;
 import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
 import arc.scene.utils.Elem;
-import arc.struct.Seq;;
+import arc.struct.Seq;
 import arc.util.Nullable;
 import arc.util.Reflect;
 import arc.util.Strings;

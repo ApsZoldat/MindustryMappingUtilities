@@ -2,6 +2,7 @@ package mu.utils;
 
 import arc.util.Http;
 import arc.util.Log;
+import arc.util.Strings;
 import arc.util.serialization.Jval;
 import mindustry.mod.Mods.LoadedMod;
 import mu.MapUtilitiesMod;
@@ -24,7 +25,7 @@ public class UpdateChecker{
             Jval release = releases.get(0);
             String modVersion = mod.meta.version;
             modVersion = (modVersion.contains(".") ? modVersion : modVersion + ".0");
-            if(release.getString("tag_name").replace("v", "").equals(modVersion)){
+            if(Strings.parseFloat(release.getString("tag_name").replace("v", "")) <= Strings.parseFloat(modVersion)){
                 Log.info("Mapping Utilities running on latest version");
                 return;
             }

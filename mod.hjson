@@ -22,6 +22,8 @@ description:
     More map making tools will be added in future
     '''
 
+repo: "ApsZoldat/MindustryMappingUtilities"
+
 version: 1.0
 
 minGameVersion: 145

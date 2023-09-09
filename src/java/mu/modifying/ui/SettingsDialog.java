@@ -11,6 +11,7 @@ public class SettingsDialog{
     public static void modify(SettingsMenuDialog dialog){
         ui.settings.addCategory("@settings.editor", Icon.editor, table -> {
             table.pref(new Title("@category.general"));
+            table.checkPref("mu_check_for_updates", true);
             table.sliderPref("editor_content_buttons_size", 50, 30, 80, i -> i + "px");
             table.pref(new Title("@settings.rules_dialog"));
             table.checkPref("editor_hidden_rules", true);

@@ -31,8 +31,8 @@ public class UpdateChecker{
 
             ui.showConfirm("@mu_new_version", bundle.format("mu_update_info", release.getString("tag_name")), () -> {
                 String releaseUrl = release.getString("url");
-                ui.mods.githubImportMod(mod.getRepo(), mod.isJava(), releaseUrl.substring(releaseUrl.lastIndexOf("/") + 1));
                 mod.file.delete();
+                ui.mods.githubImportMod(mod.getRepo(), mod.isJava(), releaseUrl.substring(releaseUrl.lastIndexOf("/") + 1));
             });
         }, thr -> Log.err("Can't fetch Mapping Utilities releases for auto-updating", thr));
     }

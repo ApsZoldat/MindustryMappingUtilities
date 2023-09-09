@@ -8,13 +8,18 @@ main: "mu.MapUtilitiesMod"
 
 description: 
     '''
+    > This is an enhanced remake of old Mapping Utilities, however, it's WIP, so it has way less features yet. When this mod will contain all features of old version, the old version will be removed from mod browser and completely replaced by this one.
+
+
     Small Mindustry mod improving map editor convenience and possibilities
     Maps created with this mod are fully compatible with vanilla
+
 
     Improvements:
 
     - More Rules Available
     - Planet Background Editing
+
 
     Check README.md in GitHub repo for more detailed information about the mod
 
@@ -24,7 +29,7 @@ description:
 
 repo: "ApsZoldat/MindustryMappingUtilities"
 
-version: 1.0
+version: 1.1
 
 minGameVersion: 145
 

@@ -16,31 +16,20 @@ import arc.struct.Seq;
 import arc.util.Nullable;
 import arc.util.Reflect;
 import arc.util.Strings;
-import mindustry.ctype.ContentType;
 import mindustry.game.Rules;
 import mindustry.game.Team;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
-import mindustry.type.UnitType;
 import mindustry.ui.dialogs.CustomRulesDialog;
-import mindustry.world.Block;
-import mu.ui.ContentSelectionDialog;
-import mu.ui.PlanetBackgroundDialog;
 import mu.ui.RulesSearchDialog;
 
 import static arc.Core.bundle;
 import static arc.Core.settings;
 import static mindustry.Vars.ui;
-import static mu.MUVars.searchDialog;
+import static mu.MUVars.*;
 
 public class RulesDialog{
-    private static final ContentSelectionDialog<Block> bannedBlocksDialog = new ContentSelectionDialog<>("@bannedblocks", ContentType.block, Block::canBeBuilt);
-    private static final ContentSelectionDialog<UnitType> bannedUnitsDialog = new ContentSelectionDialog<>("@bannedunits", ContentType.unit, u -> !u.isHidden());
-    private static final ContentSelectionDialog<Block> revealedBlocksDialog = new ContentSelectionDialog<>("@rules.revealed_blocks", ContentType.block, u -> true);
-    static { revealedBlocksDialog.isRevealedBlocks = true; }
-    private static final PlanetBackgroundDialog planetBackgroundDialog = new PlanetBackgroundDialog();
-
     public static void modify(CustomRulesDialog dialog){
         dialog.shown(() -> setup(dialog));
     }

@@ -4,10 +4,7 @@ import arc.func.*;
 import arc.graphics.Color;
 import arc.scene.Element;
 import arc.scene.event.HandCursorListener;
-import arc.scene.ui.Button;
-import arc.scene.ui.Image;
-import arc.scene.ui.Label;
-import arc.scene.ui.TextButton;
+import arc.scene.ui.*;
 import arc.scene.ui.layout.Cell;
 import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
@@ -21,7 +18,9 @@ import mindustry.game.Team;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
+import mindustry.ui.dialogs.BaseDialog;
 import mindustry.ui.dialogs.CustomRulesDialog;
+import mindustry.world.meta.Env;
 import mu.ui.RulesSearchDialog;
 
 import static arc.Core.bundle;
@@ -78,6 +77,9 @@ public class RulesDialog{
         }
         if(settings.getBool("editor_planet_background")) {
             main.button("@rules.planet_background", () -> planetBackgroundDialog.show(rules)).left().width(300f).fillX().row();
+        }
+        if(settings.getBool("editor_environment_settings")){
+            main.button("@rules.environment_settings", () -> environmentDialog(rules)).left().width(300f).fillX().row();
         }
         if(settings.getBool("editor_rules_info")) addInfoButtons(main);
     }
@@ -237,6 +239,38 @@ public class RulesDialog{
         cell.setElement(table);
     }
 
+    private static void environmentDialog(Rules rules) {
+        BaseDialog dialog = new BaseDialog("@rules.title.environment");
+        dialog.cont.add("@rules.env.warning").color(Pal.accent).center().padBottom(20f).row();
+        dialog.cont.pane(table -> {
+            table.left().defaults().growX().left().pad(5);
+
+            table.row();
+
+            envCheck(table, "@rules.env.terrestrial", Env.terrestrial, "@rules.env.terrestrial.description", rules);
+            envCheck(table, "@rules.env.space", Env.space, "@rules.env.space.description", rules);
+            envCheck(table, "@rules.env.underwater", Env.underwater, "@rules.env.underwater.description", rules);
+            envCheck(table, "@rules.env.spores", Env.spores, "@rules.env.spores.description", rules);
+            envCheck(table, "@rules.env.scorching", Env.scorching, "@rules.env.scorching.description", rules);
+            envCheck(table, "@rules.env.groundOil", Env.groundOil, "@rules.env.groundOil.description", rules);
+            envCheck(table, "@rules.env.groundWater", Env.groundWater, "@rules.env.groundWater.description", rules);
+            envCheck(table, "@rules.env.oxygen", Env.oxygen, "@rules.env.oxygen.description", rules);
+        }).fillX();
+
+        dialog.addCloseButton();
+
+        dialog.show();
+    }
+
+    private static void changeEnv(CheckBox check, int envVar, Rules rules) {
+        if (check.isChecked()) {
+            rules.env = rules.env | envVar;
+        } else {
+            rules.env = rules.env & ~envVar;
+        }
+    }
+
+    @SuppressWarnings("SameParameterValue")
     private static void number(Table main, String text, boolean integer, Floatc cons, Floatp prov, Boolp condition, float min, float max){
         main.table(table -> {
             table.left();
@@ -250,6 +284,7 @@ public class RulesDialog{
         main.row();
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void number(Table main, String text, Floatc cons, Floatp prov){
         number(main, text, false, cons, prov, () -> true, 0, Float.MAX_VALUE);
     }
@@ -278,5 +313,19 @@ public class RulesDialog{
             table.add(labelText).left().padRight(5);
             table.field(String.valueOf(prov.get()), cons).padRight(100f);
         }).padTop(0).row();
+    }
+
+    private static void envCheck(Table tb, String text, int envVar, String description, Rules rules) {
+        CheckBox check = new CheckBox(text);
+        check.changed(() -> changeEnv(check, envVar, rules));
+        check.setChecked((rules.env & envVar) != 0);
+        check.left();
+        tb.add(check);
+        tb.row();
+
+        Cell<Label> desc = tb.add(description);
+        desc.get().setWidth(600f);
+        desc.get().setWrap(true);
+        tb.row();
     }
 }

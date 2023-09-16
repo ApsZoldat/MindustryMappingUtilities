@@ -15,7 +15,6 @@ public class PlanetBackgroundDrawer{
     static private final PlanetRenderer planets = new PlanetRenderer();
 
     static public int size = Math.max(graphics.getWidth(), graphics.getHeight());
-    static public float drawSize = Math.max(camera.width, camera.height);
     static public Boolean changed = true;
 
     static public void update(){
@@ -52,7 +51,6 @@ public class PlanetBackgroundDrawer{
             backgroundBuffer.end();
         }
 
-        drawSize = Math.max(camera.width, camera.height);
         return backgroundBuffer.getTexture();
     }
 }

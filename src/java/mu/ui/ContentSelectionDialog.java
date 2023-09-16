@@ -10,8 +10,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
 import arc.util.Align;
-import arc.util.Log;
-import mindustry.content.TechTree;
+import mindustry.content.Blocks;
 import mindustry.ctype.ContentType;
 import mindustry.ctype.UnlockableContent;
 import mindustry.gen.Icon;
@@ -19,6 +18,7 @@ import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
 import mindustry.type.Category;
 import mindustry.type.Planet;
+import mindustry.type.UnitType;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.world.Block;
@@ -29,6 +29,8 @@ import static mindustry.Vars.content;
 import static mindustry.Vars.ui;
 
 public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDialog{
+    private static final int emptyBuildConstructorHash = Blocks.air.buildType.hashCode();
+
     private final ContentType type;
     private ObjectSet<T> contentSet;
     private final Boolf<T> pred;
@@ -37,7 +39,6 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
     private Category selectedCategory;
     private boolean terrainCategory;
     private Planet selectedPlanet;
-
     private Table selectedTable;
     private Table deselectedTable;
     private Seq<T> contentSelection;
@@ -68,11 +69,12 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                 for (Planet planet : content.planets()) {
                     if(!planet.accessible) continue;
                     table.button(planet.localizedName, Icon.icons.get(planet.icon), Styles.togglet, () -> {
-                                selectedPlanet = planet;
-                                dialog.hide();
-                                rebuildTables();
-                            }).marginLeft(14f).padBottom(5f).width(220f).height(55f).checked(selectedPlanet == planet)
-                            .update(b -> b.setChecked(selectedPlanet == planet)).get().getChildren().get(1).setColor(planet.iconColor);
+                        if(selectedPlanet == planet) selectedPlanet = null;
+                        else selectedPlanet = planet;
+                        dialog.hide();
+                        rebuildTables();
+                    }).marginLeft(14f).padBottom(5f).width(220f).height(55f).checked(selectedPlanet == planet)
+                    .update(b -> b.setChecked(selectedPlanet == planet)).get().getChildren().get(1).setColor(planet.iconColor);
                     i += 1;
                     if (i % 3 == 0) {
                         table.row();
@@ -185,11 +187,35 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
         rebuildTables();
     }
 
+    private boolean belongsToPlanet(T content, Planet planet){
+        if(content instanceof Block block){
+            if(block.buildType.hashCode() == emptyBuildConstructorHash) return false;
+            if(!block.supportsEnv(planet.defaultEnv)) return false;
+
+            return block.isVisibleOn(planet);
+        }else if(content instanceof UnitType unit){
+            if(!unit.supportsEnv(planet.defaultEnv)) return false;
+
+            for(var stack : unit.getTotalRequirements()){
+                if(planet.hiddenItems.contains(stack.item)){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     private void rebuildTables(){
         contentSelection.clear();
         contentSelection = content.getBy(type);
         contentSelection = contentSelection.select(pred);
+
         if(!searchText.isEmpty()) contentSelection.removeAll(content -> !content.localizedName.toLowerCase().contains(searchText.toLowerCase()));
+        if(selectedPlanet != null){
+            contentSelection.removeAll(content -> !belongsToPlanet(content, selectedPlanet));
+        }
         if(type == ContentType.block){
             contentSelection.removeAll(content -> {
                 if(terrainCategory) return ((Block)content).buildVisibility != BuildVisibility.hidden;

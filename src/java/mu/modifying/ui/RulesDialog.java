@@ -152,13 +152,13 @@ public class RulesDialog{
 
                     if(elem2 instanceof Collapser) return;
                     String labelText = getLabelText(elem2);
-                    String infoText = getInfoText(labelText);
-                    if(infoText != null) addInfoButton(cell2, infoText);
+                    String key = getBundleKey(labelText);
+                    if(isRuleKey(key) && hasInfo(key)) addInfoButton(cell2, key);
                 });
             }else{
                 String labelText = getLabelText(elem);
-                String infoText = getInfoText(labelText);
-                if(infoText != null) addInfoButton(cell, infoText);
+                String key = getBundleKey(labelText);
+                if(isRuleKey(key) && hasInfo(key)) addInfoButton(cell, key);
             }
         });
     }
@@ -205,25 +205,32 @@ public class RulesDialog{
         return getLabelText(elem, true);
     }
 
-    /* Gets info string for rule text
-    If it isn't present in bundle, returns null*/
-    @Nullable
-    private static String getInfoText(String text){
-        if(text == null) return null;
-        String bundleKey = bundle.getProperties().findKey((text), false);
-        if(bundleKey == null) return null;
 
-        if(!bundle.has(bundleKey + ".info")) return null;
-        return bundleKey;
+    @Nullable
+    public static String getBundleKey(String text){
+        if(text == null) return null;
+
+        return bundle.getProperties().findKey((text), false);
+    }
+
+    public static boolean isRuleKey(String bundleKey){
+        if(bundleKey == null) return false;
+        return bundleKey.startsWith("rules.");
+    }
+
+    private static boolean hasInfo(String bundleKey){
+        if(bundleKey == null) return false;
+
+        return bundle.has(bundleKey + ".info");
     }
 
     private static void addInfoButton(Cell<?> cell, String bundleKey){
         var elem = cell.get();
         Table table = new Table();
-        table.left().defaults().fillX().left();
+        table.left().defaults().left();
 
-        table.button(Icon.infoSmall, () -> ui.showInfo("[accent]" + bundle.get(bundleKey) + "\n\n[]" + bundle.get(bundleKey + ".info"))).padRight(5).fillY();
-        var newCell = table.add(elem);
+        table.button(Icon.infoSmall, () -> ui.showInfo("[accent]" + bundle.get(bundleKey) + "\n\n[]" + bundle.get(bundleKey + ".info"))).padRight(5).fill();
+        var newCell = table.add(elem).growX();
         if(cell.maxWidth() != 0) newCell.width(300f);
         table.row();
 
@@ -262,7 +269,7 @@ public class RulesDialog{
                 update(() -> setColor(prov.get()));
             }}).grow()).margin(4).size(50f).padRight(10);
             button.add(text);
-        }, () -> ui.picker.show(prov.get(), cons)).left().width(250f);
+        }, () -> ui.picker.show(prov.get(), cons)).left().width(300f);
     }
 
     private static void text(Table main, String labelText, Cons<String> cons, Prov<String> prov){

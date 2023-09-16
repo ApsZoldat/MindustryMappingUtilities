@@ -20,6 +20,8 @@ public class MapUtilitiesMod extends Mod{
             RulesDialog.modify(Reflect.get(infoDialog, "ruleInfo"));
             MapPlayDialog playDialog = Reflect.get(ui.custom, "dialog");
             RulesDialog.modify(Reflect.get(playDialog, "dialog"));
+            MapPlayDialog playtestDialog = Reflect.get(ui.editor, "playtestDialog");
+            RulesDialog.modify(Reflect.get(playtestDialog, "dialog"));
 
             SettingsDialog.modify();
 

@@ -10,6 +10,8 @@ import arc.scene.ui.layout.Table;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
 import arc.util.Align;
+import arc.util.Log;
+import mindustry.content.TechTree;
 import mindustry.ctype.ContentType;
 import mindustry.ctype.UnlockableContent;
 import mindustry.gen.Icon;
@@ -65,7 +67,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                         .update(b -> b.setChecked(selectedPlanet == null)).get().getChildren().get(1);
                 for (Planet planet : content.planets()) {
                     if(!planet.accessible) continue;
-                    table.button(planet.localizedName, Icon.planet, Styles.togglet, () -> {
+                    table.button(planet.localizedName, Icon.icons.get(planet.icon), Styles.togglet, () -> {
                                 selectedPlanet = planet;
                                 dialog.hide();
                                 rebuildTables();
@@ -103,7 +105,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                     field.setText("");
                     rebuildTables();
                 }).padLeft(20f);
-                table2.label(() -> selectedPlanet != null ? "@rules.title.planet" + ": " + selectedPlanet.localizedName : "").padLeft(10f);
+                table2.label(() -> selectedPlanet != null ? Core.bundle.get("rules.title.planet") + ": " + selectedPlanet.localizedName : "").padLeft(10f);
             });
             if(type == ContentType.block){
                 table.row();
@@ -184,7 +186,9 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
     }
 
     private void rebuildTables(){
-        contentSelection = content.<T>getBy(type).select(pred);
+        contentSelection.clear();
+        contentSelection = content.getBy(type);
+        contentSelection = contentSelection.select(pred);
         if(!searchText.isEmpty()) contentSelection.removeAll(content -> !content.localizedName.toLowerCase().contains(searchText.toLowerCase()));
         if(type == ContentType.block){
             contentSelection.removeAll(content -> {
@@ -192,10 +196,6 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                 return selectedCategory != null && ((Block)content).category != selectedCategory;
             });
         }
-        if(selectedPlanet != null) contentSelection.removeAll(content -> {
-            if(selectedPlanet.getContentType() == null) return false;
-            return content.techNode.planet != selectedPlanet;
-        });
 
         rebuildTable(selectedTable, true);
         rebuildTable(deselectedTable, false);

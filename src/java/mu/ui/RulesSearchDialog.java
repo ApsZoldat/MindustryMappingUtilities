@@ -1,16 +1,18 @@
 package mu.ui;
 
-import arc.scene.ui.Image;
-import arc.scene.ui.TextButton;
-import arc.scene.ui.TextField;
+import arc.scene.Element;
+import arc.scene.ui.*;
 import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
+import arc.scene.ui.layout.Cell;
 import arc.util.Reflect;
 import mindustry.gen.Icon;
 import mindustry.graphics.Pal;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mu.modifying.ui.RulesDialog;
+
+import static mu.modifying.ui.RulesDialog.*;
 
 public class RulesSearchDialog extends CustomRulesDialog{
     private Table resultsTable;
@@ -80,14 +82,16 @@ public class RulesSearchDialog extends CustomRulesDialog{
         });
 
         main.getCells().each(cell -> {
+            var elem = cell.get();
+
             // Adding team rules buttons with collapsers
-            if(cell.get() instanceof Collapser){
+            if(elem instanceof Collapser){
                 if(includeCollapsers){
                     Table newTable = new Table();
                     newTable.left().defaults().fillX().left().pad(5);
-                    ((Table)Reflect.get(Collapser.class, cell.get(), "table")).getCells().each(cell2 -> {
+                    ((Table)Reflect.get(Collapser.class, elem, "table")).getCells().each(cell2 -> {
                         String labelText = RulesDialog.getLabelText(cell2.get());
-                        if(labelText == null) return;
+                        if(!isRuleKey(getBundleKey(labelText))) return;
                         if(hasWordsParts(labelText, text)) newTable.add(cell2.get()).row();
                     });
 
@@ -101,9 +105,13 @@ public class RulesSearchDialog extends CustomRulesDialog{
                     resultsTable.add(newCollapser).row();
                 }
             }else{
-                String labelText = RulesDialog.getLabelText(cell.get());
-                if(labelText == null) return;
-                if(hasWordsParts(labelText, text)) resultsTable.add(cell.get()).row();
+                String labelText = RulesDialog.getLabelText(elem);
+                if(!isRuleKey(getBundleKey(labelText))) return;
+                if(hasWordsParts(labelText, text)){
+                    Cell<Element> elemCell = resultsTable.add(elem);
+                    if(elem instanceof Button && !(elem instanceof CheckBox)) elemCell.width(300f);
+                    resultsTable.row();
+                }
             }
         });
         addSearchBar();

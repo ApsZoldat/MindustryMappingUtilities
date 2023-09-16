@@ -103,7 +103,7 @@ public class PlanetBackgroundDialog extends BaseDialog{
             dialog.cont.pane(table -> {
                 int i = 0;
                 for (Planet planet : content.planets()) {
-                    table.button(planet.localizedName, Icon.planet, Styles.togglet, () -> {
+                    table.button(planet.localizedName, Icon.icons.get(planet.icon), Styles.togglet, () -> {
                         rules.planetBackground.planet = planet;
                         PlanetBackgroundDrawer.update();
                         dialog.hide();

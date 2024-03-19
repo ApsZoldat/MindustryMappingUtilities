@@ -1,4 +1,4 @@
-package mu.modifying.ui;
+package mu.legacy.modifying.ui;
 
 import arc.func.*;
 import arc.graphics.Color;
@@ -21,20 +21,20 @@ import mindustry.graphics.Pal;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.world.meta.Env;
-import mu.ui.RulesSearchDialog;
+import mu.legacy.ui.LegacyRulesSearchDialog;
 
 import static arc.Core.bundle;
 import static arc.Core.settings;
 import static mindustry.Vars.ui;
 import static mu.MUVars.*;
 
-public class RulesDialog{
+public class LegacyRulesDialog{
     public static void modify(CustomRulesDialog dialog){
         dialog.shown(() -> setup(dialog));
     }
 
     public static void setup(CustomRulesDialog dialog){
-        boolean isSearch = (dialog instanceof RulesSearchDialog);
+        boolean isSearch = (dialog instanceof LegacyRulesSearchDialog);
 
         Rules rules = Reflect.get(CustomRulesDialog.class, dialog, "rules");
         Table main = Reflect.get(CustomRulesDialog.class, dialog, "main");

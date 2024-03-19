@@ -1,4 +1,4 @@
-package mu.ui;
+package mu.legacy.ui;
 
 import arc.scene.Element;
 import arc.scene.ui.*;
@@ -10,17 +10,17 @@ import mindustry.gen.Icon;
 import mindustry.graphics.Pal;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.CustomRulesDialog;
-import mu.modifying.ui.RulesDialog;
+import mu.legacy.modifying.ui.LegacyRulesDialog;
 
-import static mu.modifying.ui.RulesDialog.*;
+import static mu.legacy.modifying.ui.LegacyRulesDialog.*;
 
-public class RulesSearchDialog extends CustomRulesDialog{
+public class LegacyRulesSearchDialog extends CustomRulesDialog{
     private Table resultsTable;
     private String searchText = "";
 
-    public RulesSearchDialog(){
+    public LegacyRulesSearchDialog(){
         super();
-        RulesDialog.modify(this);
+        LegacyRulesDialog.modify(this);
         shown(() -> {
             if(!searchText.isEmpty()) search(searchText);
             addSearchBar();
@@ -57,7 +57,7 @@ public class RulesSearchDialog extends CustomRulesDialog{
 
     private void buildMain(){
         Reflect.invoke(CustomRulesDialog.class, this, "setup", null);
-        RulesDialog.setup(this);
+        LegacyRulesDialog.setup(this);
     }
 
     private void search(String text){
@@ -76,7 +76,7 @@ public class RulesSearchDialog extends CustomRulesDialog{
 
         Collapser collapser = (Collapser)main.getCells().find(cell -> cell.get() instanceof Collapser).get();
         boolean includeCollapsers = ((Table)Reflect.get(collapser, "table")).getCells().contains(cell -> {
-            String labelText = RulesDialog.getLabelText(cell.get());
+            String labelText = LegacyRulesDialog.getLabelText(cell.get());
             if(labelText == null) return false;
             return hasWordsParts(labelText, text);
         });
@@ -90,7 +90,7 @@ public class RulesSearchDialog extends CustomRulesDialog{
                     Table newTable = new Table();
                     newTable.left().defaults().fillX().left().pad(5);
                     ((Table)Reflect.get(Collapser.class, elem, "table")).getCells().each(cell2 -> {
-                        String labelText = RulesDialog.getLabelText(cell2.get());
+                        String labelText = LegacyRulesDialog.getLabelText(cell2.get());
                         if(!isRuleKey(getBundleKey(labelText))) return;
                         if(hasWordsParts(labelText, text)) newTable.add(cell2.get()).row();
                     });
@@ -105,7 +105,7 @@ public class RulesSearchDialog extends CustomRulesDialog{
                     resultsTable.add(newCollapser).row();
                 }
             }else{
-                String labelText = RulesDialog.getLabelText(elem);
+                String labelText = LegacyRulesDialog.getLabelText(elem);
                 if(!isRuleKey(getBundleKey(labelText))) return;
                 if(hasWordsParts(labelText, text)){
                     Cell<Element> elemCell = resultsTable.add(elem);

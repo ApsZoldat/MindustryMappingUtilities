@@ -139,7 +139,7 @@ nb-configuration.xml
 ## Gradle
 
 /local.properties
-libs/MindustryBE.jar
+libs
 .gradle/
 gradle-app.setting
 

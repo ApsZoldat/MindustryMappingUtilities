@@ -10,6 +10,7 @@ import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.ui.dialogs.MapPlayDialog;
 import mu.legacy.modifying.ui.LegacyRulesDialog;
 import mu.legacy.modifying.ui.LegacySettingsDialog;
+import mu.modifying.ui.RulesDialog;
 import mu.utils.UpdateChecker;
 
 import static arc.Core.settings;
@@ -26,10 +27,12 @@ public class MapUtilitiesMod extends Mod{
                 LegacyRulesDialog.modify(infoRules);
                 LegacyRulesDialog.modify(playRules);
                 LegacyRulesDialog.modify(playtestRules);
-                LegacySettingsDialog.modify();
             }else{
-
+                RulesDialog.modify(infoRules);
+                RulesDialog.modify(playRules);
+                RulesDialog.modify(playtestRules);
             }
+            LegacySettingsDialog.modify();
 
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
         });

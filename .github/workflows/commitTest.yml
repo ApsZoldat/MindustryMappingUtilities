@@ -7,26 +7,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download BE Jar
+      - id: download
+        name: Download BE Jar
         uses: robinraju/release-downloader@v1.10
         with:
           repository: "Anuken/MindustryBuilds"
           latest: true
-          fileName: "Mindustry-BE-Desktop-*.jar "
+          fileName: "Mindustry-BE-Desktop-*.jar"
           out-file-path: "libs"
-        run: mv Mindustry-BE-Desktop-${{steps.0.outputs.tag_name}}.jar MindustryBE.jar
+      - name: Rename JAR
+        run: mv libs/Mindustry-BE-Desktop-${{steps.download.outputs.tag_name}}.jar libs/MindustryBE.jar
+      - name: Upload downloaded BE jar file
+        uses: actions/upload-artifact@master
+        with:
+          name: MindustryBE
+          path: libs/MindustryBE.jar
+
   buildJar:
+    needs: getBE
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up PATH
-        run: |
-          echo "${ANDROID_HOME}/build-tools/34.0.0" >> $GITHUB_PATH
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
           java-version: 17
+      - name: Retrieve downloaded BE jar file
+        uses: actions/download-artifact@master
+        with:
+          name: MindustryBE
+          path: libs
+      - run: ls -la
       - name: Build mod jar
         run: ./gradlew deploy
       - name: Upload built jar file

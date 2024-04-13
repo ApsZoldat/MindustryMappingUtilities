@@ -3,6 +3,18 @@ name: Build Mod
 on: [push, pull_request]
 
 jobs:
+  getBE:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download BE Jar
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: "Anuken/MindustryBuilds"
+          latest: true
+          fileName: "Mindustry-BE-Desktop-*.jar "
+          out-file-path: "libs"
+        run: mv Mindustry-BE-Desktop-${{steps.0.outputs.tag_name}}.jar MindustryBE.jar
   buildJar:
     runs-on: ubuntu-latest
 

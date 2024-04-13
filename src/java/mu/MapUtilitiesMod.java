@@ -2,12 +2,10 @@ package mu;
 
 import arc.Events;
 import arc.util.Reflect;
-import arc.util.Log;
 import mindustry.core.Version;
 import mindustry.editor.MapInfoDialog;
 import mindustry.game.EventType;
 import mindustry.mod.Mod;
-import mindustry.ui.dialogs.CustomGameDialog;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.ui.dialogs.MapPlayDialog;
 import mu.legacy.modifying.ui.LegacyRulesDialog;
@@ -18,7 +16,7 @@ import static arc.Core.settings;
 import static mindustry.Vars.ui;
 
 public class MapUtilitiesMod extends Mod{
-    public MapUtilitiesMod() {
+    public MapUtilitiesMod(){
         Events.on(EventType.ClientLoadEvent.class, e -> {
             CustomRulesDialog infoRules = Reflect.get(MapInfoDialog.class, Reflect.get(ui.editor, "infoDialog"), "ruleInfo");
             CustomRulesDialog playRules = Reflect.get(MapPlayDialog.class, Reflect.get(ui.custom, "dialog"), "dialog");

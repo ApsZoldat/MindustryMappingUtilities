@@ -129,7 +129,7 @@ public class LegacyRulesSearchDialog extends CustomRulesDialog{
         for(String word : words){
             boolean found = false;
             for(String textWord : textWords){
-                if(textWord.contains(word)) {
+                if(textWord.contains(word)){
                     found = true;
                     break;
                 }

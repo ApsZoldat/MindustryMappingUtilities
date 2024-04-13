@@ -102,7 +102,7 @@ public class PlanetBackgroundDialog extends BaseDialog{
             BaseDialog dialog = new BaseDialog("@rules.title.planet");
             dialog.cont.pane(table -> {
                 int i = 0;
-                for (Planet planet : content.planets()) {
+                for (Planet planet : content.planets()){
                     table.button(planet.localizedName, Icon.icons.get(planet.icon), Styles.togglet, () -> {
                         rules.planetBackground.planet = planet;
                         PlanetBackgroundDrawer.update();
@@ -110,7 +110,7 @@ public class PlanetBackgroundDialog extends BaseDialog{
                     }).marginLeft(14f).padBottom(5f).width(220f).height(55f).checked(rules.planetBackground.planet == planet)
                             .update(b -> b.setChecked(rules.planetBackground.planet == planet)).get().getChildren().get(1).setColor(planet.iconColor);
                     i += 1;
-                    if (i % 3 == 0) {
+                    if (i % 3 == 0){
                         table.row();
                     }
                 }

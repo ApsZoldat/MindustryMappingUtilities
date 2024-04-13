@@ -66,7 +66,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                             rebuildTables();
                         }).marginLeft(14f).padBottom(5f).width(220f).height(55f).checked(selectedPlanet == null)
                         .update(b -> b.setChecked(selectedPlanet == null)).get().getChildren().get(1);
-                for (Planet planet : content.planets()) {
+                for (Planet planet : content.planets()){
                     if(!planet.accessible) continue;
                     table.button(planet.localizedName, Icon.icons.get(planet.icon), Styles.togglet, () -> {
                         if(selectedPlanet == planet) selectedPlanet = null;
@@ -76,7 +76,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
                     }).marginLeft(14f).padBottom(5f).width(220f).height(55f).checked(selectedPlanet == planet)
                     .update(b -> b.setChecked(selectedPlanet == planet)).get().getChildren().get(1).setColor(planet.iconColor);
                     i += 1;
-                    if (i % 3 == 0) {
+                    if (i % 3 == 0){
                         table.row();
                     }
                 }

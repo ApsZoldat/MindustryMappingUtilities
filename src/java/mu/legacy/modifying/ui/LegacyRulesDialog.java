@@ -72,49 +72,49 @@ public class LegacyRulesDialog{
 
         if(settings.getBool("editor_better_content_dialogs")) upgradeContentDialogs(main, rules);
         if(settings.getBool("editor_hidden_rules")) addHiddenRules(main, rules);
-        if(settings.getBool("editor_revealed_blocks")) {
-            main.button("@rules.revealed_blocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).left().width(300f).fillX().row();
+        if(settings.getBool("editor_revealed_blocks")){
+            main.button("@rules.revealedblocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).left().width(300f).fillX().row();
         }
-        if(settings.getBool("editor_planet_background")) {
-            main.button("@rules.planet_background", () -> planetBackgroundDialog.show(rules)).left().width(300f).fillX().row();
+        if(settings.getBool("editor_planet_background")){
+            main.button("@rules.planetbackground", () -> planetBackgroundDialog.show(rules)).left().width(300f).fillX().row();
         }
         if(settings.getBool("editor_environment_settings")){
-            main.button("@rules.environment_settings", () -> environmentDialog(rules)).left().width(300f).fillX().row();
+            main.button("@rules.environmentsettings", () -> environmentDialog(rules)).left().width(300f).fillX().row();
         }
         if(settings.getBool("editor_rules_info")) addInfoButtons(main);
     }
 
     private static void addHiddenRules(Table main, Rules rules){
         main.defaults().left().growX();
-        main.add("@rules.hidden_rules_general").color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);
+        main.add("@rules.hiddenrulesgeneral").color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);
         main.row();
         main.image().color(Pal.accent).height(3f).padRight(100f).padBottom(20);
         main.row();
-        check(main, "@rules.pvp_auto_pause", value -> rules.pvpAutoPause = value, () -> rules.pvpAutoPause);
-        check(main, "@rules.can_game_over", value -> rules.canGameOver = value, () -> rules.canGameOver);
-        check(main, "@rules.possession_allowed", value -> rules.possessionAllowed = value, () -> rules.possessionAllowed);
-        check(main, "@rules.unit_ammo", value -> rules.unitAmmo = value, () -> rules.unitAmmo);
-        check(main, "@rules.unit_payload_update", value -> rules.unitPayloadUpdate = value, () -> rules.unitPayloadUpdate);
-        check(main, "@rules.show_spawns", value -> rules.showSpawns = value, () -> rules.showSpawns);
-        check(main, "@rules.ghost_blocks", value -> rules.ghostBlocks = value, () -> rules.ghostBlocks);
-        check(main, "@rules.logic_unit_build", value -> rules.logicUnitBuild = value, () -> rules.logicUnitBuild);
-        check(main, "@rules.core_destroy_clear", value -> rules.coreDestroyClear = value, () -> rules.coreDestroyClear);
-        number(main, "@rules.drag_multiplier", value -> rules.dragMultiplier = value, () -> rules.dragMultiplier);
-        check(main, "@rules.static_fog", value -> rules.coreDestroyClear = value, () -> rules.coreDestroyClear);
+        check(main, "@rules.pvpautopause", value -> rules.pvpAutoPause = value, () -> rules.pvpAutoPause);
+        check(main, "@rules.cangameover", value -> rules.canGameOver = value, () -> rules.canGameOver);
+        check(main, "@rules.possessionallowed", value -> rules.possessionAllowed = value, () -> rules.possessionAllowed);
+        check(main, "@rules.unitammo", value -> rules.unitAmmo = value, () -> rules.unitAmmo);
+        check(main, "@rules.unitpayloadupdate", value -> rules.unitPayloadUpdate = value, () -> rules.unitPayloadUpdate);
+        check(main, "@rules.showspawns", value -> rules.showSpawns = value, () -> rules.showSpawns);
+        check(main, "@rules.ghostblocks", value -> rules.ghostBlocks = value, () -> rules.ghostBlocks);
+        check(main, "@rules.logicunitbuild", value -> rules.logicUnitBuild = value, () -> rules.logicUnitBuild);
+        check(main, "@rules.coredestroyclear", value -> rules.coreDestroyClear = value, () -> rules.coreDestroyClear);
+        number(main, "@rules.dragmultiplier", value -> rules.dragMultiplier = value, () -> rules.dragMultiplier);
+        check(main, "@rules.staticfog", value -> rules.coreDestroyClear = value, () -> rules.coreDestroyClear);
 
-        colorPick(main, "@rules.static_fog_color", rules.staticColor::set, () -> rules.staticColor);
+        colorPick(main, "@rules.staticfogcolor", rules.staticColor::set, () -> rules.staticColor);
         main.row();
-        colorPick(main, "@rules.dynamic_fog_color", rules.dynamicColor::set, () -> rules.dynamicColor);
+        colorPick(main, "@rules.dynamicfogcolor", rules.dynamicColor::set, () -> rules.dynamicColor);
         main.row();
         main.table(table -> {
             table.left();
-            colorPick(table, "@rules.clouds_color", rules.cloudColor::set, () -> rules.dynamicColor);
+            colorPick(table, "@rules.cloudscolor", rules.cloudColor::set, () -> rules.dynamicColor);
         }).row();
 
-        text(main, "@rules.mode_name", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
+        text(main, "@rules.modename", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
         text(main, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission));
-        check(main, "@rules.border_darkness", value -> rules.borderDarkness = value, () -> rules.borderDarkness);
-        check(main, "@rules.disable_outside_area", value -> rules.disableOutsideArea = value, () -> rules.disableOutsideArea);
+        check(main, "@rules.borderdarkness", value -> rules.borderDarkness = value, () -> rules.borderDarkness);
+        check(main, "@rules.disableoutsidearea", value -> rules.disableOutsideArea = value, () -> rules.disableOutsideArea);
         addTeamRules(main, rules);
     }
 
@@ -131,14 +131,14 @@ public class LegacyRulesDialog{
 
             Table table = Reflect.get(collapsers.get(i), "table");
 
-            table.add("@rules.hidden_rules_team").color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);
+            table.add("@rules.hiddenrulesteam").color(Pal.accent).padTop(20).padRight(100f).padBottom(-3);
             table.row();
             table.image().color(Pal.accent).height(3f).padRight(100f).padBottom(20);
             table.row();
 
             check(table, "@rules.cheat", value -> teamRules.cheat = value, () -> teamRules.cheat);
-            check(table, "@rules.cores_spawn_ships", value -> teamRules.aiCoreSpawn = value, () -> teamRules.aiCoreSpawn);
-            check(table, "@rules.infinite_ammo", value -> teamRules.infiniteAmmo = value, () -> teamRules.infiniteAmmo);
+            check(table, "@rules.coresspawnships", value -> teamRules.aiCoreSpawn = value, () -> teamRules.aiCoreSpawn);
+            check(table, "@rules.infiniteammo", value -> teamRules.infiniteAmmo = value, () -> teamRules.infiniteAmmo);
         }
     }
 
@@ -239,7 +239,7 @@ public class LegacyRulesDialog{
         cell.setElement(table);
     }
 
-    private static void environmentDialog(Rules rules) {
+    private static void environmentDialog(Rules rules){
         BaseDialog dialog = new BaseDialog("@rules.title.environment");
         dialog.cont.add("@rules.env.warning").color(Pal.accent).center().padBottom(20f).row();
         dialog.cont.pane(table -> {
@@ -262,8 +262,8 @@ public class LegacyRulesDialog{
         dialog.show();
     }
 
-    private static void changeEnv(CheckBox check, int envVar, Rules rules) {
-        if (check.isChecked()) {
+    private static void changeEnv(CheckBox check, int envVar, Rules rules){
+        if (check.isChecked()){
             rules.env = rules.env | envVar;
         } else {
             rules.env = rules.env & ~envVar;
@@ -315,7 +315,7 @@ public class LegacyRulesDialog{
         }).padTop(0).row();
     }
 
-    private static void envCheck(Table tb, String text, int envVar, String description, Rules rules) {
+    private static void envCheck(Table tb, String text, int envVar, String description, Rules rules){
         CheckBox check = new CheckBox(text);
         check.changed(() -> changeEnv(check, envVar, rules));
         check.setChecked((rules.env & envVar) != 0);

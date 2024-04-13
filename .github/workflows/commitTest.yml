@@ -41,7 +41,6 @@ jobs:
         with:
           name: MindustryBE
           path: libs
-      - run: ls -la
       - name: Build mod jar
         run: ./gradlew deploy
       - name: Upload built jar file

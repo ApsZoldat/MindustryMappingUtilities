@@ -124,9 +124,9 @@ public class RulesDialog{
         category(dialog, "teams");
 
         int[] i = {0};
-        dialog.current.getCells().forEach(t -> {
+        dialog.current.getCells().each(t -> {
             if(t.get() instanceof Table){
-                ((Table) t.get()).getCells().forEach(c -> {
+                ((Table) t.get()).getCells().each(c -> {
                     if(c.get() instanceof Collapser){
                         Rules.TeamRule teams = ((Rules)Reflect.get(dialog, "rules")).teams.get(Team.baseTeams[i[0]]);
                         i[0]++;

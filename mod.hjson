@@ -8,7 +8,7 @@ main: "mu.MapUtilitiesMod"
 
 description: 
     '''
-    > This is an enhanced remake of old Mapping Utilities, however, it's WIP, so it has way less features yet. When this mod will contain all features of old version, the old version will be removed from mod browser and completely replaced by this one.
+    > This is an enhanced remake of old Mapping Utilities, however, it's WIP, so it has way less features yet. Currently i am trying to implement some acceptable old mod's features into vanilla through pull requests, but the all the controversial features and bypasses will remain a part of this mod.
 
 
     Small Mindustry mod improving map editor convenience and possibilities
@@ -19,9 +19,10 @@ description:
 
     - More Rules Available
     - Planet Background Editing
+    - Map Size bypass
 
 
-    Check README.md in GitHub repo for more detailed information about the mod
+    Check README.md in GitHub repo for more detailed information about these features
 
     ! Work In Progress !
     More map making tools will be added in future

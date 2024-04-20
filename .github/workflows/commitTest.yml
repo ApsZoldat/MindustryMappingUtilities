@@ -22,7 +22,7 @@ jobs:
         with:
           name: MindustryBE
           path: libs/MindustryBE.jar
-          retention_days: 1
+          retention-days: 1
 
   buildJar:
     needs: getBE

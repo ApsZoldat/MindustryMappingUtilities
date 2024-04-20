@@ -40,29 +40,29 @@ public class RulesDialog{
         Rules rules = Reflect.get(dialog, "rules");
 
         category(dialog, "waves");
-        dialog.withInfo("@rules.showspawns.info", () -> dialog.check("@rules.showspawns", b -> rules.showSpawns = b, () -> rules.showSpawns));
+        dialog.check("@rules.showspawns", b -> rules.showSpawns = b, () -> rules.showSpawns);
 
 
         category(dialog, "resourcesbuilding");
-        dialog.withInfo("@rules.ghostblocks.info", () -> dialog.check("@rules.ghostblocks", b -> rules.ghostBlocks = b, () -> rules.ghostBlocks));
-        dialog.withInfo("@rules.logicunitbuild.info", () -> dialog.check("@rules.logicunitbuild", b -> rules.logicUnitBuild = b, () -> rules.logicUnitBuild));
+        dialog.check("@rules.ghostblocks", b -> rules.ghostBlocks = b, () -> rules.ghostBlocks);
+        dialog.check("@rules.logicunitbuild", b -> rules.logicUnitBuild = b, () -> rules.logicUnitBuild);
 
 
         category(dialog, "unit");
-        dialog.withInfo("@rules.possessionallowed.info", () -> dialog.check("@rules.possessionallowed", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed));
+        dialog.check("@rules.possessionallowed", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
         dialog.check("@rules.unitammo", b -> rules.unitAmmo = b, () -> rules.unitAmmo);
-        dialog.withInfo("rules.unitpayloadupdate.info", () -> dialog.check("@rules.unitpayloadupdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate));
+        dialog.check("@rules.unitpayloadupdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate);
 
 
         category(dialog, "enemy");
-        dialog.withInfo("@rules.pvpautopause.info", () -> dialog.check("@rules.pvpautopause", b -> rules.pvpAutoPause = b, () -> rules.pvpAutoPause));
-        dialog.withInfo("@rules.pvpautopause.info", () -> dialog.check("@rules.coredestroyclear", b -> rules.coreDestroyClear = b, () -> rules.coreDestroyClear));
+        dialog.check("@rules.pvpautopause", b -> rules.pvpAutoPause = b, () -> rules.pvpAutoPause);
+        dialog.check("@rules.coredestroyclear", b -> rules.coreDestroyClear = b, () -> rules.coreDestroyClear);
 
 
         category(dialog, "environment");
-        dialog.withInfo("@rules.borderdarkness.info", () -> dialog.check("@rules.borderdarkness", b -> rules.borderDarkness = b, () -> rules.borderDarkness));
-        dialog.withInfo("@rules.disableoutsidearea.info", () -> dialog.check("@rules.disableoutsidearea", b -> rules.disableOutsideArea = b, () -> rules.disableOutsideArea));
-        dialog.withInfo("@rules.staticfog.info", () -> dialog.check("@rules.staticfog", b -> rules.staticFog = b, () -> rules.staticFog));
+        dialog.check("@rules.borderdarkness", b -> rules.borderDarkness = b, () -> rules.borderDarkness);
+        dialog.check("@rules.disableoutsidearea", b -> rules.disableOutsideArea = b, () -> rules.disableOutsideArea);
+        dialog.check("@rules.staticfog", b -> rules.staticFog = b, () -> rules.staticFog);
 
         if(Core.bundle.get("rules.staticfogcolor").toLowerCase().contains(dialog.ruleSearch)){
             dialog.current.button(b -> {
@@ -83,17 +83,16 @@ public class RulesDialog{
             }, () -> ui.picker.show(rules.dynamicColor, rules.dynamicColor::set)).left().width(300f).row();
         }
         if(Core.bundle.get("rules.cloudscolor").toLowerCase().contains(dialog.ruleSearch)){
-            dialog.withInfo("@rules.cloudscolor.info", () ->
             dialog.current.button(b -> {
                 b.left();
                 b.table(Tex.pane, in -> in.stack(new Image(Tex.alphaBg), new Image(Tex.whiteui){{
                     update(() -> setColor(rules.cloudColor));
                 }}).grow()).margin(4).size(50f).padRight(10);
                 b.add("@rules.cloudscolor");
-            }, () -> ui.picker.show(rules.cloudColor, rules.cloudColor::set)).left().width(300f).row());
+            }, () -> ui.picker.show(rules.cloudColor, rules.cloudColor::set)).left().width(300f).row();
         }
 
-        dialog.withInfo("@rules.dragmultiplier.info", () -> dialog.number("@rules.dragmultiplier", f -> rules.dragMultiplier = f, () -> rules.dragMultiplier));
+        dialog.number("@rules.dragmultiplier", f -> rules.dragMultiplier = f, () -> rules.dragMultiplier);
 
         if(Core.bundle.get("rules.environmentsettings").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_environment_settings")){
             dialog.current.button("@rules.environmentsettings", () -> environmentDialog(rules)).left().width(300f).fillX().row();
@@ -103,17 +102,17 @@ public class RulesDialog{
         dialog.category("miscellaneous");
         dialog.check("@rules.cangameover", b -> rules.canGameOver = b, () -> rules.canGameOver);
         if(Core.bundle.get("rules.modename").toLowerCase().contains(dialog.ruleSearch)){
-            dialog.withInfo("@rules.modename.info", () -> text(dialog.current, "@rules.modename", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName)));
+            text(dialog.current, "@rules.modename", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
         }
         if(Core.bundle.get("rules.mission").toLowerCase().contains(dialog.ruleSearch)){
-            dialog.withInfo("@rules.mission.info", () -> text(dialog.current, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission)));
+            text(dialog.current, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission));
         }
 
         if(Core.bundle.get("rules.revealedblocks").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_revealed_blocks")){
-            dialog.withInfo("@rules.revealedblocks.info", () -> dialog.current.button("@rules.revealedblocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).left().width(300f).fillX().row());
+            dialog.current.button("@rules.revealedblocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).left().width(300f).fillX().row();
         }
         if(Core.bundle.get("rules.planetbackground").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_planet_background")){
-            dialog.withInfo("@rules.planetbackground.info", () -> dialog.current.button("@rules.planetbackground", () -> planetBackgroundDialog.show(rules)).left().width(300f).fillX().row());
+            dialog.current.button("@rules.planetbackground", () -> planetBackgroundDialog.show(rules)).left().width(300f).fillX().row();
         }
 
         // TODO: PR so rule search detects these
@@ -132,9 +131,9 @@ public class RulesDialog{
                         i[0]++;
 
                         dialog.current = Reflect.get(c.get(), "table");
-                        dialog.withInfo("@rules.cheat.info", () -> dialog.check("@rules.cheat", value -> teams.cheat = value, () -> teams.cheat));
-                        dialog.withInfo("@rules.coresspawnships.info", () -> dialog.check("@rules.coresspawnships", value -> teams.aiCoreSpawn = value, () -> teams.aiCoreSpawn));
-                        dialog.withInfo("@rules.infiniteammo.info", () -> dialog.check("@rules.infiniteammo", value -> teams.infiniteAmmo = value, () -> teams.infiniteAmmo));
+                        dialog.check("@rules.cheat", value -> teams.cheat = value, () -> teams.cheat);
+                        dialog.check("@rules.coresspawnships", value -> teams.aiCoreSpawn = value, () -> teams.aiCoreSpawn);
+                        dialog.check("@rules.infiniteammo", value -> teams.infiniteAmmo = value, () -> teams.infiniteAmmo);
                     }
                 });
             }

@@ -10,6 +10,7 @@ import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.ui.dialogs.MapPlayDialog;
 import mu.legacy.modifying.ui.LegacyRulesDialog;
 import mu.legacy.modifying.ui.LegacySettingsDialog;
+import mu.modifying.ui.ResizeDialog;
 import mu.modifying.ui.RulesDialog;
 import mu.utils.UpdateChecker;
 
@@ -32,6 +33,7 @@ public class MapUtilitiesMod extends Mod{
                 RulesDialog.modify(playRules);
                 RulesDialog.modify(playtestRules);
             }
+            ResizeDialog.modify(Reflect.get(ui.editor, "resizeDialog"));
             LegacySettingsDialog.modify();
 
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();

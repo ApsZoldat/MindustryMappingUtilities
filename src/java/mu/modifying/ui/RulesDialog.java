@@ -102,17 +102,25 @@ public class RulesDialog{
         dialog.category("miscellaneous");
         dialog.check("@rules.cangameover", b -> rules.canGameOver = b, () -> rules.canGameOver);
         if(Core.bundle.get("rules.modename").toLowerCase().contains(dialog.ruleSearch)){
-            text(dialog.current, "@rules.modename", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
+            text(dialog, dialog.current, "@rules.modename", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
         }
         if(Core.bundle.get("rules.mission").toLowerCase().contains(dialog.ruleSearch)){
-            text(dialog.current, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission));
+            text(dialog, dialog.current, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission));
         }
 
         if(Core.bundle.get("rules.revealedblocks").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_revealed_blocks")){
-            dialog.current.button("@rules.revealedblocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).left().width(300f).fillX().row();
+            dialog.ruleInfo(dialog.current.table(table -> {
+                table.button("@rules.revealedblocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).width(300f).left();
+                table.left().row();
+            }).fillX(), "@rules.revealedblocks");
+            dialog.current.row();
         }
         if(Core.bundle.get("rules.planetbackground").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_planet_background")){
-            dialog.current.button("@rules.planetbackground", () -> planetBackgroundDialog.show(rules)).left().width(300f).fillX().row();
+            dialog.ruleInfo(dialog.current.table(table -> {
+                table.button("@rules.planetbackground", () -> planetBackgroundDialog.show(rules)).width(300f).left();
+                table.left().row();
+            }).fillX(), "@rules.planetbackground");
+            dialog.current.row();
         }
 
         // TODO: PR so rule search detects these
@@ -185,11 +193,13 @@ public class RulesDialog{
         tb.row();
     }
 
-    private static void text(Table table, String labelText, Cons<String> cons, Prov<String> prov){
-        table.table(t -> {
+    private static void text(CustomRulesDialog dialog, Table table, String labelText, Cons<String> cons, Prov<String> prov){
+        Cell<Table> cell = table.table(t -> {
             t.left();
             t.add(labelText).left().padRight(5);
             t.field(String.valueOf(prov.get()), cons).padRight(100f);
-        }).padTop(0).row();
+        }).padTop(0);
+        dialog.ruleInfo(cell, labelText);
+        table.row();
     }
 }

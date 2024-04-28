@@ -1,6 +1,5 @@
 package mu.modifying.ui;
 
-import arc.scene.ui.TextField;
 import arc.scene.ui.layout.Table;
 import mindustry.editor.MapResizeDialog;
 

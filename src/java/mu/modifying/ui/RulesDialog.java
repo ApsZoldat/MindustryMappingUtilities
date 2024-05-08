@@ -10,10 +10,13 @@ import arc.scene.ui.layout.Cell;
 import arc.scene.ui.layout.Collapser;
 import arc.scene.ui.layout.Table;
 import arc.util.Reflect;
+import mindustry.content.Planets;
 import mindustry.game.Rules;
 import mindustry.game.Team;
+import mindustry.gen.Icon;
 import mindustry.gen.Tex;
 import mindustry.graphics.Pal;
+import mindustry.ui.Styles;
 import mindustry.ui.dialogs.BaseDialog;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.world.meta.Env;
@@ -24,6 +27,8 @@ import static mu.MUVars.planetBackgroundDialog;
 import static mu.MUVars.revealedBlocksDialog;
 
 public class RulesDialog{
+    public static int currentNumbered = 0;
+
     public static void modify(CustomRulesDialog dialog){
         dialog.additionalSetup.add(() -> setup(dialog));
     }
@@ -99,6 +104,21 @@ public class RulesDialog{
         }
 
 
+        category(dialog, "teams");
+        Table numberedEdit = new Table(); // Numbered teams
+        dialog.numberi("@rules.numberedteam", f -> {
+            currentNumbered = f;
+            updateNumberedEdit(dialog, numberedEdit, Team.get(f));
+        }, () -> currentNumbered, 0, 255);
+        updateNumberedEdit(dialog, numberedEdit, Team.get(currentNumbered));
+        if(numberedEdit.hasChildren()){
+            dialog.current.add(numberedEdit).row();
+        }
+
+        dialog.numberi("@rules.playerteam", f -> rules.defaultTeam = Team.get(f), () -> rules.defaultTeam.id, 0, 255);
+        dialog.numberi("@rules.enemyteam", f -> rules.waveTeam = Team.get(f), () -> rules.waveTeam.id, 0, 255);
+
+
         dialog.category("miscellaneous");
         dialog.check("@rules.cangameover", b -> rules.canGameOver = b, () -> rules.canGameOver);
         if(Core.bundle.get("rules.modename").toLowerCase().contains(dialog.ruleSearch)){
@@ -127,11 +147,64 @@ public class RulesDialog{
         addHiddenTeamRules(dialog);
     }
 
+    private static void updateNumberedEdit(CustomRulesDialog dialog, Table edit, Team team){
+        edit.clear();
+        boolean[] shown = {false};
+        Table wasCurrent = dialog.current;
+        Rules rules = Reflect.get(dialog, "rules");
+
+        edit.button(team.coloredName(), Icon.downOpen, Styles.togglet, () -> {
+            shown[0] = !shown[0];
+        }).marginLeft(14f).width(260f).height(55f).update(t -> {
+            ((Image)t.getChildren().get(1)).setDrawable(shown[0] ? Icon.upOpen : Icon.downOpen);
+            t.setChecked(shown[0]);
+        }).left().padBottom(2f).row();
+
+        edit.collapser(c -> {
+            c.left().defaults().fillX().left().pad(5);
+            dialog.current = c;
+            Rules.TeamRule teams = rules.teams.get(team);
+
+            dialog.number("@rules.blockhealthmultiplier", f -> teams.blockHealthMultiplier = f, () -> teams.blockHealthMultiplier);
+            dialog.number("@rules.blockdamagemultiplier", f -> teams.blockDamageMultiplier = f, () -> teams.blockDamageMultiplier);
+
+            dialog.check("@rules.rtsai", b -> teams.rtsAi = b, () -> teams.rtsAi, () -> team != rules.defaultTeam);
+            dialog.numberi("@rules.rtsminsquadsize", f -> teams.rtsMinSquad = f, () -> teams.rtsMinSquad, () -> teams.rtsAi, 0, 100);
+            dialog.numberi("@rules.rtsmaxsquadsize", f -> teams.rtsMaxSquad = f, () -> teams.rtsMaxSquad, () -> teams.rtsAi, 1, 1000);
+            dialog.number("@rules.rtsminattackweight", f -> teams.rtsMinWeight = f, () -> teams.rtsMinWeight, () -> teams.rtsAi);
+
+            //disallow on Erekir (this is broken for mods I'm sure, but whatever)
+            dialog.check("@rules.buildai", b -> teams.buildAi = b, () -> teams.buildAi, () -> team != rules.defaultTeam && rules.env != Planets.erekir.defaultEnv && !rules.pvp);
+            dialog.number("@rules.buildaitier", false, f -> teams.buildAiTier = f, () -> teams.buildAiTier, () -> teams.buildAi && rules.env != Planets.erekir.defaultEnv && !rules.pvp, 0, 1);
+
+            dialog.check("@rules.infiniteresources", b -> teams.infiniteResources = b, () -> teams.infiniteResources);
+            dialog.number("@rules.buildspeedmultiplier", f -> teams.buildSpeedMultiplier = f, () -> teams.buildSpeedMultiplier, 0.001f, 50f);
+
+            dialog.number("@rules.unitdamagemultiplier", f -> teams.unitDamageMultiplier = f, () -> teams.unitDamageMultiplier);
+            dialog.number("@rules.unitcrashdamagemultiplier", f -> teams.unitCrashDamageMultiplier = f, () -> teams.unitCrashDamageMultiplier);
+            dialog.number("@rules.unitbuildspeedmultiplier", f -> teams.unitBuildSpeedMultiplier = f, () -> teams.unitBuildSpeedMultiplier, 0.001f, 50f);
+            dialog.number("@rules.unitcostmultiplier", f -> teams.unitCostMultiplier = f, () -> teams.unitCostMultiplier);
+            dialog.number("@rules.unithealthmultiplier", f -> teams.unitHealthMultiplier = f, () -> teams.unitHealthMultiplier);
+
+            dialog.check("@rules.cheat", value -> teams.cheat = value, () -> teams.cheat);
+            dialog.check("@rules.coresspawnships", value -> teams.aiCoreSpawn = value, () -> teams.aiCoreSpawn);
+            dialog.check("@rules.infiniteammo", value -> teams.infiniteAmmo = value, () -> teams.infiniteAmmo);
+
+            if(!dialog.current.hasChildren()){
+                edit.clear();
+            }
+
+            dialog.current = wasCurrent;
+        }, () -> shown[0]).left().growX().row();
+    }
+
     private static void addHiddenTeamRules(CustomRulesDialog dialog){
         category(dialog, "teams");
 
         int[] i = {0};
         dialog.current.getCells().each(t -> {
+            if(i[0] > 5) return;
+
             if(t.get() instanceof Table){
                 ((Table) t.get()).getCells().each(c -> {
                     if(c.get() instanceof Collapser){

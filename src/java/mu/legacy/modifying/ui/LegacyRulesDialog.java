@@ -115,6 +115,9 @@ public class LegacyRulesDialog{
         text(main, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission));
         check(main, "@rules.borderdarkness", value -> rules.borderDarkness = value, () -> rules.borderDarkness);
         check(main, "@rules.disableoutsidearea", value -> rules.disableOutsideArea = value, () -> rules.disableOutsideArea);
+
+        number(main, "@rules.playerteam", true, f -> rules.defaultTeam = Team.get((int)f), () -> rules.defaultTeam.id, () -> true, 0, 255);
+        number(main, "@rules.enemyteam", true, f -> rules.waveTeam = Team.get((int)f), () -> rules.waveTeam.id, () -> true, 0, 255);
         addTeamRules(main, rules);
     }
 

@@ -129,17 +129,17 @@ public class RulesDialog{
         }
 
         if(Core.bundle.get("rules.revealedblocks").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_revealed_blocks")){
-            dialog.ruleInfo(dialog.current.table(table -> {
+            dialog.current.table(table -> {
                 table.button("@rules.revealedblocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).width(300f).left();
                 table.left().row();
-            }).fillX(), "@rules.revealedblocks");
+            }).fillX();
             dialog.current.row();
         }
         if(Core.bundle.get("rules.planetbackground").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_planet_background")){
-            dialog.ruleInfo(dialog.current.table(table -> {
+            dialog.current.table(table -> {
                 table.button("@rules.planetbackground", () -> planetBackgroundDialog.show(rules)).width(300f).left();
                 table.left().row();
-            }).fillX(), "@rules.planetbackground");
+            }).fillX();
             dialog.current.row();
         }
 
@@ -272,7 +272,6 @@ public class RulesDialog{
             t.add(labelText).left().padRight(5);
             t.field(String.valueOf(prov.get()), cons).padRight(100f);
         }).padTop(0);
-        dialog.ruleInfo(cell, labelText);
         table.row();
     }
 }

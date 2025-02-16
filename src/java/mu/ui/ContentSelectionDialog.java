@@ -192,7 +192,7 @@ public class ContentSelectionDialog<T extends UnlockableContent> extends BaseDia
             if(block.buildType.hashCode() == emptyBuildConstructorHash) return false;
             if(!block.supportsEnv(planet.defaultEnv)) return false;
 
-            return block.isVisibleOn(planet);
+            return block.isOnPlanet(planet);
         }else if(content instanceof UnitType unit){
             if(!unit.supportsEnv(planet.defaultEnv)) return false;
 

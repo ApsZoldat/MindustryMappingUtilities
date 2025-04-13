@@ -1,4 +1,4 @@
-package mu.legacy.modifying.ui;
+package mu.modifying.ui;
 
 import mindustry.gen.Icon;
 import mindustry.graphics.Pal;
@@ -7,7 +7,7 @@ import mindustry.ui.dialogs.SettingsMenuDialog;
 import static mindustry.Vars.ui;
 import static mindustry.ui.dialogs.SettingsMenuDialog.SettingsTable.Setting;
 
-public class LegacySettingsDialog{
+public class SettingsDialog{
     public static void modify(){
         ui.settings.addCategory("@settings.editor", Icon.editor, table -> {
             table.pref(new Title("@category.general"));

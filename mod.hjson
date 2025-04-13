@@ -32,7 +32,7 @@ repo: "ApsZoldat/MindustryMappingUtilities"
 
 version: 1.8
 
-minGameVersion: 145
+minGameVersion: 147
 
 java: true
 

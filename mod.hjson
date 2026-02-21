@@ -2,7 +2,7 @@ displayName: "Mapping Utilities"
 
 name: "mapping-utilities"
 
-author: "ApsZoldat"
+author: "ApsZoldat & Jyle"
 
 main: "mu.MapUtilitiesMod"
 
@@ -30,9 +30,9 @@ description:
 
 repo: "ApsZoldat/MindustryMappingUtilities"
 
-version: 1.8
+version: 1.9
 
-minGameVersion: 147
+minGameVersion: 154.2
 
 java: true
 

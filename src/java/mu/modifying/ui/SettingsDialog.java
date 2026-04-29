@@ -15,7 +15,6 @@ public class SettingsDialog{
             table.sliderPref("editor_content_buttons_size", 50, 30, 80, i -> i + "px");
             table.pref(new Title("@settings.rules_dialog"));
             table.checkPref("editor_hidden_rules", true);
-            table.checkPref("editor_rules_info", true);
             table.checkPref("editor_rules_search", true);
             table.checkPref("editor_revealed_blocks", true);
             table.checkPref("editor_planet_background", true);

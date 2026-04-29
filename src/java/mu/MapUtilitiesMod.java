@@ -2,11 +2,14 @@ package mu;
 
 import arc.Events;
 import arc.util.Reflect;
+import arc.struct.*;
 import mindustry.editor.MapInfoDialog;
+import mindustry.editor.BannedContentDialog;
 import mindustry.game.EventType;
 import mindustry.mod.Mod;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.ui.dialogs.MapPlayDialog;
+import mu.modifying.ui.BanDialog;
 import mu.modifying.ui.ResizeDialog;
 import mu.modifying.ui.RulesDialog;
 import mu.modifying.ui.SettingsDialog;
@@ -29,6 +32,17 @@ public class MapUtilitiesMod extends Mod{
             ResizeDialog.modify(Reflect.get(ui.editor, "resizeDialog"));
             SettingsDialog.modify();
 
+            Seq<BannedContentDialog> bannedContents = new Seq<>();
+            
+            bannedContents.add((BannedContentDialog)Reflect.get(infoRules, "bannedBlocks"));
+            bannedContents.add((BannedContentDialog)Reflect.get(infoRules, "bannedUnits"));
+            bannedContents.add((BannedContentDialog)Reflect.get(playRules, "bannedBlocks"));
+            bannedContents.add((BannedContentDialog)Reflect.get(playRules, "bannedUnits"));
+            bannedContents.add((BannedContentDialog)Reflect.get(playtestRules, "bannedBlocks"));
+            bannedContents.add((BannedContentDialog)Reflect.get(playtestRules, "bannedUnits"));
+
+            bannedContents.each(d -> {BanDialog.modify(d);});
+            
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
         });
     }

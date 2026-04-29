@@ -17,6 +17,7 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 
+import static arc.Core.settings;
 import static mindustry.Vars.*;
 
 public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialog{
@@ -143,16 +144,18 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
 
     private void rebuildTable(Table table, boolean isSelected){
         table.clear();
+        
+        int buttonSize = settings.getInt("editor_content_buttons_size");
 
         int cols;
         if(Core.graphics.isPortrait()){
-            cols = Math.max(4, (int)((Core.graphics.getWidth() / Scl.scl() - 100f) / 50f));
+            cols = Math.max(4, (int)((Core.graphics.getWidth() / Scl.scl() - 100f) / buttonSize));
         }else{
-            cols = Math.max(4, (int)((Core.graphics.getWidth() / Scl.scl() - 300f) / 50f / 2));
+            cols = Math.max(4, (int)((Core.graphics.getWidth() / Scl.scl() - 300f) / buttonSize / 2));
         }
 
         if((isSelected && contentSet.isEmpty()) || (!isSelected && contentSet.size == content.<T>getBy(type).count(pred))){
-            table.add("@empty").width(50f * cols).padBottom(5f).get().setAlignment(Align.center);
+            table.add("@empty").width(buttonSize * cols).padBottom(5f).get().setAlignment(Align.center);
         }else{
             Seq<T> array;
             if(!isSelected){
@@ -166,7 +169,7 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
             array.removeAll(content -> !filteredContent.contains(content));
 
             if(array.isEmpty()){
-                table.add("@empty").width(50f * cols).padBottom(5f).get().setAlignment(Align.center);
+                table.add("@empty").width(buttonSize * cols).padBottom(5f).get().setAlignment(Align.center);
                 return;
             }
             int i = 0;
@@ -177,7 +180,7 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
 
                 ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNonei);
                 button.getStyle().imageUp = new TextureRegionDrawable(region);
-                button.resizeImage(8 * 4f);
+                button.resizeImage(buttonSize - 8f);
                 if(isSelected) button.clicked(() -> {
                     contentSet.remove(content);
                     rebuildTables();
@@ -186,7 +189,7 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
                     contentSet.add(content);
                     rebuildTables();
                 });
-                table.add(button).size(50f).tooltip(content.localizedName);
+                table.add(button).size(buttonSize).tooltip(content.localizedName);
 
                 if(++i % cols == 0){
                     table.row();
@@ -195,7 +198,7 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
             }
 
             if(requiresPad){
-                table.add("").padRight(50f * (cols - i));
+                table.add("").padRight(buttonSize * (cols - i));
             }
         }
     }

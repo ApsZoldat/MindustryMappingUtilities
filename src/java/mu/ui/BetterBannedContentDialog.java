@@ -23,6 +23,7 @@ import static arc.Core.settings;
 import static mindustry.Vars.*;
 
 public class BetterBannedContentDialog<T extends UnlockableContent> extends BannedContentDialog{
+    public boolean isRevealed = false;
     private final ContentType type;
     private Table selectedTable;
     private Table deselectedTable;
@@ -62,8 +63,12 @@ public class BetterBannedContentDialog<T extends UnlockableContent> extends Bann
     }
 
     public void show(ObjectSet contentSet){
-        this.contentSet = contentSet;
-        ((BaseDialog) this).show();
+        if(settings.getBool("editor_better_content_dialogs") || isRevealed){
+            this.contentSet = contentSet;
+            ((BaseDialog) this).show();
+        }else{
+            new BannedContentDialog<T>(Reflect.get(title, "text").toString(), type, pred).show(contentSet);
+        }
     }
 
     public void build(){
@@ -118,9 +123,15 @@ public class BetterBannedContentDialog<T extends UnlockableContent> extends Bann
         if(!contentSearch.isEmpty()) filteredContent.removeAll(content -> !content.localizedName.toLowerCase().contains(contentSearch.toLowerCase()));
 
         cont.table(table -> {
-            table.add("@revealed_content").color(Pal.accent).padBottom(-1).top().row();
+            if(isRevealed){
+                table.add("@revealed_content").color(Pal.accent).padBottom(-1).top().row();
+            }else if(type == ContentType.block){
+                table.add("@bannedblocks").color(Color.valueOf("f25555")).padBottom(-1).top().row();
+            }else{
+                table.add("@bannedunits").color(Color.valueOf("f25555")).padBottom(-1).top().row();
+            }
 
-            table.image().color(Pal.accent).height(3f).padBottom(5f).fillX().top().row();
+            table.image().color((isRevealed ? Pal.accent : Color.valueOf("f25555"))).height(3f).padBottom(5f).fillX().top().row();
             table.pane(table2 -> selectedTable = table2).fill().expand().row();
             table.button("@addall", Icon.add, () -> {
                 contentSet.addAll(filteredContent);
@@ -131,9 +142,15 @@ public class BetterBannedContentDialog<T extends UnlockableContent> extends Bann
         if(Core.graphics.isPortrait()) cont.row();
 
         var cell2 = cont.table(table -> {
-            table.add("@unrevealed_content").color(Color.valueOf("f25555")).padBottom(-1).top().row();
+            if(isRevealed){
+                table.add("@unrevealed_content").color(Color.valueOf("f25555")).padBottom(-1).top().row();
+            }else if(type == ContentType.block){
+                table.add("@unbannedblocks").color(Pal.accent).padBottom(-1).top().row();
+            }else{
+                table.add("@unbannedunits").color(Pal.accent).padBottom(-1).top().row();
+            }
 
-            table.image().color(Color.valueOf("f25555")).height(3f).padBottom(5f).fillX().expandX().top().row();
+            table.image().color((!isRevealed ? Pal.accent : Color.valueOf("f25555"))).height(3f).padBottom(5f).fillX().expandX().top().row();
             table.pane(table2 -> deselectedTable = table2).fill().expand().row();
             table.button("@addall", Icon.add, () -> {
                 contentSet.removeAll(filteredContent);

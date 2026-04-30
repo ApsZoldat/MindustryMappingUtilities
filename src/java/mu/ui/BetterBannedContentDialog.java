@@ -9,7 +9,9 @@ import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.content.*;
 import mindustry.ctype.*;
+import mindustry.editor.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
@@ -20,8 +22,8 @@ import mindustry.world.*;
 import static arc.Core.settings;
 import static mindustry.Vars.*;
 
-public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialog{
-    private final ContentType type;  // TODO: no to pred and type
+public class BetterBannedContentDialog<T extends UnlockableContent> extends BannedContentDialog{
+    private final ContentType type;
     private Table selectedTable;
     private Table deselectedTable;
     private ObjectSet<T> contentSet;
@@ -29,9 +31,11 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
     private String contentSearch;
     private Category selectedCategory;
     private Seq<T> filteredContent;
+    private @Nullable Seq<UnlockableContent> allTabs;
+    private UnlockableContent tab = Planets.sun;
 
-    public RevealedBlocksDialog(String title, ContentType type, Boolf<T> pred){
-        super(title);
+    public BetterBannedContentDialog(String title, ContentType type, Boolf<T> pred){
+        super(title, type, pred);
         this.type = type;
         this.pred = pred;
         contentSearch = "";
@@ -43,11 +47,23 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
 
         shown(this::build);
         resized(this::build);
+        
+        Seq<Content>[] allContent = content.getContentMap();
+        ObjectSet<UnlockableContent> all = new ObjectSet<>();
+        for(var contents : allContent){
+            for(var content : contents){
+                if(content instanceof UnlockableContent u){
+                    all.addAll(u.databaseTabs);
+                }
+            }
+        }
+        allTabs = all.toSeq().sort();
+        allTabs.insert(0, Planets.sun);
     }
 
-    public void show(ObjectSet<T> contentSet){
+    public void show(ObjectSet contentSet){
         this.contentSet = contentSet;
-        show();
+        ((BaseDialog) this).show();
     }
 
     public void build(){
@@ -65,6 +81,16 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
                     field.setText("");
                     rebuildTables();
                 }).padLeft(10f).size(35f);
+                s.table(g -> {
+                    for(var content : allTabs){
+        g.button(content == Planets.sun ? Icon.eyeSmall : content instanceof Planet p ? Icon.icons.get(p.icon, Icon.commandRally) : new TextureRegionDrawable(content.uiIcon), Styles.clearNoneTogglei, iconMed, () -> {
+                            tab = content;
+                            rebuildTables();
+                        }).size(50f).checked(b -> tab == content).tooltip(content == Planets.sun ? "@all" : content.localizedName).with(but -> {
+                            but.getStyle().imageUpColor = content instanceof Planet p ? p.iconColor : Color.white.cpy();
+                        });
+                    }
+                }).padLeft(10f);
             });
             if(type == ContentType.block){
                 t.row();
@@ -137,6 +163,7 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
         if(type == ContentType.block){
             filteredContent.removeAll(content -> selectedCategory != null && ((Block)content).category != selectedCategory);
         }
+        filteredContent.removeAll(content -> !(tab == Planets.sun || content.allDatabaseTabs || content.databaseTabs.contains(tab)));
 
         rebuildTable(selectedTable, true);
         rebuildTable(deselectedTable, false);
@@ -156,50 +183,50 @@ public class RevealedBlocksDialog<T extends UnlockableContent> extends BaseDialo
 
         if((isSelected && contentSet.isEmpty()) || (!isSelected && contentSet.size == content.<T>getBy(type).count(pred))){
             table.add("@empty").width(buttonSize * cols).padBottom(5f).get().setAlignment(Align.center);
+            return;
+        }
+        Seq<T> array;
+        if(!isSelected){
+            array = content.getBy(type);
+            array = array.copy();
+               array.removeAll(contentSet.toSeq());
         }else{
-            Seq<T> array;
-            if(!isSelected){
-                array = content.getBy(type);
-                array = array.copy();
-                array.removeAll(contentSet.toSeq());
-            }else{
-                array = contentSet.toSeq();
+            array = contentSet.toSeq();
+        }
+        array.sort();
+        array.removeAll(content -> !filteredContent.contains(content));
+
+        if(array.isEmpty()){
+            table.add("@empty").width(buttonSize * cols).padBottom(5f).get().setAlignment(Align.center);
+            return;
+        }
+        int i = 0;
+        boolean requiresPad = true;
+
+        for(T content : array){
+            TextureRegion region = content.uiIcon;
+
+            ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNonei);
+            button.getStyle().imageUp = new TextureRegionDrawable(region);
+            button.resizeImage(buttonSize - 8f);
+            if(isSelected) button.clicked(() -> {
+                contentSet.remove(content);
+                rebuildTables();
+            });
+            else button.clicked(() -> {
+                contentSet.add(content);
+                rebuildTables();
+            });
+            table.add(button).size(buttonSize).tooltip(content.localizedName);
+
+        if(++i % cols == 0){
+            table.row();
+            requiresPad = false;
             }
-            array.sort();
-            array.removeAll(content -> !filteredContent.contains(content));
+        }
 
-            if(array.isEmpty()){
-                table.add("@empty").width(buttonSize * cols).padBottom(5f).get().setAlignment(Align.center);
-                return;
-            }
-            int i = 0;
-            boolean requiresPad = true;
-
-            for(T content : array){
-                TextureRegion region = content.uiIcon;
-
-                ImageButton button = new ImageButton(Tex.whiteui, Styles.clearNonei);
-                button.getStyle().imageUp = new TextureRegionDrawable(region);
-                button.resizeImage(buttonSize - 8f);
-                if(isSelected) button.clicked(() -> {
-                    contentSet.remove(content);
-                    rebuildTables();
-                });
-                else button.clicked(() -> {
-                    contentSet.add(content);
-                    rebuildTables();
-                });
-                table.add(button).size(buttonSize).tooltip(content.localizedName);
-
-                if(++i % cols == 0){
-                    table.row();
-                    requiresPad = false;
-                }
-            }
-
-            if(requiresPad){
-                table.add("").padRight(buttonSize * (cols - i));
-            }
+        if(requiresPad){
+            table.add("").padRight(buttonSize * (cols - i));
         }
     }
 }

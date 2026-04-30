@@ -9,7 +9,6 @@ import mindustry.game.EventType;
 import mindustry.mod.Mod;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.ui.dialogs.MapPlayDialog;
-import mu.modifying.ui.BanDialog;
 import mu.modifying.ui.ResizeDialog;
 import mu.modifying.ui.RulesDialog;
 import mu.modifying.ui.SettingsDialog;
@@ -17,6 +16,7 @@ import mu.utils.UpdateChecker;
 
 import static arc.Core.settings;
 import static mindustry.Vars.ui;
+import static mu.MUVars.*;
 
 public class MapUtilitiesMod extends Mod{
     public MapUtilitiesMod(){
@@ -32,17 +32,14 @@ public class MapUtilitiesMod extends Mod{
             ResizeDialog.modify(Reflect.get(ui.editor, "resizeDialog"));
             SettingsDialog.modify();
 
-            Seq<BannedContentDialog> bannedContents = new Seq<>();
-            
-            bannedContents.add((BannedContentDialog)Reflect.get(infoRules, "bannedBlocks"));
-            bannedContents.add((BannedContentDialog)Reflect.get(infoRules, "bannedUnits"));
-            bannedContents.add((BannedContentDialog)Reflect.get(playRules, "bannedBlocks"));
-            bannedContents.add((BannedContentDialog)Reflect.get(playRules, "bannedUnits"));
-            bannedContents.add((BannedContentDialog)Reflect.get(playtestRules, "bannedBlocks"));
-            bannedContents.add((BannedContentDialog)Reflect.get(playtestRules, "bannedUnits"));
 
-            bannedContents.each(d -> {BanDialog.modify(d);});
-            
+            Reflect.set(infoRules, "bannedBlocks", MUVars.betterBannedBlocks);
+            Reflect.set(infoRules, "bannedUnits", MUVars.betterBannedUnits);
+            Reflect.set(playRules, "bannedBlocks", MUVars.betterBannedBlocks);
+            Reflect.set(playRules, "bannedUnits", MUVars.betterBannedUnits);
+            Reflect.set(playtestRules, "bannedBlocks", MUVars.betterBannedBlocks);
+            Reflect.set(playtestRules, "bannedUnits", MUVars.betterBannedUnits);
+
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
         });
     }

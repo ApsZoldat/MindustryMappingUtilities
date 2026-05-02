@@ -55,7 +55,6 @@ public class RulesDialog{
 
         category(dialog, "unit");
         dialog.check("@rules.possessionallowed", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
-        dialog.check("@rules.unitammo", b -> rules.unitAmmo = b, () -> rules.unitAmmo);
         dialog.check("@rules.unitpayloadupdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate);
 
 
@@ -188,7 +187,6 @@ public class RulesDialog{
 
             dialog.check("@rules.cheat", value -> teams.cheat = value, () -> teams.cheat);
             dialog.check("@rules.coresspawnships", value -> teams.aiCoreSpawn = value, () -> teams.aiCoreSpawn);
-            dialog.check("@rules.infiniteammo", value -> teams.infiniteAmmo = value, () -> teams.infiniteAmmo);
 
             if(!dialog.current.hasChildren()){
                 edit.clear();
@@ -214,7 +212,6 @@ public class RulesDialog{
                         dialog.current = Reflect.get(c.get(), "table");
                         dialog.check("@rules.cheat", value -> teams.cheat = value, () -> teams.cheat);
                         dialog.check("@rules.coresspawnships", value -> teams.aiCoreSpawn = value, () -> teams.aiCoreSpawn);
-                        dialog.check("@rules.infiniteammo", value -> teams.infiniteAmmo = value, () -> teams.infiniteAmmo);
                     }
                 });
             }

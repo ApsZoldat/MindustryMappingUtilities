@@ -1,4 +1,4 @@
-package mu.modifying.ui;
+package mu.modifying;
 
 import arc.Core;
 import arc.func.Cons;

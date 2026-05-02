@@ -9,9 +9,9 @@ import mindustry.game.EventType;
 import mindustry.mod.Mod;
 import mindustry.ui.dialogs.CustomRulesDialog;
 import mindustry.ui.dialogs.MapPlayDialog;
-import mu.modifying.ui.ResizeDialog;
-import mu.modifying.ui.RulesDialog;
-import mu.modifying.ui.SettingsDialog;
+import mu.modifying.ResizeDialog;
+import mu.modifying.RulesDialog;
+import mu.modifying.SettingsDialog;
 import mu.utils.UpdateChecker;
 
 import static arc.Core.settings;

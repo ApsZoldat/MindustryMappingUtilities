@@ -1,4 +1,4 @@
-package mu.modifying.ui;
+package mu.modifying;
 
 import mindustry.gen.Icon;
 import mindustry.graphics.Pal;

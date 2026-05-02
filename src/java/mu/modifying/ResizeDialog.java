@@ -1,4 +1,4 @@
-package mu.modifying.ui;
+package mu.modifying;
 
 import arc.scene.ui.layout.Table;
 import mindustry.editor.MapResizeDialog;

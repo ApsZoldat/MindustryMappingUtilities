@@ -44,8 +44,6 @@ public class BetterBannedContentDialog<T extends UnlockableContent> extends Bann
         selectedTable = new Table();
         deselectedTable = new Table();
 
-        addCloseButton();
-
         shown(this::build);
         resized(this::build);
         

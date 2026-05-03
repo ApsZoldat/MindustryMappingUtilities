@@ -1,4 +1,4 @@
-package mu.modifying;
+package mu.mods;
 
 import mindustry.gen.Icon;
 import mindustry.graphics.Pal;
@@ -7,7 +7,7 @@ import mindustry.ui.dialogs.SettingsMenuDialog;
 import static mindustry.Vars.ui;
 import static mindustry.ui.dialogs.SettingsMenuDialog.SettingsTable.Setting;
 
-public class SettingsDialog{
+public class SettingsDialogMod{
     public static void modify(){
         ui.settings.addCategory("@settings.editor", Icon.editor, table -> {
             table.pref(new Title("@category.general"));
@@ -15,7 +15,6 @@ public class SettingsDialog{
             table.sliderPref("editor_content_buttons_size", 50, 30, 80, i -> i + "px");
             table.pref(new Title("@settings.rules_dialog"));
             table.checkPref("editor_hidden_rules", true);
-            table.checkPref("editor_rules_search", true);
             table.checkPref("editor_revealed_blocks", true);
             table.checkPref("editor_planet_background", true);
             table.checkPref("editor_environment_settings", true);

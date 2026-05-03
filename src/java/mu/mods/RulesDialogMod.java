@@ -1,4 +1,4 @@
-package mu.modifying;
+package mu.mods;
 
 import arc.Core;
 import arc.func.Cons;
@@ -26,7 +26,7 @@ import static mindustry.Vars.ui;
 import static mu.MUVars.planetBackgroundDialog;
 import static mu.MUVars.revealedBlocksDialog;
 
-public class RulesDialog{
+public class RulesDialogMod{
     public static int currentNumbered = 0;
 
     public static void modify(CustomRulesDialog dialog){

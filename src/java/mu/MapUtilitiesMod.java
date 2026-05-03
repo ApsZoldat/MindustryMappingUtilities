@@ -1,21 +1,17 @@
 package mu;
 
 import arc.Events;
-import arc.util.Reflect;
+import arc.util.*;
 import arc.struct.*;
-import mindustry.editor.MapInfoDialog;
-import mindustry.editor.BannedContentDialog;
-import mindustry.game.EventType;
-import mindustry.mod.Mod;
-import mindustry.ui.dialogs.CustomRulesDialog;
-import mindustry.ui.dialogs.MapPlayDialog;
-import mu.modifying.ResizeDialog;
-import mu.modifying.RulesDialog;
-import mu.modifying.SettingsDialog;
-import mu.utils.UpdateChecker;
+import mindustry.editor.*;
+import mindustry.game.*;
+import mindustry.mod.*;
+import mindustry.ui.dialogs.*;
+import mu.mods.*;
+import mu.utils.*;
 
 import static arc.Core.settings;
-import static mindustry.Vars.ui;
+import static mindustry.Vars.*;
 import static mu.MUVars.*;
 
 public class MapUtilitiesMod extends Mod{
@@ -25,12 +21,12 @@ public class MapUtilitiesMod extends Mod{
             CustomRulesDialog playRules = Reflect.get(MapPlayDialog.class, Reflect.get(ui.custom, "dialog"), "dialog");
             CustomRulesDialog playtestRules = Reflect.get(MapPlayDialog.class, Reflect.get(ui.editor, "playtestDialog"), "dialog");
 
-            RulesDialog.modify(infoRules);
-            RulesDialog.modify(playRules);
-            RulesDialog.modify(playtestRules);
+            RulesDialogMod.modify(infoRules);
+            RulesDialogMod.modify(playRules);
+            RulesDialogMod.modify(playtestRules);
 
-            ResizeDialog.modify(Reflect.get(ui.editor, "resizeDialog"));
-            SettingsDialog.modify();
+            ResizeDialogMod.modify(Reflect.get(ui.editor, "resizeDialog"));
+            SettingsDialogMod.modify();
 
 
             Reflect.set(infoRules, "bannedBlocks", MUVars.betterBannedBlocks);

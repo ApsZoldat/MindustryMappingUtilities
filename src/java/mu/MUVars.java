@@ -1,6 +1,6 @@
 package mu;
 
-import mindustry.ctype.ContentType;
+import mindustry.ctype.*;
 import mindustry.type.*;
 import mindustry.world.*;
 import mu.ui.*;

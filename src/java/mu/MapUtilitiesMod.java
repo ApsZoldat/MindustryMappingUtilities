@@ -21,20 +21,16 @@ public class MapUtilitiesMod extends Mod{
             CustomRulesDialog playRules = Reflect.get(MapPlayDialog.class, Reflect.get(ui.custom, "dialog"), "dialog");
             CustomRulesDialog playtestRules = Reflect.get(MapPlayDialog.class, Reflect.get(ui.editor, "playtestDialog"), "dialog");
 
-            RulesDialogMod.modify(infoRules);
-            RulesDialogMod.modify(playRules);
-            RulesDialogMod.modify(playtestRules);
+            infoRulesMod = new RulesDialogMod(infoRules);
+            playRulesMod = new RulesDialogMod(playRules);
+            playtestRulesMod = new RulesDialogMod(playtestRules);
 
-            ResizeDialogMod.modify(Reflect.get(ui.editor, "resizeDialog"));
-            SettingsDialogMod.modify();
+            updateRulesMods();
 
-
-            Reflect.set(infoRules, "bannedBlocks", MUVars.betterBannedBlocks);
-            Reflect.set(infoRules, "bannedUnits", MUVars.betterBannedUnits);
-            Reflect.set(playRules, "bannedBlocks", MUVars.betterBannedBlocks);
-            Reflect.set(playRules, "bannedUnits", MUVars.betterBannedUnits);
-            Reflect.set(playtestRules, "bannedBlocks", MUVars.betterBannedBlocks);
-            Reflect.set(playtestRules, "bannedUnits", MUVars.betterBannedUnits);
+            resizeMod = new ResizeDialogMod(Reflect.get(ui.editor, "resizeDialog"));
+            resizeMod.update();
+            
+            SettingsDialogMod.enable();
 
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
         });

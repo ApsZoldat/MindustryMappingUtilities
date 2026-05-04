@@ -1,69 +1,116 @@
 package mu.mods;
 
 import arc.Core;
-import arc.func.Cons;
-import arc.func.Prov;
-import arc.scene.ui.CheckBox;
-import arc.scene.ui.Image;
-import arc.scene.ui.Label;
-import arc.scene.ui.layout.Cell;
-import arc.scene.ui.layout.Collapser;
-import arc.scene.ui.layout.Table;
+import arc.func.*;
+import arc.scene.ui.*;
+import arc.scene.ui.layout.*;
 import arc.util.Reflect;
-import mindustry.content.Planets;
-import mindustry.game.Rules;
-import mindustry.game.Team;
-import mindustry.gen.Icon;
-import mindustry.gen.Tex;
+import mindustry.content.*;
+import mindustry.ctype.*;
+import mindustry.editor.*;
+import mindustry.game.*;
+import mindustry.gen.*;
 import mindustry.graphics.Pal;
+import mindustry.type.*;
 import mindustry.ui.Styles;
-import mindustry.ui.dialogs.BaseDialog;
-import mindustry.ui.dialogs.CustomRulesDialog;
+import mindustry.ui.dialogs.*;
+import mindustry.world.*;
 import mindustry.world.meta.Env;
+import mu.ui.*;
 
 import static arc.Core.settings;
 import static mindustry.Vars.ui;
-import static mu.MUVars.planetBackgroundDialog;
-import static mu.MUVars.revealedBlocksDialog;
 
 public class RulesDialogMod{
-    public static int currentNumbered = 0;
+    public CustomRulesDialog dialog;
+    public Runnable setupFunc = this::setup;
+    public Rules rules;
 
-    public static void modify(CustomRulesDialog dialog){
-        dialog.additionalSetup.add(() -> setup(dialog));
+    public BetterBannedContentDialog revealedBlocksDialog;
+    public BetterBannedContentDialog<Block> betterBannedBlocks;
+    public BetterBannedContentDialog<UnitType> betterBannedUnits;
+    public PlanetBackgroundDialog planetBackgroundDialog;
+
+    public BannedContentDialog oldBannedBlocks;
+    public BannedContentDialog oldBannedUnits;
+
+    public int currentNumbered = 0;
+
+    public RulesDialogMod(CustomRulesDialog dialog){
+        this.dialog = dialog;
+        
+        revealedBlocksDialog = new BetterBannedContentDialog("@rules.revealedblocks", ContentType.block, b -> true);
+        revealedBlocksDialog.isRevealed = true;
+        betterBannedBlocks = new BetterBannedContentDialog<>("@bannedblocks", ContentType.block, Block::canBeBuilt);
+        betterBannedUnits= new BetterBannedContentDialog<>("@bannedunits", ContentType.unit, u -> !u.isHidden());
+        planetBackgroundDialog = new PlanetBackgroundDialog();
+        
+        oldBannedBlocks = Reflect.get(dialog, "bannedBlocks");
+        oldBannedUnits = Reflect.get(dialog, "bannedUnits");
     }
 
-    public static void setup(CustomRulesDialog dialog){
-        if(settings.getBool("editor_hidden_rules")) addHiddenRules(dialog);
+    public void update(){
+        if(settings.getBool("mu_rules_mod")){
+            enable();
+        }else{
+            disable();
+        }
     }
 
-    private static void category(CustomRulesDialog dialog, String category){
+    public void enable(){
+        if(!dialog.additionalSetup.contains(setupFunc)){
+            dialog.additionalSetup.add(setupFunc);
+        }
+        if(settings.getBool("editor_better_content_dialogs")){
+            Reflect.set(dialog, "bannedBlocks", betterBannedBlocks);
+            Reflect.set(dialog, "bannedUnits", betterBannedUnits);
+        }
+    }
+    
+    public void disable(){
+        if(dialog.additionalSetup.contains(setupFunc)){
+            dialog.additionalSetup.remove(setupFunc);
+        }
+        Reflect.set(dialog, "bannedBlocks", oldBannedBlocks);
+        Reflect.set(dialog, "bannedUnits", oldBannedUnits);
+    }
+
+    public void setup(){
+        rules = Reflect.get(dialog, "rules");
+        if(settings.getBool("editor_hidden_rules")) addHiddenRules();
+        if(settings.getBool("editor_revealed_blocks")){
+            addRevealedBlocks();
+        }
+        if(settings.getBool("editor_planet_background")){
+            addPlanetBackground();
+        }
+    }
+
+    private void category(String category){
         dialog.current = dialog.categories.get(dialog.categoryNames.indexOf(category));
     }
 
-    private static void addHiddenRules(CustomRulesDialog dialog){
-        Rules rules = Reflect.get(dialog, "rules");
-
-        category(dialog, "waves");
+    private void addHiddenRules(){
+        category("waves");
         dialog.check("@rules.showspawns", b -> rules.showSpawns = b, () -> rules.showSpawns);
 
 
-        category(dialog, "resourcesbuilding");
+        category("resourcesbuilding");
         dialog.check("@rules.ghostblocks", b -> rules.ghostBlocks = b, () -> rules.ghostBlocks);
         dialog.check("@rules.logicunitbuild", b -> rules.logicUnitBuild = b, () -> rules.logicUnitBuild);
 
 
-        category(dialog, "unit");
+        category("unit");
         dialog.check("@rules.possessionallowed", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
         dialog.check("@rules.unitpayloadupdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate);
 
 
-        category(dialog, "enemy");
+        category("enemy");
         dialog.check("@rules.pvpautopause", b -> rules.pvpAutoPause = b, () -> rules.pvpAutoPause);
         dialog.check("@rules.coredestroyclear", b -> rules.coreDestroyClear = b, () -> rules.coreDestroyClear);
 
 
-        category(dialog, "environment");
+        category("environment");
         dialog.check("@rules.borderdarkness", b -> rules.borderDarkness = b, () -> rules.borderDarkness);
         dialog.check("@rules.disableoutsidearea", b -> rules.disableOutsideArea = b, () -> rules.disableOutsideArea);
         dialog.check("@rules.staticfog", b -> rules.staticFog = b, () -> rules.staticFog);
@@ -103,13 +150,13 @@ public class RulesDialogMod{
         }
 
 
-        category(dialog, "teams");
+        category("teams");
         Table numberedEdit = new Table(); // Numbered teams
         dialog.numberi("@rules.numberedteam", f -> {
             currentNumbered = f;
-            updateNumberedEdit(dialog, numberedEdit, Team.get(f));
+            updateNumberedEdit(numberedEdit, Team.get(f));
         }, () -> currentNumbered, 0, 255);
-        updateNumberedEdit(dialog, numberedEdit, Team.get(currentNumbered));
+        updateNumberedEdit(numberedEdit, Team.get(currentNumbered));
         if(numberedEdit.hasChildren()){
             dialog.current.add(numberedEdit).row();
         }
@@ -117,36 +164,41 @@ public class RulesDialogMod{
         dialog.numberi("@rules.playerteam", f -> rules.defaultTeam = Team.get(f), () -> rules.defaultTeam.id, 0, 255);
         dialog.numberi("@rules.enemyteam", f -> rules.waveTeam = Team.get(f), () -> rules.waveTeam.id, 0, 255);
 
-
         dialog.category("miscellaneous");
         dialog.check("@rules.cangameover", b -> rules.canGameOver = b, () -> rules.canGameOver);
         if(Core.bundle.get("rules.modename").toLowerCase().contains(dialog.ruleSearch)){
-            text(dialog, dialog.current, "@rules.modename", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
+            text(dialog.current, "@rules.modename", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));
         }
         if(Core.bundle.get("rules.mission").toLowerCase().contains(dialog.ruleSearch)){
-            text(dialog, dialog.current, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission));
+            text(dialog.current, "@rules.mission", value -> rules.mission = (value.isEmpty() ? null : value), () -> (rules.mission == null ? "" : rules.mission));
         }
 
-        if(Core.bundle.get("rules.revealedblocks").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_revealed_blocks")){
+        addHiddenTeamRules();
+    }
+    
+    private void addRevealedBlocks(){
+        category("miscellaneous");
+        if(Core.bundle.get("rules.revealedblocks").toLowerCase().contains(dialog.ruleSearch)){
             dialog.ruleInfo(dialog.current.table(table -> {
                 table.button("@rules.revealedblocks", () -> revealedBlocksDialog.show(rules.revealedBlocks)).width(300f).left();
                 table.left().row();
             }).fillX(), "@rules.revealedblocks");
             dialog.current.row();
         }
-        if(Core.bundle.get("rules.planetbackground").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_planet_background")){
+    }
+    
+    private void addPlanetBackground(){
+        category("miscellaneous");
+        if(Core.bundle.get("rules.planetbackground").toLowerCase().contains(dialog.ruleSearch)){
             dialog.ruleInfo(dialog.current.table(table -> {
                 table.button("@rules.planetbackground", () -> planetBackgroundDialog.show(rules)).width(300f).left();
                 table.left().row();
             }).fillX(), "@rules.planetbackground");
             dialog.current.row();
         }
-
-        // TODO: PR so rule search detects these
-        addHiddenTeamRules(dialog);
     }
 
-    private static void updateNumberedEdit(CustomRulesDialog dialog, Table edit, Team team){
+    private void updateNumberedEdit(Table edit, Team team){
         edit.clear();
         boolean[] shown = {false};
         Table wasCurrent = dialog.current;
@@ -196,8 +248,8 @@ public class RulesDialogMod{
         }, () -> shown[0]).left().growX().row();
     }
 
-    private static void addHiddenTeamRules(CustomRulesDialog dialog){
-        category(dialog, "teams");
+    private void addHiddenTeamRules(){
+        category("teams");
 
         int[] i = {0};
         dialog.current.getCells().each(t -> {
@@ -218,7 +270,7 @@ public class RulesDialogMod{
         });
     }
 
-    private static void environmentDialog(Rules rules){
+    private void environmentDialog(Rules rules){
         BaseDialog dialog = new BaseDialog("@rules.title.environment");
         dialog.cont.add("@rules.env.warning").color(Pal.accent).center().padBottom(20f).row();
         dialog.cont.pane(table -> {
@@ -241,7 +293,7 @@ public class RulesDialogMod{
         dialog.show();
     }
 
-    private static void changeEnv(CheckBox check, int envVar, Rules rules){
+    private void changeEnv(CheckBox check, int envVar, Rules rules){
         if (check.isChecked()){
             rules.env = rules.env | envVar;
         } else {
@@ -249,7 +301,7 @@ public class RulesDialogMod{
         }
     }
 
-    private static void envCheck(Table tb, String text, int envVar, String description, Rules rules){
+    private void envCheck(Table tb, String text, int envVar, String description, Rules rules){
         CheckBox check = new CheckBox(text);
         check.changed(() -> changeEnv(check, envVar, rules));
         check.setChecked((rules.env & envVar) != 0);
@@ -263,7 +315,7 @@ public class RulesDialogMod{
         tb.row();
     }
 
-    private static void text(CustomRulesDialog dialog, Table table, String labelText, Cons<String> cons, Prov<String> prov){
+    private void text(Table table, String labelText, Cons<String> cons, Prov<String> prov){
         Cell<Table> cell = table.table(t -> {
             t.left();
             t.add(labelText).left().padRight(5);

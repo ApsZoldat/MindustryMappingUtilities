@@ -61,12 +61,8 @@ public class BetterBannedContentDialog<T extends UnlockableContent> extends Bann
     }
 
     public void show(ObjectSet contentSet){
-        if(settings.getBool("editor_better_content_dialogs") || isRevealed){
-            this.contentSet = contentSet;
-            ((BaseDialog) this).show();
-        }else{
-            new BannedContentDialog<T>(Reflect.get(title, "text").toString(), type, pred).show(contentSet);
-        }
+        this.contentSet = contentSet;
+        ((BaseDialog) this).show();
     }
 
     public void build(){

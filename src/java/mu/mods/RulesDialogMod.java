@@ -2,9 +2,12 @@ package mu.mods;
 
 import arc.Core;
 import arc.func.*;
+import arc.scene.*;
+import arc.scene.event.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
-import arc.util.Reflect;
+import arc.struct.*;
+import arc.util.*;
 import mindustry.content.*;
 import mindustry.ctype.*;
 import mindustry.editor.*;
@@ -24,6 +27,8 @@ import static mindustry.Vars.ui;
 public class RulesDialogMod{
     public CustomRulesDialog dialog;
     public Runnable setupFunc = this::setup;
+    public VisibilityListener categoryFix;
+
     public Rules rules;
 
     public BetterBannedContentDialog revealedBlocksDialog;
@@ -38,7 +43,16 @@ public class RulesDialogMod{
 
     public RulesDialogMod(CustomRulesDialog dialog){
         this.dialog = dialog;
-        
+
+        // this fixes categoryNames not being cleared before every setup
+        categoryFix = new VisibilityListener(){
+            @Override
+            public boolean shown(){
+                dialog.categoryNames.clear(); // if you by some miracle stumble across this atrocious piece of code, tell Anuke to add this line without tve word dialog to the setup method in CustomRulesDialog (or don't, i am just too lazy to make a PR)
+                return false;
+            }
+        };
+    
         revealedBlocksDialog = new BetterBannedContentDialog("@rules.revealedblocks", ContentType.block, b -> true);
         revealedBlocksDialog.isRevealed = true;
         betterBannedBlocks = new BetterBannedContentDialog<>("@bannedblocks", ContentType.block, Block::canBeBuilt);
@@ -58,9 +72,8 @@ public class RulesDialogMod{
     }
 
     public void enable(){
-        if(!dialog.additionalSetup.contains(setupFunc)){
-            dialog.additionalSetup.add(setupFunc);
-        }
+        dialog.additionalSetup.add(setupFunc);
+        ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, dialog, "listeners")).insert(0, categoryFix);
         if(settings.getBool("editor_better_content_dialogs")){
             Reflect.set(dialog, "bannedBlocks", betterBannedBlocks);
             Reflect.set(dialog, "bannedUnits", betterBannedUnits);
@@ -68,15 +81,15 @@ public class RulesDialogMod{
     }
     
     public void disable(){
-        if(dialog.additionalSetup.contains(setupFunc)){
-            dialog.additionalSetup.remove(setupFunc);
-        }
+        dialog.additionalSetup.remove(setupFunc);
+        ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, dialog, "listeners")).remove(categoryFix);
         Reflect.set(dialog, "bannedBlocks", oldBannedBlocks);
         Reflect.set(dialog, "bannedUnits", oldBannedUnits);
     }
 
     public void setup(){
         rules = Reflect.get(dialog, "rules");
+        
         if(settings.getBool("editor_hidden_rules")) addHiddenRules();
         if(settings.getBool("editor_revealed_blocks")){
             addRevealedBlocks();
@@ -87,7 +100,11 @@ public class RulesDialogMod{
     }
 
     private void category(String category){
-        dialog.current = dialog.categories.get(dialog.categoryNames.indexOf(category));
+        if(dialog.categoryNames.contains(category)){
+            dialog.current = dialog.categories.get(dialog.categoryNames.indexOf(category));
+        }else{
+            dialog.category(category);
+        }
     }
 
     private void addHiddenRules(){
@@ -164,7 +181,7 @@ public class RulesDialogMod{
         dialog.numberi("@rules.playerteam", f -> rules.defaultTeam = Team.get(f), () -> rules.defaultTeam.id, 0, 255);
         dialog.numberi("@rules.enemyteam", f -> rules.waveTeam = Team.get(f), () -> rules.waveTeam.id, 0, 255);
 
-        dialog.category("miscellaneous");
+        category("miscellaneous");
         dialog.check("@rules.cangameover", b -> rules.canGameOver = b, () -> rules.canGameOver);
         if(Core.bundle.get("rules.modename").toLowerCase().contains(dialog.ruleSearch)){
             text(dialog.current, "@rules.modename", value -> rules.modeName = (value.isEmpty() ? null : value), () -> (rules.modeName == null ? "" : rules.modeName));

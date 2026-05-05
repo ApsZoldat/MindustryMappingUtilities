@@ -8,6 +8,7 @@ import arc.graphics.g2d.*;
 import arc.input.*;
 import arc.math.*;
 import arc.math.geom.*;
+import arc.scene.*;
 import arc.scene.actions.*;
 import arc.scene.event.*;
 import arc.scene.style.*;
@@ -37,7 +38,7 @@ import mindustry.world.meta.*;
 import static mindustry.Vars.*;
 import static mu.MUVars.editor;
 
-public class MUMapEditorDialog extends Dialog implements Disposable{
+public class MUMapEditorDialog extends MapEditorDialog{
     private MUMapView view;
     private MapInfoDialog infoDialog;
     private MapLoadDialog loadDialog;
@@ -54,9 +55,10 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
     private Seq<Block> blocksOut = new Seq<>();
 
     public MUMapEditorDialog(){
-        super("");
+        super();
 
-        background(Styles.black);
+        // remove all listeners that previous constructor made
+        ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, this, "listeners")).clear();
 
         view = new MUMapView();
         infoDialog = new MapInfoDialog();
@@ -290,7 +292,6 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
         });
 
         shown(() -> {
-
             saved = true;
             if(!Core.settings.getBool("landscape")) platform.beginForceLandscape();
             editor.clearOp();
@@ -315,6 +316,7 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
         shown(this::build);
     }
 
+    @Override
     public void resumeEditing(){
         state.set(State.menu);
         shownWithMap = true;
@@ -370,6 +372,7 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
         });
     }
 
+    @Override
     public void resumeAfterPlaytest(Map map){
         beginEditMap(map.file);
     }
@@ -395,6 +398,7 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
         }
     }
 
+    @Override
     public @Nullable Map save(){
         boolean isEditor = state.rules.editor;
         state.rules.editor = false;
@@ -508,6 +512,7 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
         editor.renderer.dispose();
     }
 
+    @Override
     public void beginEditMap(Fi file){
         ui.loadAnd(() -> {
             try{
@@ -521,7 +526,7 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
         });
     }
 
-    public MUMapView getView(){
+    public MapView getView(){
         return view;
     }
 
@@ -537,6 +542,7 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
         return Core.scene.getScrollFocus() == pane || Core.scene.getKeyboardFocus() != this;
     }
 
+    @Override
     public void build(){
         float size = mobile ? 50f : 58f;
 
@@ -561,7 +567,7 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
                             lastTable[0].remove();
                         }
                     });
-                    button.update(() -> button.setChecked(view.getTool() == tool));
+                    button.update(() -> button.setChecked(view.tool == tool));
                     group.add(button);
 
                     if(tool.altModes.length > 0){
@@ -734,7 +740,6 @@ public class MUMapEditorDialog extends Dialog implements Disposable{
     }
 
     private void doInput(){
-
         if(Core.input.ctrl()){
             //alt mode select
             for(int i = 0; i < view.getTool().altModes.length; i++){

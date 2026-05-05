@@ -16,18 +16,19 @@ import mindustry.world.blocks.environment.*;
 import static mindustry.Vars.*;
 import static mu.MUVars.editor;
 
-public class MUEditorRenderer implements Disposable{
-    public static final float packPad = tilesize * 10f;
-    public static final int chunkSize = 60;
-    public static final Seq<Tile> tmpTiles = new Seq<>();
+public class MUEditorRenderer extends EditorRenderer{
+    private static final float packPad = tilesize * 10f;
+    private static final int chunkSize = 60;
+    private static final Seq<Tile> tmpTiles = new Seq<>();
 
-    public EditorSpriteCache[][] chunks;
-    public IntSet recacheChunks = new IntSet();
-    public int width, height;
-    public float packWidth, packHeight;
+    private EditorSpriteCache[][] chunks;
+    private IntSet recacheChunks = new IntSet();
+    private int width, height;
+    private float packWidth, packHeight;
 
-    public Shader shader;
+    private Shader shader;
 
+    @Override
     public void resize(int width, int height){
         dispose();
 
@@ -52,6 +53,7 @@ public class MUEditorRenderer implements Disposable{
         recache();
     }
 
+    @Override
     public void draw(float tx, float ty, float tw, float th){
         if(shader == null){
             shader = new Shader(
@@ -121,7 +123,7 @@ public class MUEditorRenderer implements Disposable{
 
         renderer.blocks.floor.beginDraw();
         if(editor.showTerrain){
-            renderer.blocks.floor.drawLayer(CacheLayer.walls, doUpdate);
+            renderer.blocks.floor.drawLayer(CacheLayer.walls);  // TODO: add doUpdate when new version releases
         }
         renderer.animateWater = prev;
 

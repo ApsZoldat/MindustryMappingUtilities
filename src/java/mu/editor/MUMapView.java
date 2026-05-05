@@ -10,8 +10,10 @@ import arc.math.geom.*;
 import arc.scene.*;
 import arc.scene.event.*;
 import arc.scene.ui.layout.*;
+import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
+import mindustry.editor.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.ui.*;
@@ -20,8 +22,8 @@ import mu.editor.*;
 import static mindustry.Vars.*;
 import static mu.MUVars.editor;
 
-public class MUMapView extends Element implements GestureListener{
-    MUEditorTool tool = Vars.mobile ? MUEditorTool.zoom : MUEditorTool.pencil;
+public class MUMapView extends MapView{
+    public MUEditorTool tool = Vars.mobile ? MUEditorTool.zoom : MUEditorTool.pencil;
     private float offsetx, offsety;
     private float zoom = 1f;
     private boolean grid = false;
@@ -37,15 +39,16 @@ public class MUMapView extends Element implements GestureListener{
     MUEditorTool lastTool;
 
     public MUMapView(){
+        super();
 
+        // remove all listeners that previous constructor mader
+        ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, this, "listeners")).clear();
+        
         for(int i = 0; i < MUMapEditor.brushSizes.length; i++){
             float size = MUMapEditor.brushSizes[i];
             float mod = size % 1f;
             brushPolygons[i] = Geometry.pixelCircle(size, (index, x, y) -> Mathf.dst(x, y, index - mod, index - mod) <= size - 0.5f);
         }
-
-        Core.input.getInputProcessors().insert(0, new GestureDetector(20, 0.5f, 2, 0.15f, this));
-        this.touchable = Touchable.enabled;
 
         Point2 firstTouch = new Point2();
 
@@ -154,10 +157,6 @@ public class MUMapView extends Element implements GestureListener{
                 }
             }
         });
-    }
-
-    public MUEditorTool getTool(){
-        return tool;
     }
 
     public void setTool(MUEditorTool tool){

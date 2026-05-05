@@ -6,6 +6,7 @@ import arc.graphics.*;
 import arc.math.*;
 import arc.math.geom.*;
 import arc.struct.*;
+import arc.util.*;
 import mindustry.content.*;
 import mindustry.editor.*;
 import mindustry.entities.units.*;
@@ -17,9 +18,8 @@ import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
 
 import static mindustry.Vars.*;
-import static mu.MUVars.editor;
 
-public class MUMapEditor{
+public class MUMapEditor extends MapEditor{
     public static final float[] brushSizes = {1, 1.5f, 2, 3, 4, 5, 9, 15, 20};
 
     public StringMap tags = new StringMap();
@@ -40,6 +40,7 @@ public class MUMapEditor{
         return loading;
     }
 
+    @Override
     public void beginEdit(int width, int height){
         reset();
 
@@ -49,9 +50,9 @@ public class MUMapEditor{
         loading = false;
     }
 
+    @Override
     public void beginEdit(Map map){
         reset();
-
         loading = true;
         tags.putAll(map.tags);
         if(map.file.parent().parent().name().equals("1127400") && steam){
@@ -62,6 +63,7 @@ public class MUMapEditor{
         loading = false;
     }
 
+    @Override
     public void beginEdit(Pixmap pixmap){
         reset();
 
@@ -70,6 +72,7 @@ public class MUMapEditor{
         renderer.resize(width(), height());
     }
 
+    @Override
     public void updateRenderer(){
         Tiles tiles = world.tiles;
         Seq<Building> builds = new Seq<>();
@@ -90,6 +93,7 @@ public class MUMapEditor{
         renderer.resize(width(), height());
     }
 
+    @Override
     public void load(Runnable r){
         loading = true;
         r.run();
@@ -106,6 +110,7 @@ public class MUMapEditor{
             }
         }
     }
+
 
     public Map createMap(Fi file){
         return new Map(file, width(), height(), new StringMap(tags), true);
@@ -134,18 +139,22 @@ public class MUMapEditor{
         return world.height();
     }
 
+    @Override
     public void drawBlocksReplace(int x, int y){
         drawBlocks(x, y, tile -> tile.block() != Blocks.air || drawBlock.isFloor());
     }
 
+    @Override
     public void drawBlocks(int x, int y){
         drawBlocks(x, y, false, false, tile -> true);
     }
 
+    @Override
     public void drawBlocks(int x, int y, Boolf<Tile> tester){
         drawBlocks(x, y, false, false, tester);
     }
 
+    @Override
     public void drawBlocks(int x, int y, boolean square, boolean forceOverlay, Boolf<Tile> tester){
         if(drawBlock.isMultiblock()){
             x = Mathf.clamp(x, (drawBlock.size - 1) / 2, width() - drawBlock.size / 2 - 1);
@@ -244,6 +253,7 @@ public class MUMapEditor{
         return false;
     }
 
+    @Override
     public void addCliffs(){
         for(Tile tile : world.tiles){
             if(!tile.block().isStatic() || tile.block() == Blocks.cliff) continue;
@@ -271,6 +281,7 @@ public class MUMapEditor{
         editor.flushOp();
     }
 
+    @Override
     public void drawCircle(int x, int y, Cons<Tile> drawer){
         int clamped = (int)brushSize;
         for(int rx = -clamped; rx <= clamped; rx++){
@@ -288,6 +299,7 @@ public class MUMapEditor{
         }
     }
 
+    @Override
     public void drawSquare(int x, int y, Cons<Tile> drawer){
         int clamped = (int)brushSize;
         for(int rx = -clamped; rx <= clamped; rx++){
@@ -303,6 +315,7 @@ public class MUMapEditor{
         }
     }
 
+    @Override
     public void resize(int width, int height, int shiftX, int shiftY){
         clearOp();
 
@@ -361,36 +374,43 @@ public class MUMapEditor{
         loading = false;
     }
 
+    @Override
     public void clearOp(){
         stack.clear();
     }
 
+    @Override
     public void undo(){
         if(stack.canUndo()){
             stack.undo();
         }
     }
 
+    @Override
     public void redo(){
         if(stack.canRedo()){
             stack.redo();
         }
     }
 
+    @Override
     public boolean canUndo(){
         return stack.canUndo();
     }
 
+    @Override
     public boolean canRedo(){
         return stack.canRedo();
     }
 
+    @Override
     public void flushOp(){
         if(currentOp == null || currentOp.isEmpty()) return;
         stack.add(currentOp);
         currentOp = null;
     }
 
+    @Override
     public void addTileOp(long data){
         if(loading) return;
 
@@ -400,11 +420,13 @@ public class MUMapEditor{
         renderer.updateStatic(TileOp.x(data), TileOp.y(data));
     }
 
+    @Override
     public int ops(){
         if(currentOp == null) return 0;
         return currentOp.size();
     }
 
+    @Override
     public void removeLastOps(int amount){
         if(currentOp == null || loading) return;
 

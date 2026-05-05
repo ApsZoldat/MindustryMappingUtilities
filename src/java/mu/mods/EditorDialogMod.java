@@ -4,34 +4,40 @@ import arc.util.*;
 import mindustry.gen.*;
 import mindustry.editor.*;
 import mindustry.ui.dialogs.*;
+import mindustry.Vars;
+import mu.editor.*;
+import mu.MUVars;
 
 import static arc.Core.settings;
 
 public class EditorDialogMod{
-    public MapEditorDialog dialog;
-    
-    public boolean isEnabled;
-    
-    public EditorDialogMod(MapEditorDialog dialog){
-        this.dialog = dialog;
-        isEnabled = false;
+    public MapEditorDialog oldDialog;
+    public MapEditor oldEditor;
+
+    public MUMapEditorDialog newDialog;
+
+    public EditorDialogMod(MapEditorDialog dialog, MapEditor editor){
+        oldDialog = dialog;
+        oldEditor = editor;
+        
+        newDialog = new MUMapEditorDialog();
     }
     
     public void update(){
-        if(settings.getBool("mu_editor_mod") && !isEnabled){
+        if(settings.getBool("mu_editor_mod")){
             enable();
+        }else{
+            disable();
         }
     }
     
     public void enable(){
-        BaseDialog menu = Reflect.get(dialog, "menu");
-        
-        menu.cont.row();
-        menu.cont.button("@mu_editor", Icon.wrench, () -> {
-            Reflect.invoke(dialog, "tryExit");
-            menu.hide();
-        }).padTop(1).size(180f * 2f + 10, 60f);
+        Vars.ui.editor = newDialog;
+        Vars.editor = MUVars.editor;
+    }
 
-        isEnabled = true;
+    public void disable(){
+        Vars.ui.editor = oldDialog;
+        Vars.editor = oldEditor;
     }
 }

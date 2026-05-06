@@ -1,5 +1,6 @@
 package mu;
 
+import arc.struct.*;
 import mindustry.ctype.*;
 import mindustry.type.*;
 import mindustry.world.*;
@@ -9,19 +10,20 @@ import mu.editor.*;
 public class MUVars{
     // New editor
     public static MUMapEditor editor;
+    public static MUMapEditorDialog editorDialog;
 
     // UI mods
-    public static EditorDialogMod editorMod;
+    public static Seq<MUMod> allMods;
 
-    public static RulesDialogMod infoRulesMod;
-    public static RulesDialogMod playRulesMod;
-    public static RulesDialogMod playtestRulesMod;
-
-    public static ResizeDialogMod resizeMod;
+    public static void updateMods(){
+        allMods.each(m -> m.update());
+    }
     
-    public static void updateRulesMods(){
-        infoRulesMod.update();
-        playRulesMod.update();
-        playtestRulesMod.update();
+    public static void updateMods(Class cls){
+        allMods.each(m -> {
+            if(cls.isInstance(m)){
+                m.update();
+            }
+        });
     }
 }

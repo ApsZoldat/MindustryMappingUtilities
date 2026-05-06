@@ -21,22 +21,29 @@ public class MapUtilitiesMod extends Mod{
             SettingsDialogMod.enable();
 
             editor = new MUMapEditor();
-
-            editorMod = new EditorDialogMod(Vars.ui.editor, Vars.editor);
-            editorMod.update();
+            editorDialog = new MUMapEditorDialog();
 
             CustomRulesDialog infoRules = Reflect.get(MapInfoDialog.class, Reflect.get(Vars.ui.editor, "infoDialog"), "ruleInfo");
             CustomRulesDialog playRules = Reflect.get(MapPlayDialog.class, Reflect.get(Vars.ui.custom, "dialog"), "dialog");
             CustomRulesDialog playtestRules = Reflect.get(MapPlayDialog.class, Reflect.get(Vars.ui.editor, "playtestDialog"), "dialog");
+            CustomRulesDialog newRules = Reflect.get(MapInfoDialog.class, Reflect.get(MapEditorDialog.class, editorDialog, "infoDialog"), "ruleInfo");
 
-            infoRulesMod = new RulesDialogMod(infoRules);
-            playRulesMod = new RulesDialogMod(playRules);
-            playtestRulesMod = new RulesDialogMod(playtestRules);
+            allMods = new Seq<MUMod>();
 
-            updateRulesMods();
+            // Rules mods
+            allMods.add(new RulesDialogMod(infoRules));
+            allMods.add(new RulesDialogMod(playRules));
+            allMods.add(new RulesDialogMod(playtestRules));
+            allMods.add(new RulesDialogMod(newRules));
 
-            resizeMod = new ResizeDialogMod(Reflect.get(Vars.ui.editor, "resizeDialog"));
-            resizeMod.update();
+            // Resize mods
+            allMods.add(new ResizeDialogMod(Reflect.get(Vars.ui.editor, "resizeDialog")));
+            allMods.add(new ResizeDialogMod(Reflect.get(MapEditorDialog.class, editorDialog, "resizeDialog")));
+
+            // Editor mod
+            allMods.add(new EditorDialogMod(Vars.ui.editor, Vars.editor));
+
+            updateMods();
 
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
         });

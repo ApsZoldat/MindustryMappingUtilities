@@ -24,7 +24,7 @@ import mu.ui.*;
 import static arc.Core.settings;
 import static mindustry.Vars.ui;
 
-public class RulesDialogMod{
+public class RulesDialogMod extends MUMod{
     public CustomRulesDialog dialog;
     public Runnable setupFunc = this::setup;
     public VisibilityListener categoryFix;
@@ -42,6 +42,7 @@ public class RulesDialogMod{
     public int currentNumbered = 0;
 
     public RulesDialogMod(CustomRulesDialog dialog){
+        this.settingName = "mu_rules_mod";
         this.dialog = dialog;
 
         // this fixes categoryNames not being cleared before every setup
@@ -63,14 +64,7 @@ public class RulesDialogMod{
         oldBannedUnits = Reflect.get(dialog, "bannedUnits");
     }
 
-    public void update(){
-        if(settings.getBool("mu_rules_mod")){
-            enable();
-        }else{
-            disable();
-        }
-    }
-
+    @Override
     public void enable(){
         dialog.additionalSetup.add(setupFunc);
         ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, dialog, "listeners")).insert(0, categoryFix);
@@ -79,7 +73,8 @@ public class RulesDialogMod{
             Reflect.set(dialog, "bannedUnits", betterBannedUnits);
         }
     }
-    
+
+    @Override
     public void disable(){
         dialog.additionalSetup.remove(setupFunc);
         ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, dialog, "listeners")).remove(categoryFix);

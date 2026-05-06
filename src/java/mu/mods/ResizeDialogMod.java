@@ -6,7 +6,7 @@ import mindustry.editor.MapResizeDialog;
 
 import static arc.Core.settings;
 
-public class ResizeDialogMod{
+public class ResizeDialogMod extends MUMod{
     public MapResizeDialog dialog;
     public VisibilityListener shownListener;
     
@@ -14,6 +14,7 @@ public class ResizeDialogMod{
     public int oldMaxSize;
     
     public ResizeDialogMod(MapResizeDialog dialog){
+        this.settingName = "mu_resize_mod";
         this.dialog = dialog;
         
         shownListener = new VisibilityListener(){
@@ -27,21 +28,15 @@ public class ResizeDialogMod{
         oldMinSize = dialog.minSize;
         oldMaxSize = dialog.maxSize;
     }
-    
-    public void update(){
-        if(settings.getBool("mu_resize_mod")){
-            enable();
-        }else{
-            disable();
-        }
-    }
-    
+
+    @Override
     public void enable(){
         MapResizeDialog.minSize = 1;
         MapResizeDialog.maxSize = 2147483647; // I don't care about you crashing your game
         dialog.addListener(shownListener);
     }
 
+    @Override
     public void disable(){
         MapResizeDialog.minSize = oldMinSize;
         MapResizeDialog.maxSize = oldMaxSize;

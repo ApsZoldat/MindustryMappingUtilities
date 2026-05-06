@@ -10,32 +10,23 @@ import mu.MUVars;
 
 import static arc.Core.settings;
 
-public class EditorDialogMod{
+public class EditorDialogMod extends MUMod{
     public MapEditorDialog oldDialog;
     public MapEditor oldEditor;
 
-    public MUMapEditorDialog newDialog;
-
     public EditorDialogMod(MapEditorDialog dialog, MapEditor editor){
+        this.settingName = "mu_editor_mod";
         oldDialog = dialog;
         oldEditor = editor;
-        
-        newDialog = new MUMapEditorDialog();
     }
-    
-    public void update(){
-        if(settings.getBool("mu_editor_mod")){
-            enable();
-        }else{
-            disable();
-        }
-    }
-    
+
+    @Override
     public void enable(){
-        Vars.ui.editor = newDialog;
+        Vars.ui.editor = MUVars.editorDialog;
         Vars.editor = MUVars.editor;
     }
 
+    @Override
     public void disable(){
         Vars.ui.editor = oldDialog;
         Vars.editor = oldEditor;

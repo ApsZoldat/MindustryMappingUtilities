@@ -13,8 +13,8 @@ import mindustry.ui.*;
 // yep this is quite literally https://github.com/mnemotechnician/new-console/blob/master/src%2Fnewconsole%2Fui%2FFloatingWidget.java copy (thank you very much Mnemotechnician <3)
 
 public class Window extends Table{
+    public Table dragger;
     public Table cont;
-    public Button dragger;
 
     public boolean isDragging = false;
     public float dragOffsetX, dragOffsetY;
@@ -22,15 +22,19 @@ public class Window extends Table{
     public static float draggedAlpha = 0.45f;
 
     public Window(){
+        dragger = new Table();
         cont = new Table();
-        dragger = new Button();
 
-        padTop = padLeft = padBottom = padRight = 20f;
+        padTop = padLeft = padBottom = padRight = 50f;
 
-        add(dragger).size(50f);
-        // dragger.setBackground(Styles.black3);
-
-        //addChild(cont);
+        dragger.setBackground(Styles.black3);
+        dragger.touchable = Touchable.enabled; 
+        dragger.add(cont)
+            .marginTop(padTop)
+            .marginLeft(padLeft)
+            .marginBottom(padBottom)
+            .marginRight(padRight);
+        add(dragger);
         cont.button("test", Icon.wrench, () -> {}).size(160f, 64f);
 
         dragOffsetX = 0;
@@ -39,6 +43,7 @@ public class Window extends Table{
         dragger.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
+                if(event.targetActor != dragger) return false;
                 dragOffsetX = x;
                 dragOffsetY = y;
                 isDragging = true;
@@ -58,10 +63,14 @@ public class Window extends Table{
 
         update(() -> {
             color.a = isDragging ? draggedAlpha : 1f;
-        });
 
-        // Just clamping the position
-        updateDrag(dragOffsetX, dragOffsetY);
+            // Just clamping the position
+            updateDrag(dragOffsetX, dragOffsetY);
+        });
+    }
+
+    public boolean verifyDrag(float x, float y){
+        return !((padLeft <= x && x <= getPrefWidth() - padRight) && (padBottom <= y && y <= getPrefHeight() - padBottom));
     }
 
     public void updateDrag(float x, float y){

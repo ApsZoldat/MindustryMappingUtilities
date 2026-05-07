@@ -34,6 +34,7 @@ import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
 import mindustry.world.meta.*;
+import mu.ui.*;
 
 import static mindustry.Vars.*;
 import static mu.MUVars.editor;
@@ -57,7 +58,6 @@ public class MUMapEditorDialog extends MapEditorDialog{
 
     @Override
     public void build(){
-        
         float size = mobile ? 50f : 58f;
 
         clearChildren();
@@ -248,7 +248,9 @@ public class MUMapEditorDialog extends MapEditorDialog{
                 }
             }).margin(0).left().growY();
 
-            cont.table(t -> t.add(view).grow()).grow();
+            WidgetGroup windows = new WidgetGroup(new Window());
+            windows.touchable = Touchable.childrenOnly;
+            cont.stack(view, windows).grow();
 
             cont.table(t -> Reflect.invoke(MapEditorDialog.class, this, "addBlockSelection", new Object[]{t}, Table.class)).right().growY();
 

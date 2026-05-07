@@ -1,4 +1,4 @@
-package mu.ui;
+package mu.ui.dialogs;
 
 import arc.*;
 import arc.func.*;

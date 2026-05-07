@@ -1,4 +1,4 @@
-package mu.ui;
+package mu.ui.dialogs;
 
 import arc.Core;
 import arc.graphics.g2d.Draw;
@@ -30,7 +30,7 @@ public class PlanetBackgroundDialog extends BaseDialog{
     private float zoom = 1f;
 
     public PlanetBackgroundDialog(){
-        super("@rules.planet_background", new DialogStyle(){{
+        super("@rules.planetbackground", new DialogStyle(){{
             stageBackground = Styles.none;
             titleFont = Fonts.def;
             titleFontColor = Pal.accent;

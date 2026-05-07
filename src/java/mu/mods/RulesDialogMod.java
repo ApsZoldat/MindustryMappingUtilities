@@ -19,7 +19,7 @@ import mindustry.ui.Styles;
 import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 import mindustry.world.meta.Env;
-import mu.ui.*;
+import mu.ui.dialogs.*;
 
 import static arc.Core.settings;
 import static mindustry.Vars.ui;

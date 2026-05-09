@@ -38,11 +38,11 @@ import mu.ui.*;
 
 import static mindustry.Vars.*;
 import static mu.MUVars.editor;
+import static mu.MUVars.windows;
 
 public class MUMapEditorDialog extends MapEditorDialog{
     public MUMapView view;  // shadows private view
     public BaseDialog menu; // shadows private menu
-    
 
     public MUMapEditorDialog(){
         super();
@@ -248,7 +248,6 @@ public class MUMapEditorDialog extends MapEditorDialog{
                 }
             }).margin(0).left().growY();
 
-            WidgetGroup windows = new WidgetGroup(new Window());
             windows.touchable = Touchable.childrenOnly;
             cont.stack(view, windows).grow();
 

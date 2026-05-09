@@ -1,8 +1,9 @@
 package mu;
 
 import arc.Events;
-import arc.util.*;
+import arc.scene.ui.layout.*;
 import arc.struct.*;
+import arc.util.*;
 import mindustry.editor.*;
 import mindustry.game.*;
 import mindustry.mod.*;
@@ -11,6 +12,8 @@ import mindustry.Vars;
 import mu.editor.*;
 import mu.mods.*;
 import mu.utils.*;
+import mu.ui.*;
+import mu.ui.data.*;
 
 import static arc.Core.settings;
 import static mu.MUVars.*;
@@ -22,6 +25,14 @@ public class MapUtilitiesMod extends Mod{
 
             editor = new MUMapEditor();
             editorDialog = new MUMapEditorDialog();
+            windowsData = new Seq<>();
+            windowsData.add(new WindowData());
+            windowsData.add(new WindowData());
+            windows = new WidgetGroup();
+
+            for(WindowData data : windowsData){
+                windows.addChild(new Window(data));
+            }
 
             CustomRulesDialog infoRules = Reflect.get(MapInfoDialog.class, Reflect.get(Vars.ui.editor, "infoDialog"), "ruleInfo");
             CustomRulesDialog playRules = Reflect.get(MapPlayDialog.class, Reflect.get(Vars.ui.custom, "dialog"), "dialog");

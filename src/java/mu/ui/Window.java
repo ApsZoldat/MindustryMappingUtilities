@@ -23,12 +23,11 @@ public class Window extends Table{
 
     public boolean isDragging = false;
     public float dragOffsetX, dragOffsetY;
-    public static float draggedAlpha = 0.45f;
 
     public Window(WindowData data){
         this.data = data;
         dragger = new Table();
-        cont = new Table();
+        cont = data.cont.build();
 
         dragger.setBackground(Styles.black3);
         dragger.touchable = Touchable.enabled;
@@ -44,7 +43,7 @@ public class Window extends Table{
         dragger.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
-                if(event.targetActor != dragger) return false;
+                if(event.targetActor != dragger || !data.isDraggable) return false;
                 dragOffsetX = x;
                 dragOffsetY = y;
                 isDragging = true;
@@ -63,7 +62,7 @@ public class Window extends Table{
         });
 
         update(() -> {
-            color.a = isDragging ? draggedAlpha : 1f;
+            color.a = isDragging ? data.draggedAlpha : 1f;
 
             // Just clamping the position
             setPos(data.x, data.y);  // TODO: Only do this once somehow

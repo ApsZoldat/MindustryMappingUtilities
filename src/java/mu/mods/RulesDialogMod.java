@@ -49,7 +49,7 @@ public class RulesDialogMod extends MUMod{
         categoryFix = new VisibilityListener(){
             @Override
             public boolean shown(){
-                dialog.categoryNames.clear(); // if you by some miracle stumble across this atrocious piece of code, tell Anuke to add this line without tve word dialog to the setup method in CustomRulesDialog (or don't, i am just too lazy to make a PR)
+                dialog.categoryNames.clear(); // if you by some miracle stumble across this atrocious piece of code, tell Anuke to add this line without the word dialog to the setup method in CustomRulesDialog (or don't, i am just too lazy to make a PR)
                 return false;
             }
         };
@@ -84,7 +84,10 @@ public class RulesDialogMod extends MUMod{
 
     public void setup(){
         rules = Reflect.get(dialog, "rules");
-        
+
+        // Ensure it exists in categories Seq before doing all the stuff
+        dialog.category("miscellaneous");
+
         if(settings.getBool("editor_hidden_rules")) addHiddenRules();
         if(settings.getBool("editor_revealed_blocks")){
             addRevealedBlocks();

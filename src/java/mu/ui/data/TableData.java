@@ -5,40 +5,26 @@ import arc.scene.style.*;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.gen.*;
+import mu.ui.dialogs.*;
 
-public class TableData{
+public class TableData implements ElementData{
     // All cells
-    public Seq<CellData> cells;
+    public Seq<CellData> cells = new Seq<>();
 
     // Defaults
-    public CellData cellDefaults;
+    public CellData cellDefaults = new CellData(null);
 
     // Margins
-    public float marginTop, marginLeft, marginBot, marginRight;
+    public float marginTop = 0f, marginLeft = 0f, marginBot = 0f, marginRight = 0f;
 
     // Styling
-    public String backgroundName;
-    public int align;
-    public boolean round;
-    public boolean clip;
+    public String backgroundName = "";
+    public int align = Align.center;
+    public boolean round = true;
+    public boolean clip = false;
 
     // All fields that can be set easily through Reflect
     public static Seq<String> fieldNames = new Seq<>(new String[]{"marginTop", "marginLeft", "marginBot", "marginRight", "align", "round", "clip"});
-
-    public TableData(){
-        cells = new Seq<>();
-        cellDefaults = new CellData();
-        
-        marginTop = 0f;
-        marginLeft = 0f;
-        marginBot = 0f;
-        marginRight = 0f;
-        
-        backgroundName = "";
-        align = Align.center;
-        round = true;
-        clip = false;
-    }
     
     public Table build(){
         Table table = new Table();
@@ -54,5 +40,9 @@ public class TableData{
         
         table.invalidate();
         return table;
+    }
+    
+    public Table explorerSettings(UIExplorerDialog dialog){
+        return new Table();
     }
 }

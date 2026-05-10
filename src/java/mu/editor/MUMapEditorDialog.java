@@ -35,6 +35,7 @@ import mindustry.world.blocks.storage.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
 import mindustry.world.meta.*;
 import mu.ui.*;
+import mu.ui.dialogs.*;
 
 import static mindustry.Vars.*;
 import static mu.MUVars.editor;
@@ -43,6 +44,7 @@ import static mu.MUVars.windows;
 public class MUMapEditorDialog extends MapEditorDialog{
     public MUMapView view;  // shadows private view
     public BaseDialog menu; // shadows private menu
+    public UIExplorerDialog explorer;
 
     public MUMapEditorDialog(){
         super();
@@ -53,7 +55,14 @@ public class MUMapEditorDialog extends MapEditorDialog{
 
         view = new MUMapView();
         Reflect.set(MapEditorDialog.class, this, "view", view);
-        menu = Reflect.get(MapEditorDialog.class, this, "menu"); 
+        menu = Reflect.get(MapEditorDialog.class, this, "menu");
+
+        explorer = new UIExplorerDialog();
+        menu.cont.row();
+        menu.cont.button("temp", Icon.wrench, () -> {
+            menu.hide();
+            explorer.show();
+        }).padTop(20f).size(180f * 2f + 10, 60f);
     }
 
     @Override

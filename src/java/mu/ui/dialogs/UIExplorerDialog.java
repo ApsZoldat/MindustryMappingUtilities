@@ -1,6 +1,8 @@
 package mu.ui.dialogs;
 
 import arc.Core;
+import arc.graphics.*;
+import arc.func.*;
 import arc.scene.ui.layout.*;
 import arc.scene.ui.*;
 import arc.struct.*;
@@ -9,6 +11,7 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mu.ui.*;
 import mu.ui.data.*;
 
 import static mu.MUVars.*;
@@ -26,8 +29,15 @@ public class UIExplorerDialog extends BaseDialog{
         pathTable = new Table();
 
         addCloseButton();
-        
+
         shown(this::build);
+
+        hidden(() -> {
+            windows.clear();
+            for(WindowData data : windowsData){
+                windows.addChild(new Window(data));
+            }
+        });
     }
 
     public void build(){
@@ -39,7 +49,7 @@ public class UIExplorerDialog extends BaseDialog{
             buildPath();
             cont.add(pathTable).growX().left().row();
             cont.image().color(Pal.accent).height(3f).padTop(6f).padBottom(20).fillX().row();
-            cont.add(currentElement.explorerSettings(this)).grow();
+            cont.pane(p -> p.add(currentElement.explorerSettings(this))).grow();
         }
     }
 
@@ -93,5 +103,34 @@ public class UIExplorerDialog extends BaseDialog{
             if(data == element) break;
         }
         pathStack = newStack;
+    }
+
+    public void numberi(Table table, String text, Intc cons, Intp prov, int min, int max){
+        table.table(t -> {
+            t.left();
+            t.add(text).left().padRight(5f)
+                .get().setColor(Color.white);
+            t.field((prov.get()) + "", s -> cons.get(Strings.parseInt(s)))
+                .padRight(100f)
+                .valid(f -> Strings.parseInt(f) >= min && Strings.parseInt(f) <= max).width(120f).left();
+        }).padTop(0f);
+        table.row();
+    }
+
+    public void number(Table table, String text, Floatc cons, Floatp prov, float min, float max){
+        table.table(t -> {
+            t.left();
+            t.add(text).left().padRight(5f)
+            .get().setColor(Color.white);
+            t.field(prov.get() + "", s -> cons.get(Strings.parseFloat(s)))
+            .padRight(50f)
+            .valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max).width(120f).left();
+        }).padTop(0f);
+        table.row();
+    }
+
+    public void check(Table table, String text, Boolc cons, Boolp prov){
+        table.check(text, cons).checked(prov.get()).get().left().marginTop(8f);
+        table.row();
     }
 }

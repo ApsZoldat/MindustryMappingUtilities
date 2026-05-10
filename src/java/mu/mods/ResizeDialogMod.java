@@ -32,7 +32,7 @@ public class ResizeDialogMod extends MUMod{
     @Override
     public void enable(){
         MapResizeDialog.minSize = 1;
-        MapResizeDialog.maxSize = 2147483647; // I don't care about you crashing your game
+        MapResizeDialog.maxSize = Integer.MAX_VALUE; // I don't care about you crashing your game
         dialog.addListener(shownListener);
     }
 

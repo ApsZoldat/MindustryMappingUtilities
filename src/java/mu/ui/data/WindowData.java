@@ -54,6 +54,7 @@ public class WindowData implements ElementData{
 
     public Table explorerSettings(UIExplorerDialog dialog){
         Table table = new Table();
+        table.defaults().fillX().left();
 
         table.table(t -> {
             t.left();
@@ -63,6 +64,12 @@ public class WindowData implements ElementData{
                 dialog.buildPath();
             }).width(300f);
         });
+        table.row();
+
+        dialog.number(table, "X", f -> x = f, () -> x, 0, Integer.MAX_VALUE);
+        dialog.number(table, "Y", f -> y = f, () -> y, 0, Integer.MAX_VALUE);
+        dialog.check(table, "IsDraggable", b -> isDraggable = b, () -> isDraggable);
+        dialog.number(table, "DraggedOpacity", f -> draggedAlpha = f, () -> draggedAlpha, 0, 1);
 
         return table;
     }

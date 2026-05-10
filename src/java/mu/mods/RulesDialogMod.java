@@ -97,7 +97,7 @@ public class RulesDialogMod extends MUMod{
         }
     }
 
-    private void category(String category){
+    public void category(String category){
         if(dialog.categoryNames.contains(category)){
             dialog.current = dialog.categories.get(dialog.categoryNames.indexOf(category));
         }else{
@@ -105,25 +105,21 @@ public class RulesDialogMod extends MUMod{
         }
     }
 
-    private void addHiddenRules(){
+    public void addHiddenRules(){
         category("waves");
         dialog.check("@rules.showspawns", b -> rules.showSpawns = b, () -> rules.showSpawns);
-
 
         category("resourcesbuilding");
         dialog.check("@rules.ghostblocks", b -> rules.ghostBlocks = b, () -> rules.ghostBlocks);
         dialog.check("@rules.logicunitbuild", b -> rules.logicUnitBuild = b, () -> rules.logicUnitBuild);
 
-
         category("unit");
         dialog.check("@rules.possessionallowed", b -> rules.possessionAllowed = b, () -> rules.possessionAllowed);
         dialog.check("@rules.unitpayloadupdate", b -> rules.unitPayloadUpdate = b, () -> rules.unitPayloadUpdate);
 
-
         category("enemy");
         dialog.check("@rules.pvpautopause", b -> rules.pvpAutoPause = b, () -> rules.pvpAutoPause);
         dialog.check("@rules.coredestroyclear", b -> rules.coreDestroyClear = b, () -> rules.coreDestroyClear);
-
 
         category("environment");
         dialog.check("@rules.borderdarkness", b -> rules.borderDarkness = b, () -> rules.borderDarkness);
@@ -164,7 +160,6 @@ public class RulesDialogMod extends MUMod{
             dialog.current.button("@rules.environmentsettings", () -> environmentDialog(rules)).left().width(300f).fillX().row();
         }
 
-
         category("teams");
         Table numberedEdit = new Table(); // Numbered teams
         dialog.numberi("@rules.numberedteam", f -> {
@@ -191,7 +186,7 @@ public class RulesDialogMod extends MUMod{
         addHiddenTeamRules();
     }
     
-    private void addRevealedBlocks(){
+    public void addRevealedBlocks(){
         category("miscellaneous");
         if(Core.bundle.get("rules.revealedblocks").toLowerCase().contains(dialog.ruleSearch)){
             dialog.ruleInfo(dialog.current.table(table -> {
@@ -201,8 +196,8 @@ public class RulesDialogMod extends MUMod{
             dialog.current.row();
         }
     }
-    
-    private void addPlanetBackground(){
+
+    public void addPlanetBackground(){
         category("miscellaneous");
         if(Core.bundle.get("rules.planetbackground").toLowerCase().contains(dialog.ruleSearch)){
             dialog.ruleInfo(dialog.current.table(table -> {
@@ -213,7 +208,7 @@ public class RulesDialogMod extends MUMod{
         }
     }
 
-    private void updateNumberedEdit(Table edit, Team team){
+    public void updateNumberedEdit(Table edit, Team team){
         edit.clear();
         boolean[] shown = {false};
         Table wasCurrent = dialog.current;
@@ -263,7 +258,7 @@ public class RulesDialogMod extends MUMod{
         }, () -> shown[0]).left().growX().row();
     }
 
-    private void addHiddenTeamRules(){
+    public void addHiddenTeamRules(){
         category("teams");
 
         int[] i = {0};
@@ -285,7 +280,7 @@ public class RulesDialogMod extends MUMod{
         });
     }
 
-    private void environmentDialog(Rules rules){
+    public void environmentDialog(Rules rules){
         BaseDialog dialog = new BaseDialog("@rules.title.environment");
         dialog.cont.add("@rules.env.warning").color(Pal.accent).center().padBottom(20f).row();
         dialog.cont.pane(table -> {
@@ -308,7 +303,7 @@ public class RulesDialogMod extends MUMod{
         dialog.show();
     }
 
-    private void changeEnv(CheckBox check, int envVar, Rules rules){
+    public void changeEnv(CheckBox check, int envVar, Rules rules){
         if (check.isChecked()){
             rules.env = rules.env | envVar;
         } else {
@@ -316,7 +311,7 @@ public class RulesDialogMod extends MUMod{
         }
     }
 
-    private void envCheck(Table tb, String text, int envVar, String description, Rules rules){
+    public void envCheck(Table tb, String text, int envVar, String description, Rules rules){
         CheckBox check = new CheckBox(text);
         check.changed(() -> changeEnv(check, envVar, rules));
         check.setChecked((rules.env & envVar) != 0);
@@ -330,7 +325,7 @@ public class RulesDialogMod extends MUMod{
         tb.row();
     }
 
-    private void text(Table table, String labelText, Cons<String> cons, Prov<String> prov){
+    public void text(Table table, String labelText, Cons<String> cons, Prov<String> prov){
         Cell<Table> cell = table.table(t -> {
             t.left();
             t.add(labelText).left().padRight(5);

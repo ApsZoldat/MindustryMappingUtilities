@@ -25,7 +25,7 @@ public class TableData implements ElementData{
 
     // All fields that can be set easily through Reflect
     public static Seq<String> fieldNames = new Seq<>(new String[]{"marginTop", "marginLeft", "marginBot", "marginRight", "align", "round", "clip"});
-    
+
     public Table build(){
         Table table = new Table();
 
@@ -37,12 +37,23 @@ public class TableData implements ElementData{
         for(CellData cell : cells){
             cell.build(table);
         }
-        
+
         table.invalidate();
         return table;
     }
     
     public Table explorerSettings(UIExplorerDialog dialog){
-        return new Table();
+        Table table = new Table();
+        table.defaults().fillX().left();
+
+        dialog.number(table, "MarginTop", f -> marginTop = f, () -> marginTop, 0f, Float.POSITIVE_INFINITY, 5f);
+        dialog.number(table, "MarginLeft", f -> marginLeft = f, () -> marginLeft, 0f, Float.POSITIVE_INFINITY, 5f);
+        dialog.number(table, "MarginBottom", f -> marginBot = f, () -> marginBot, 0f, Float.POSITIVE_INFINITY, 5f);
+        dialog.number(table, "MarginRight", f -> marginRight = f, () -> marginRight, 0f, Float.POSITIVE_INFINITY, 5f);
+
+        dialog.check(table, "Round", b -> round = b, () -> round);
+        dialog.check(table, "Clip", b -> clip = b, () -> clip);
+
+        return table;
     }
 }

@@ -3,6 +3,7 @@ package mu.ui.dialogs;
 import arc.Core;
 import arc.graphics.*;
 import arc.func.*;
+import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.scene.ui.*;
 import arc.struct.*;
@@ -124,8 +125,8 @@ public class UIExplorerDialog extends BaseDialog{
                 .valid(f -> Strings.parseInt(f) >= min && Strings.parseInt(f) <= max)
                 .update(c -> {c.setText(prov.get() + "");})
                 .width(120f).left().padRight(20f);
-            t.button("+", () -> cons.get(prov.get() + step)).size(40f).padRight(5f);
-            t.button("-", () -> cons.get(prov.get() - step)).size(40f);
+            t.button("+", () -> cons.get(Mathf.clamp(prov.get() + step, min, max))).size(40f).padRight(5f);
+            t.button("-", () -> cons.get(Mathf.clamp(prov.get() - step, min, max))).size(40f);
         }).padTop(0f);
         table.row();
     }
@@ -140,8 +141,8 @@ public class UIExplorerDialog extends BaseDialog{
                 .valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max)
                 .update(c -> {c.setText(prov.get() + "");})
                 .width(120f).left().padRight(20f);
-            t.button("+", () -> cons.get(prov.get() + step)).size(40f).padRight(5f);
-            t.button("-", () -> cons.get(prov.get() - step)).size(40f);
+            t.button("+", () -> cons.get(Mathf.clamp(prov.get() + step, min, max))).size(40f).padRight(5f);
+            t.button("-", () -> cons.get(Mathf.clamp(prov.get() - step, min, max))).size(40f);
         }).padTop(0f);
         table.row();
     }

@@ -18,16 +18,15 @@ import mu.ui.data.*;
 import static mu.MUVars.*;
 
 public class UIExplorerDialog extends BaseDialog{
-    public ElementData currentElement;
+    public ElementData currentElement = null;
 
-    public Table pathTable;
+    public Table pathTable = new Table();;
     public Seq<ElementData> pathStack = new Seq<>();
+    
+    public TableLayoutDialog layoutDialog = new TableLayoutDialog();
 
     public UIExplorerDialog(){
         super("temp");
-
-        currentElement = null;
-        pathTable = new Table();
 
         addCloseButton();
 
@@ -150,5 +149,69 @@ public class UIExplorerDialog extends BaseDialog{
     public void check(Table table, String text, Boolc cons, Boolp prov){
         table.check(text, cons).checked(prov.get()).get().left().marginTop(8f);
         table.row();
+    }
+    
+    public void alignment(Table table, Intc cons){
+        table.button("", () -> cons.get(Align.left & Align.top)).size(50f);
+        table.button(Icon.up, () -> cons.get(Align.top)).size(50f);
+        table.button("", () -> cons.get(Align.right & Align.top)).size(50f);
+        table.row();
+        table.button(Icon.left, () -> cons.get(Align.top)).size(50f);
+            
+        table.button("", () -> cons.get(Align.center)).size(50f);  // TODO: find icon for ts
+        table.button(Icon.right, () -> cons.get(Align.right)).size(50f);
+        table.row();
+        table.button("", () -> cons.get(Align.left & Align.bottom)).size(50f);
+        table.button(Icon.down, () -> cons.get(Align.bottom)).size(50f);
+        table.button("", () -> cons.get(Align.right & Align.bottom)).size(50f);
+    }
+
+    public void elementSelectionDialog(){
+        BaseDialog dialog = new BaseDialog("temp");
+
+        dialog.cont.pane(p -> {
+            int i = 0;
+
+            p.add("Row " + (++i)).row();
+            p.image().color(Color.white).height(3f).padTop(6f).padBottom(8f).left().fillX().row();
+
+            for(CellData cell : ((TableData) currentElement).cells){
+                ElementData elem = cell.element;
+
+                // TODO: define style in elements themselves
+                p.button(elem.getClass().getSimpleName().replace("Data", ""), () -> {
+                    currentElement = elem;
+                    pathStack.add(elem);
+                    build();
+                    dialog.hide();
+                }).padTop(10f).width(300f).minHeight(50f).row();
+
+                if(cell.endRow){
+                    p.add("Row " + (++i)).padTop(10f).row();
+                    p.image().color(Color.white).height(3f).padTop(6f).padBottom(8f).left().fillX().row();
+                }
+            }
+        });
+        dialog.cont.row();
+        dialog.cont.button("@add", Icon.add, () -> elementAdditionDialog(dialog)).width(320f).minHeight(50f).padTop(40f);
+        
+        dialog.addCloseButton();
+        dialog.show();
+    }
+
+    public void elementAdditionDialog(BaseDialog selectionDialog){
+        BaseDialog dialog = new BaseDialog("temp");
+
+        dialog.cont.button("Button", () -> {
+            CellData cell = new CellData(new ButtonData());
+            cell.minWidth = cell.maxWidth = cell.minHeight = cell.maxHeight = 50f;
+            ((TableData) currentElement).cells.add(cell);
+            dialog.hide();
+            selectionDialog.hide();
+            elementSelectionDialog();
+        }).padTop(10f).width(300f).minHeight(50f).row();
+
+        dialog.addCloseButton();
+        dialog.show();
     }
 }

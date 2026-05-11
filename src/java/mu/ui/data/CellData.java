@@ -30,21 +30,34 @@ public class CellData{
 
     // All fields that can be set easily through Reflect
     public static Seq<String> fieldNames = new Seq<>(new String[]{"minWidth", "maxWidth", "minHeight", "maxHeight", "padTop", "padLeft", "padBottom", "padRight", "fillX", "fillY", "expandX", "expandY", "align", "uniformX", "uniformY", "endRow", "colspan"});
+    // All fields that must be scaled through scl()
+    public static Seq<String> sclFieldNames = new Seq<>(new String[]{"minWidth", "maxWidth", "minHeight", "maxHeight", "padTop", "padLeft", "padBottom", "padRight"});
 
     public CellData(ElementData element){
         this.element = element;
     }
 
     public Cell build(Table table){
-        Cell cell = table.add(element.build());
+        Cell cell;
+        if(element == null){
+            cell = table.add("");
+        }else{
+            cell = table.add(element.build());
+        }
         if(endRow) table.row();
 
-        for(String field : fieldNames){
-            Reflect.set(cell, field, Reflect.get(this, field));
-        }
-
-        cell.size(50f);
+        copyFields(cell);
 
         return cell;
+    }
+
+    public void copyFields(Cell cell){
+        for(String field : fieldNames){
+            if(sclFieldNames.contains(field)){
+                Reflect.set(cell, field, Scl.scl(Reflect.get(this, field)));
+            }else{
+                Reflect.set(cell, field, Reflect.get(this, field));
+            }
+        }
     }
 }

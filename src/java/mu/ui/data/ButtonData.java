@@ -6,7 +6,7 @@ import mindustry.gen.*;
 import mindustry.ui.*;
 import mu.ui.dialogs.*;
 
-public class ButtonData implements ElementData{
+public class ButtonData extends ElementData{
     public Button build(){
         return new Button(Styles.defaultb);
     }

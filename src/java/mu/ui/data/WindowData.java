@@ -8,7 +8,7 @@ import mu.ui.dialogs.*;
 
 import static mu.MUVars.*;
 
-public class WindowData implements ElementData{
+public class WindowData extends ElementData{
     public String name;
 
     // Position

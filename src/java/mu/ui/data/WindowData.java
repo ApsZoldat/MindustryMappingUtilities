@@ -2,6 +2,7 @@ package mu.ui.data;
 
 import arc.struct.*;
 import arc.scene.ui.layout.*;
+import mindustry.gen.*;
 import mu.ui.*;
 import mu.ui.dialogs.*;
 
@@ -63,13 +64,19 @@ public class WindowData implements ElementData{
                 name = v;
                 dialog.buildPath();
             }).width(300f);
-        });
+        }).padBottom(10f);
         table.row();
 
-        dialog.number(table, "X", f -> x = f, () -> x, 0, Integer.MAX_VALUE);
-        dialog.number(table, "Y", f -> y = f, () -> y, 0, Integer.MAX_VALUE);
+        dialog.number(table, "X", f -> x = f, () -> x, Integer.MIN_VALUE, Integer.MAX_VALUE, 10);
+        dialog.number(table, "Y", f -> y = f, () -> y, Integer.MIN_VALUE, Integer.MAX_VALUE, 10);
         dialog.check(table, "IsDraggable", b -> isDraggable = b, () -> isDraggable);
-        dialog.number(table, "DraggedOpacity", f -> draggedAlpha = f, () -> draggedAlpha, 0, 1);
+        dialog.number(table, "DraggedOpacity", f -> draggedAlpha = f, () -> draggedAlpha, 0f, 1f, 0.05f);
+        
+        table.button("Table", Icon.menu, () -> {
+            dialog.currentElement = cont;
+            dialog.pathStack.add(cont);
+            dialog.build();
+        }).center().padTop(20f);
 
         return table;
     }

@@ -27,7 +27,6 @@ public class MapUtilitiesMod extends Mod{
             editorDialog = new MUMapEditorDialog();
             windowsData = new Seq<>();
             windowsData.add(new WindowData());
-            windowsData.add(new WindowData());
             windows = new WidgetGroup();
 
             for(WindowData data : windowsData){

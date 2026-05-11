@@ -66,6 +66,14 @@ public class UIExplorerDialog extends BaseDialog{
                 }).width(300f).minHeight(50f).row();
             }
         });
+        cont.row();
+        cont.button("@add", Icon.add, () -> {
+            WindowData data = new WindowData();
+            currentElement = data;
+            pathStack.add(data);
+            windowsData.add(data);
+            build();
+        }).width(320f).minHeight(50f).padTop(40f);
     }
 
     public void buildPath(){
@@ -89,9 +97,10 @@ public class UIExplorerDialog extends BaseDialog{
                         currentElement = data;
                         cutPathTo(data);
                         build();
-                    }).left().height(50f).get().getLabel().setWrap(false);
-                }  // TODO: actually make this at the left side
+                    }).left().height(40f).get().getLabel().setWrap(false);
+                }
             }
+            p.add("").growX().left();
         }).scrollX(true).growX().left();
     }
 
@@ -105,26 +114,34 @@ public class UIExplorerDialog extends BaseDialog{
         pathStack = newStack;
     }
 
-    public void numberi(Table table, String text, Intc cons, Intp prov, int min, int max){
+    public void numberi(Table table, String text, Intc cons, Intp prov, int min, int max, int step){
         table.table(t -> {
             t.left();
             t.add(text).left().padRight(5f)
                 .get().setColor(Color.white);
             t.field((prov.get()) + "", s -> cons.get(Strings.parseInt(s)))
                 .padRight(100f)
-                .valid(f -> Strings.parseInt(f) >= min && Strings.parseInt(f) <= max).width(120f).left();
+                .valid(f -> Strings.parseInt(f) >= min && Strings.parseInt(f) <= max)
+                .update(c -> {c.setText(prov.get() + "");})
+                .width(120f).left().padRight(20f);
+            t.button("+", () -> cons.get(prov.get() + step)).size(40f).padRight(5f);
+            t.button("-", () -> cons.get(prov.get() - step)).size(40f);
         }).padTop(0f);
         table.row();
     }
 
-    public void number(Table table, String text, Floatc cons, Floatp prov, float min, float max){
+    public void number(Table table, String text, Floatc cons, Floatp prov, float min, float max, float step){
         table.table(t -> {
             t.left();
             t.add(text).left().padRight(5f)
             .get().setColor(Color.white);
             t.field(prov.get() + "", s -> cons.get(Strings.parseFloat(s)))
-            .padRight(50f)
-            .valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max).width(120f).left();
+                .padRight(50f)
+                .valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max)
+                .update(c -> {c.setText(prov.get() + "");})
+                .width(120f).left().padRight(20f);
+            t.button("+", () -> cons.get(prov.get() + step)).size(40f).padRight(5f);
+            t.button("-", () -> cons.get(prov.get() - step)).size(40f);
         }).padTop(0f);
         table.row();
     }

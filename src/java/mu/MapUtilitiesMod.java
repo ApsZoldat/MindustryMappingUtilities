@@ -68,7 +68,6 @@ public class MapUtilitiesMod extends Mod{
             }catch (Exception err){
                 Log.err("Oops, failed to randomize Mapping Utilities subtitle, how unfortunate!", err);
             }
-    
         });
     }
 }

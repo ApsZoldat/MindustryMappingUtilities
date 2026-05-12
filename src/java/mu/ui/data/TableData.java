@@ -48,16 +48,16 @@ public class TableData extends ElementData{
         Table table = new Table();
         table.defaults().fillX().left();
 
-        dialog.number(table, "MarginTop", f -> marginTop = f, () -> marginTop, 0f, Float.POSITIVE_INFINITY, 5f);
-        dialog.number(table, "MarginLeft", f -> marginLeft = f, () -> marginLeft, 0f, Float.POSITIVE_INFINITY, 5f);
-        dialog.number(table, "MarginBottom", f -> marginBot = f, () -> marginBot, 0f, Float.POSITIVE_INFINITY, 5f);
-        dialog.number(table, "MarginRight", f -> marginRight = f, () -> marginRight, 0f, Float.POSITIVE_INFINITY, 5f);
+        UIExplorerDialog.number(table, "MarginTop", f -> marginTop = f, () -> marginTop, 0f, Float.POSITIVE_INFINITY, 5f);
+        UIExplorerDialog.number(table, "MarginLeft", f -> marginLeft = f, () -> marginLeft, 0f, Float.POSITIVE_INFINITY, 5f);
+        UIExplorerDialog.number(table, "MarginBottom", f -> marginBot = f, () -> marginBot, 0f, Float.POSITIVE_INFINITY, 5f);
+        UIExplorerDialog.number(table, "MarginRight", f -> marginRight = f, () -> marginRight, 0f, Float.POSITIVE_INFINITY, 5f);
 
         table.table(c -> {
             c.table(t -> {
                 t.defaults().fillX().left();
-                dialog.check(t, "Round", b -> round = b, () -> round);
-                dialog.check(t, "Clip", b -> clip = b, () -> clip);
+                UIExplorerDialog.check(t, "Round", b -> round = b, () -> round);
+                UIExplorerDialog.check(t, "Clip", b -> clip = b, () -> clip);
                 t.button("Background", Icon.image, () -> {}).padTop(5f).size(200f, 50f).get().getLabel().setWrap(false);  // TODO
             }).growX().left();
             c.table(t -> {
@@ -65,7 +65,7 @@ public class TableData extends ElementData{
                 t.add("Alignment").padBottom(5f).row();
                 t.table(a -> {
                     a.right();
-                    dialog.alignment(a, v -> align = v);
+                    UIExplorerDialog.alignment(a, v -> align = v);
                 });  // TODO: this layout sucks
             }).growX().right();
         }).left().padTop(10f).fillX().row();

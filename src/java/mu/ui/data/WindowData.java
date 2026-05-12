@@ -37,15 +37,6 @@ public class WindowData extends ElementData{
         cont.marginLeft = 50f;
         cont.marginBot = 50f;
         cont.marginRight = 50f;
-
-        cont.cells.add(new CellData(new ButtonData()));
-        var c = new CellData(new ButtonData());
-        c.endRow = true;
-        c.padLeft = 20f;
-        c.padBottom = 20f;
-        cont.cells.add(c);
-        cont.cells.add(new CellData(new ButtonData()));
-        cont.cells.add(new CellData(new ButtonData()));
     }
 
     public Window build(){
@@ -67,10 +58,10 @@ public class WindowData extends ElementData{
         }).padBottom(10f);
         table.row();
 
-        dialog.number(table, "X", f -> x = f, () -> x, Integer.MIN_VALUE, Integer.MAX_VALUE, 10);
-        dialog.number(table, "Y", f -> y = f, () -> y, Integer.MIN_VALUE, Integer.MAX_VALUE, 10);
-        dialog.check(table, "IsDraggable", b -> isDraggable = b, () -> isDraggable);
-        dialog.number(table, "DraggedOpacity", f -> draggedAlpha = f, () -> draggedAlpha, 0f, 1f, 0.05f);
+        UIExplorerDialog.number(table, "X", f -> x = f, () -> x, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 10f);
+        UIExplorerDialog.number(table, "Y", f -> y = f, () -> y, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 10f);
+        UIExplorerDialog.check(table, "IsDraggable", b -> isDraggable = b, () -> isDraggable);
+        UIExplorerDialog.number(table, "DraggedOpacity", f -> draggedAlpha = f, () -> draggedAlpha, 0f, 1f, 0.05f);
         
         table.button("Table", Icon.menu, () -> {
             dialog.currentElement = cont;

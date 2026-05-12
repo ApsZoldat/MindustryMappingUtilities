@@ -114,7 +114,7 @@ public class UIExplorerDialog extends BaseDialog{
         pathStack = newStack;
     }
 
-    public void numberi(Table table, String text, Intc cons, Intp prov, int min, int max, int step){
+    public static void numberi(Table table, String text, Intc cons, Intp prov, int min, int max, int step){
         table.table(t -> {
             t.left();
             t.add(text).left().padRight(5f)
@@ -130,7 +130,7 @@ public class UIExplorerDialog extends BaseDialog{
         table.row();
     }
 
-    public void number(Table table, String text, Floatc cons, Floatp prov, float min, float max, float step){
+    public static void number(Table table, String text, Floatc cons, Floatp prov, float min, float max, float step){
         table.table(t -> {
             t.left();
             t.add(text).left().padRight(5f)
@@ -146,12 +146,12 @@ public class UIExplorerDialog extends BaseDialog{
         table.row();
     }
 
-    public void check(Table table, String text, Boolc cons, Boolp prov){
+    public static void check(Table table, String text, Boolc cons, Boolp prov){
         table.check(text, cons).checked(prov.get()).get().left().marginTop(8f);
         table.row();
     }
     
-    public void alignment(Table table, Intc cons){
+    public static void alignment(Table table, Intc cons){
         table.button("", () -> cons.get(Align.left & Align.top)).size(50f);
         table.button(Icon.up, () -> cons.get(Align.top)).size(50f);
         table.button("", () -> cons.get(Align.right & Align.top)).size(50f);
@@ -174,6 +174,7 @@ public class UIExplorerDialog extends BaseDialog{
 
             p.add("Row " + (++i)).row();
             p.image().color(Color.white).height(3f).padTop(6f).padBottom(8f).left().fillX().row();
+            // TODO: add <empty>
 
             for(CellData cell : ((TableData) currentElement).cells){
                 ElementData elem = cell.element;

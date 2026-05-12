@@ -7,6 +7,7 @@ import arc.util.*;
 import mindustry.editor.*;
 import mindustry.game.*;
 import mindustry.mod.*;
+import mindustry.mod.Mods.*;
 import mindustry.ui.dialogs.*;
 import mindustry.Vars;
 import mu.editor.*;
@@ -16,6 +17,7 @@ import mu.ui.*;
 import mu.ui.data.*;
 
 import static arc.Core.settings;
+import static mindustry.Vars.mods;
 import static mu.MUVars.*;
 
 public class MapUtilitiesMod extends Mod{
@@ -56,6 +58,17 @@ public class MapUtilitiesMod extends Mod{
             updateMods();
 
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
+
+            try{
+                LoadedMod mod = mods.getMod("mapping-utilities");
+                SubtitleRandomizer randomizer = new SubtitleRandomizer(mod);
+                randomizer.removeMaxLength();
+                randomizer.fetchSubtitles();
+                randomizer.randomize();
+            }catch (Exception err){
+                Log.err("Oops, failed to randomize Mapping Utilities subtitle, how unfortunate!", err);
+            }
+    
         });
     }
 }

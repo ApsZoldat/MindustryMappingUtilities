@@ -20,15 +20,19 @@ import static mu.MUVars.*;
 public class UIExplorerDialog extends BaseDialog{
     public ElementData currentElement = null;
 
-    public Table pathTable = new Table();;
+    // Multiple element/cell editing
+    public Seq<CellData> selectedCells = new Seq<>();
+    public Class groupClass = null;
+
+    public Table pathTable = new Table();
     public Seq<ElementData> pathStack = new Seq<>();
-    
-    public TableLayoutDialog layoutDialog = new TableLayoutDialog();
 
     public UIExplorerDialog(){
         super("temp");
 
         addCloseButton();
+        
+        buttons.button("Preview", Icon.eye, () -> previewDialog()).disabled(b -> currentElement == null);
 
         shown(this::build);
 
@@ -40,6 +44,29 @@ public class UIExplorerDialog extends BaseDialog{
         });
     }
 
+    public Seq<Object> getCurrentGroup(){
+        Seq<Object> group = new Seq<>();
+        
+        if(selectedCells.isEmpty() || groupClass == null){
+            group.add(currentElement);
+            return group;
+        }
+
+        if(groupClass == CellData.class){
+            group.addAll(selectedCells);
+            return group;
+        }
+
+        for(CellData cell : selectedCells){
+            ElementData element = cell.element;
+            if(groupClass.isInstance(element)){
+                group.add(element);
+            }
+        }
+        
+        return group;
+    }
+
     public void build(){
         cont.clear();
 
@@ -49,7 +76,15 @@ public class UIExplorerDialog extends BaseDialog{
             buildPath();
             cont.add(pathTable).growX().left().row();
             cont.image().color(Pal.accent).height(3f).padTop(6f).padBottom(20).fillX().row();
-            cont.pane(p -> p.add(currentElement.explorerSettings(this))).grow();
+            if(!selectedCells.isEmpty() && groupClass != null){
+                if(groupClass == CellData.class){
+                    cont.pane(p -> p.add(CellData.explorerSettings(this))).grow();
+                }else{
+                    cont.pane(p -> p.add(((ElementData) getCurrentGroup().get(0)).explorerSettings(this))).grow();
+                }
+            }else{
+                cont.pane(p -> p.add(currentElement.explorerSettings(this))).grow();
+            }
         }
     }
 
@@ -80,31 +115,37 @@ public class UIExplorerDialog extends BaseDialog{
         pathTable.clear();
         pathTable.button(Icon.left, () -> {
             currentElement = null;
+            groupClass = null;
+            selectedCells.clear();
             pathStack.clear();
-            build();
+            build();  // TODO: try using cutPathTo(null)
         }).size(40f).padRight(8f);
 
         pathTable.pane(p -> {
             for(ElementData data : pathStack){
                 if(data instanceof WindowData w){
                     p.button(w.name, () -> {
-                        currentElement = data;
                         cutPathTo(data);
                         build();
                     }).left().height(40f).get().getLabel().setWrap(false);
                 }else{
                     p.button(data.getClass().getSimpleName().replace("Data", ""), () -> {
-                        currentElement = data;
                         cutPathTo(data);
                         build();
                     }).left().height(40f).get().getLabel().setWrap(false);
                 }
+            }
+            if(!selectedCells.isEmpty() && groupClass != null){
+                p.button(groupClass.getSimpleName().replace("Data", "") + " x" + getCurrentGroup().size, () -> {});
             }
             p.add("").growX().left();
         }).scrollX(true).growX().left();
     }
 
     public void cutPathTo(ElementData element){
+        currentElement = element;
+        groupClass = null;
+        selectedCells.clear();
         Seq<ElementData> newStack = new Seq<>();
 
         for(ElementData data : pathStack){
@@ -114,7 +155,11 @@ public class UIExplorerDialog extends BaseDialog{
         pathStack = newStack;
     }
 
-    public static void numberi(Table table, String text, Intc cons, Intp prov, int min, int max, int step){
+    public void numberi(Table table, String text, String property, int min, int max, int step){
+        Seq<Object> group = getCurrentGroup();
+        Intp prov = () -> Reflect.get(group.get(0), property);
+        Intc cons = f -> group.each(e -> Reflect.set(e, property, f));
+
         table.table(t -> {
             t.left();
             t.add(text).left().padRight(5f)
@@ -124,13 +169,17 @@ public class UIExplorerDialog extends BaseDialog{
                 .valid(f -> Strings.parseInt(f) >= min && Strings.parseInt(f) <= max)
                 .update(c -> {c.setText(prov.get() + "");})
                 .width(120f).left().padRight(20f);
-            t.button("+", () -> cons.get(Mathf.clamp(prov.get() + step, min, max))).size(40f).padRight(5f);
-            t.button("-", () -> cons.get(Mathf.clamp(prov.get() - step, min, max))).size(40f);
+            t.button("-", () -> cons.get(Mathf.clamp(prov.get() - step, min, max))).size(40f).padRight(5f);
+            t.button("+", () -> cons.get(Mathf.clamp(prov.get() + step, min, max))).size(40f);
         }).padTop(0f);
         table.row();
     }
 
-    public static void number(Table table, String text, Floatc cons, Floatp prov, float min, float max, float step){
+    public void number(Table table, String text, String property, float min, float max, float step){
+        Seq<Object> group = getCurrentGroup();
+        Floatp prov = () -> Reflect.get(group.get(0), property);
+        Floatc cons = f -> group.each(e -> Reflect.set(e, property, f));
+
         table.table(t -> {
             t.left();
             t.add(text).left().padRight(5f)
@@ -140,18 +189,26 @@ public class UIExplorerDialog extends BaseDialog{
                 .valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max)
                 .update(c -> {c.setText(prov.get() + "");})
                 .width(120f).left().padRight(20f);
-            t.button("+", () -> cons.get(Mathf.clamp(prov.get() + step, min, max))).size(40f).padRight(5f);
-            t.button("-", () -> cons.get(Mathf.clamp(prov.get() - step, min, max))).size(40f);
+            t.button("-", () -> cons.get(Mathf.clamp(prov.get() - step, min, max))).size(40f).padRight(5f);
+            t.button("+", () -> cons.get(Mathf.clamp(prov.get() + step, min, max))).size(40f);
         }).padTop(0f);
         table.row();
     }
 
-    public static void check(Table table, String text, Boolc cons, Boolp prov){
-        table.check(text, cons).checked(prov.get()).get().left().marginTop(8f);
+    public void check(Table table, String text, String property){
+        Seq<Object> group = getCurrentGroup();
+        Boolp prov = () -> Reflect.get(group.get(0), property);
+        Boolc cons = f -> group.each(e -> Reflect.set(e, property, f));
+
+
+        table.check(text, b -> cons.get(b)).checked(prov.get()).get().left().marginTop(8f);
         table.row();
     }
     
-    public static void alignment(Table table, Intc cons){
+    public void alignment(Table table, String property){
+        Seq<Object> group = getCurrentGroup();
+        Intc cons = f -> group.each(e -> Reflect.set(e, property, f));
+
         table.button("", () -> cons.get(Align.left & Align.top)).size(50f);
         table.button(Icon.up, () -> cons.get(Align.top)).size(50f);
         table.button("", () -> cons.get(Align.right & Align.top)).size(50f);
@@ -166,53 +223,77 @@ public class UIExplorerDialog extends BaseDialog{
         table.button("", () -> cons.get(Align.right & Align.bottom)).size(50f);
     }
 
-    public void elementSelectionDialog(){
+    public void addElementDialog(BaseDialog prev){
         BaseDialog dialog = new BaseDialog("temp");
 
-        dialog.cont.pane(p -> {
-            int i = 0;
-
-            p.add("Row " + (++i)).row();
-            p.image().color(Color.white).height(3f).padTop(6f).padBottom(8f).left().fillX().row();
-            // TODO: add <empty>
-
-            for(CellData cell : ((TableData) currentElement).cells){
-                ElementData elem = cell.element;
-
-                // TODO: define style in elements themselves
-                p.button(elem.getClass().getSimpleName().replace("Data", ""), () -> {
-                    currentElement = elem;
-                    pathStack.add(elem);
-                    build();
-                    dialog.hide();
-                }).padTop(10f).width(300f).minHeight(50f).row();
-
-                if(cell.endRow){
-                    p.add("Row " + (++i)).padTop(10f).row();
-                    p.image().color(Color.white).height(3f).padTop(6f).padBottom(8f).left().fillX().row();
-                }
-            }
-        });
-        dialog.cont.row();
-        dialog.cont.button("@add", Icon.add, () -> elementAdditionDialog(dialog)).width(320f).minHeight(50f).padTop(40f);
-        
         dialog.addCloseButton();
-        dialog.show();
-    }
-
-    public void elementAdditionDialog(BaseDialog selectionDialog){
-        BaseDialog dialog = new BaseDialog("temp");
-
+        
         dialog.cont.button("Button", () -> {
             CellData cell = new CellData(new ButtonData());
             cell.minWidth = cell.maxWidth = cell.minHeight = cell.maxHeight = 50f;
             ((TableData) currentElement).cells.add(cell);
             dialog.hide();
-            selectionDialog.hide();
-            elementSelectionDialog();
+            prev.hide();
+            previewDialog();
         }).padTop(10f).width(300f).minHeight(50f).row();
 
-        dialog.addCloseButton();
         dialog.show();
+    }
+
+    public void previewDialog(){
+        BaseDialog dialog = new BaseDialog("temp");
+
+        dialog.cont.pane(p -> {
+            p.add(currentElement.buildPreview(this));
+        });
+
+        dialog.addCloseButton();
+        
+        dialog.buttons.button("Edit", Icon.edit, () -> {
+            selectGroupClass(dialog);
+        }).disabled(b -> selectedCells.isEmpty());
+        dialog.buttons.button("Add", Icon.add, () -> {
+            addElementDialog(dialog);
+        });
+
+
+        dialog.hidden(() -> {
+            if(groupClass == null) selectedCells.clear();
+        });
+
+        dialog.show();
+    }
+
+    public void selectGroupClass(BaseDialog prev){
+        BaseDialog dialog = new BaseDialog("temp");
+
+        dialog.cont.pane(p -> {
+            classButton(p, CellData.class, dialog);
+            classButton(p, TableData.class, dialog);
+            classButton(p, ButtonData.class, dialog);
+        });
+
+        dialog.addCloseButton();
+
+        dialog.hidden(() -> {
+            if(groupClass != null) prev.hide();
+        });
+
+        dialog.show();
+    }
+
+    public void classButton(Table table, Class cls, BaseDialog dialog){
+        table.button(cls.getSimpleName().replace("Data", ""), () -> {
+            groupClass = cls;
+            build();
+            dialog.hide();
+        }).padBottom(10f).width(300f).minHeight(50f).disabled(b -> {
+            if(cls == CellData.class) return false;
+            
+            for(CellData cell : selectedCells){
+                if(cls.isInstance(cell.element)) return false;
+            }
+            return true;
+        }).row();
     }
 }

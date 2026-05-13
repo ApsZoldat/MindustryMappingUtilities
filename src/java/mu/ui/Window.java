@@ -21,11 +21,14 @@ public class Window extends Table{
     public Table dragger;
     public Table cont;
 
+    public boolean isDraggable;
     public boolean isDragging = false;
-    public float dragOffsetX, dragOffsetY;
+    public float dragOffsetX = 0f, dragOffsetY = 0f;
 
     public Window(WindowData data){
         this.data = data;
+        this.isDraggable = data.isDraggable;
+        
         dragger = new Table();
         cont = data.cont.build();
 
@@ -37,13 +40,10 @@ public class Window extends Table{
         dragger.add(cont);
         add(dragger);
 
-        dragOffsetX = 0;
-        dragOffsetY = 0;
-
         dragger.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
-                if(event.targetActor != dragger || !data.isDraggable) return false;
+                if(event.targetActor != dragger || !isDraggable) return false;
                 dragOffsetX = x;
                 dragOffsetY = y;
                 isDragging = true;

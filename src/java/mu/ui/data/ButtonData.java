@@ -10,6 +10,10 @@ public class ButtonData extends ElementData{
     public Button build(){
         return new Button(Styles.defaultb);
     }
+    
+    public Button buildPreview(UIExplorerDialog dialog){
+        return build();
+    }
 
     public Table explorerSettings(UIExplorerDialog dialog){
         return new Table();

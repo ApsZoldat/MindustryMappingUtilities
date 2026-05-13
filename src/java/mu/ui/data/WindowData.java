@@ -4,6 +4,7 @@ import arc.struct.*;
 import arc.scene.ui.layout.*;
 import mindustry.gen.*;
 import mu.ui.*;
+import mu.ui.data.annotations.*;
 import mu.ui.dialogs.*;
 
 import static mu.MUVars.*;
@@ -44,6 +45,13 @@ public class WindowData extends ElementData{
         // Yep it's that easy but only for WindowData
     }
 
+    // This method shouldn't be called anywhere but just in case
+    public Window buildPreview(UIExplorerDialog dialog){
+        Window window = new Window(this);
+        window.isDraggable = false;
+        return window;
+    }
+
     public Table explorerSettings(UIExplorerDialog dialog){
         Table table = new Table();
         table.defaults().fillX().left();
@@ -56,12 +64,12 @@ public class WindowData extends ElementData{
                 dialog.buildPath();
             }).width(300f);
         }).padBottom(10f);
-        table.row();
+        table.row();  // TODO: check name uniqueness
 
-        UIExplorerDialog.number(table, "X", f -> x = f, () -> x, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 10f);
-        UIExplorerDialog.number(table, "Y", f -> y = f, () -> y, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 10f);
-        UIExplorerDialog.check(table, "IsDraggable", b -> isDraggable = b, () -> isDraggable);
-        UIExplorerDialog.number(table, "DraggedOpacity", f -> draggedAlpha = f, () -> draggedAlpha, 0f, 1f, 0.05f);
+        dialog.number(table, "X", "x", Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 10f);
+        dialog.number(table, "Y", "y", Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, 10f);
+        dialog.check(table, "IsDraggable", "isDraggable");
+        dialog.number(table, "DraggedOpacity", "draggedAlpha", 0f, 1f, 0.05f);
         
         table.button("Table", Icon.menu, () -> {
             dialog.currentElement = cont;

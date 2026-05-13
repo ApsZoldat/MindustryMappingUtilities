@@ -1,5 +1,6 @@
 package mu.ui.data;
 
+import arc.scene.event.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import mindustry.gen.*;
@@ -12,7 +13,9 @@ public class ButtonData extends ElementData{
     }
     
     public Button buildPreview(UIExplorerDialog dialog){
-        return build();
+        Button button = build();
+        button.touchable = Touchable.disabled;
+        return button;
     }
 
     public Table explorerSettings(UIExplorerDialog dialog){

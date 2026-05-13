@@ -32,7 +32,7 @@ public class UIExplorerDialog extends BaseDialog{
 
         addCloseButton();
         
-        buttons.button("Preview", Icon.eye, () -> previewDialog()).disabled(b -> currentElement == null);
+        buttons.button("Preview", Icon.eye, () -> previewDialog()).disabled(b -> currentElement == null || currentElement instanceof WindowData);  // TODO: Windows are broken
 
         shown(this::build);
 
@@ -136,7 +136,7 @@ public class UIExplorerDialog extends BaseDialog{
                 }
             }
             if(!selectedCells.isEmpty() && groupClass != null){
-                p.button(groupClass.getSimpleName().replace("Data", "") + " x" + getCurrentGroup().size, () -> {});
+                p.button(groupClass.getSimpleName().replace("Data", "") + " x" + getCurrentGroup().size, () -> {}).left().height(40f).get().getLabel().setWrap(false);
             }
             p.add("").growX().left();
         }).scrollX(true).growX().left();
@@ -223,23 +223,6 @@ public class UIExplorerDialog extends BaseDialog{
         table.button("", () -> cons.get(Align.right & Align.bottom)).size(50f);
     }
 
-    public void addElementDialog(BaseDialog prev){
-        BaseDialog dialog = new BaseDialog("temp");
-
-        dialog.addCloseButton();
-        
-        dialog.cont.button("Button", () -> {
-            CellData cell = new CellData(new ButtonData());
-            cell.minWidth = cell.maxWidth = cell.minHeight = cell.maxHeight = 50f;
-            ((TableData) currentElement).cells.add(cell);
-            dialog.hide();
-            prev.hide();
-            previewDialog();
-        }).padTop(10f).width(300f).minHeight(50f).row();
-
-        dialog.show();
-    }
-
     public void previewDialog(){
         BaseDialog dialog = new BaseDialog("temp");
 
@@ -254,12 +237,45 @@ public class UIExplorerDialog extends BaseDialog{
         }).disabled(b -> selectedCells.isEmpty());
         dialog.buttons.button("Add", Icon.add, () -> {
             addElementDialog(dialog);
-        });
+        }).disabled(b -> !(currentElement instanceof TableData));
 
 
         dialog.hidden(() -> {
             if(groupClass == null) selectedCells.clear();
         });
+
+        dialog.show();
+    }
+
+    public void addElementDialog(BaseDialog prev){
+        BaseDialog dialog = new BaseDialog("temp");
+
+        dialog.addCloseButton();
+        
+        dialog.cont.button("Button", () -> {
+            CellData cell = new CellData(new ButtonData());
+            cell.minWidth = cell.maxWidth = cell.minHeight = cell.maxHeight = 50f;
+            ((TableData) currentElement).cells.add(cell);
+            dialog.hide();
+            prev.hide();
+            previewDialog();
+        }).padBottom(5f).width(300f).minHeight(50f).row();
+        dialog.cont.button("Table", () -> {
+            CellData cell = new CellData(new TableData());
+            cell.minWidth = cell.minHeight = 50f;
+            ((TableData) currentElement).cells.add(cell);
+            dialog.hide();
+            prev.hide();
+            previewDialog();
+        }).padBottom(5f).width(300f).minHeight(50f).row();
+        dialog.cont.button("Row", () -> {
+            Seq<CellData> cells = ((TableData) currentElement).cells;
+            if(cells.isEmpty()) return;
+            cells.get(cells.size - 1).endRow = true;
+            dialog.hide();
+            prev.hide();
+            previewDialog();
+        }).padBottom(5f).width(300f).minHeight(50f).row();
 
         dialog.show();
     }
@@ -284,6 +300,12 @@ public class UIExplorerDialog extends BaseDialog{
 
     public void classButton(Table table, Class cls, BaseDialog dialog){
         table.button(cls.getSimpleName().replace("Data", ""), () -> {
+            
+            if(selectedCells.size == 1 && cls != CellData.class){
+                currentElement = selectedCells.get(0).element;
+                pathStack.add(currentElement);
+                selectedCells.clear();
+            }
             groupClass = cls;
             build();
             dialog.hide();

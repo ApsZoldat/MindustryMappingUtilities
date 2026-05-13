@@ -28,7 +28,8 @@ public class CellData{
     public int align = Align.center;
     
     // Layout
-    public boolean uniformX = false, uniformY = false, endRow = false;
+    public boolean uniformX = false, uniformY = false;
+    public @NoCopy boolean endRow = false;  // it is handled by table.row()
     public int colspan = 1;
 
     public CellData(ElementData element){
@@ -53,11 +54,12 @@ public class CellData{
         Button button = new Button(Styles.underlineb);
         button.update(() -> {
             if(dialog.selectedCells.contains(this)){
-                button.setColor(0.3f, 0.7f, 0.3f, 0.6f);
+                button.setColor(0.4f, 0.8f, 0.4f, 0.6f);
             }else{
                 button.setColor(0.6f, 0.3f, 0.3f, 0.6f);
             }
-        });
+            button.setChecked(true);
+        });  // TODO: proper style
         button.clicked(() -> {
             if(dialog.selectedCells.contains(this)){
                 dialog.selectedCells.remove(this);
@@ -74,23 +76,25 @@ public class CellData{
         }else{
             cell = elemTable.add(element.buildPreview(dialog));
         }
+        copyFields(cell);
         Stack stack = new Stack(elemTable, button);
         table.add(stack);
         if(endRow) table.row();
-
-        copyFields(cell);
-        elemTable.invalidate();
 
         return cell;
     }
 
     public static Table explorerSettings(UIExplorerDialog dialog){
         Table table = new Table();
+        table.defaults().fillX().left();
 
         dialog.number(table, "PadTop", "padTop", 0f, Float.POSITIVE_INFINITY, 5f);
         dialog.number(table, "PadLeft", "padLeft", 0f, Float.POSITIVE_INFINITY, 5f);
         dialog.number(table, "PadBottom", "padBottom", 0f, Float.POSITIVE_INFINITY, 5f);
         dialog.number(table, "PadRight", "padRight", 0f, Float.POSITIVE_INFINITY, 5f);
+        dialog.check(table, "EndRow", "endRow");
+
+        // TODO: add other settings
 
         return table;
     }

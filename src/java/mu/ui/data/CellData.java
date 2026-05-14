@@ -69,32 +69,76 @@ public class CellData{
         });
 
         Table elemTable = new Table();
-        Cell cell;
+        Cell innerCell;
 
         if(element == null){
-            cell = elemTable.add("");
+            innerCell = elemTable.add("");
         }else{
-            cell = elemTable.add(element.buildPreview(dialog));
+            innerCell = elemTable.add(element.buildPreview(dialog));
         }
-        copyFields(cell);
+        
+        innerCell.pad(padTop, padLeft, padBottom, padRight);
+        innerCell.align(align);
+        innerCell.grow();
+        
         Stack stack = new Stack(elemTable, button);
-        table.add(stack);
+        Cell outerCell = table.add(stack);
+        copyFields(outerCell);
+        /*if(maxWidth != Float.POSITIVE_INFINITY) outerCell.maxWidth(maxWidth + padLeft + padRight);
+        if(maxHeight != Float.POSITIVE_INFINITY) outerCell.maxHeight(maxHeight + padTop + padBottom);*/
+        // TODO: fix ts
+        
+        outerCell.pad(0f);
         if(endRow) table.row();
 
-        return cell;
+        return outerCell;
     }
 
     public static Table explorerSettings(UIExplorerDialog dialog){
         Table table = new Table();
         table.defaults().fillX().left();
 
+        dialog.number(table, "MinWidth", "minWidth", 0f, Float.POSITIVE_INFINITY, 5f);
+        dialog.number(table, "MaxWidth", "maxWidth", 0f, Float.POSITIVE_INFINITY, 5f);
+        dialog.number(table, "MinHeight", "minHeight", 0f, Float.POSITIVE_INFINITY, 5f);
+        dialog.number(table, "MaxHeight", "maxHeight", 0f, Float.POSITIVE_INFINITY, 5f);
+        table.table(t -> {
+            t.button("No Max Width", () -> {
+                dialog.getCurrentGroup().each(c -> Reflect.set(c, "maxWidth", Float.POSITIVE_INFINITY));
+            }).growX().uniformX();
+            t.button("No Max Height", () -> {
+                dialog.getCurrentGroup().each(c -> Reflect.set(c, "maxHeight", Float.POSITIVE_INFINITY));
+            }).growX().uniformX();
+        }).padBottom(5f).padTop(3f).fillX().row();
+        // TODO: move pads and other stuff from explorer methods here
+
         dialog.number(table, "PadTop", "padTop", 0f, Float.POSITIVE_INFINITY, 5f);
         dialog.number(table, "PadLeft", "padLeft", 0f, Float.POSITIVE_INFINITY, 5f);
         dialog.number(table, "PadBottom", "padBottom", 0f, Float.POSITIVE_INFINITY, 5f);
         dialog.number(table, "PadRight", "padRight", 0f, Float.POSITIVE_INFINITY, 5f);
+        dialog.numberi(table, "Colspan", "colspan", 1, Integer.MAX_VALUE, 1);
         dialog.check(table, "EndRow", "endRow");
 
-        // TODO: add other settings
+        dialog.number(table, "FillX", "fillX", 0f, Float.POSITIVE_INFINITY, 1f);
+        dialog.number(table, "FillY", "fillY", 0f, Float.POSITIVE_INFINITY, 1f);
+        dialog.numberi(table, "ExpandX", "expandX", 0, Integer.MAX_VALUE, 1);
+        dialog.numberi(table, "ExpandY", "expandY", 0, Integer.MAX_VALUE, 1);
+
+        table.table(c -> {
+            c.table(t -> {
+                t.defaults().fillX().left();
+                dialog.check(t, "UniformX", "uniformX");
+                dialog.check(t, "UniformY", "uniformY");
+            }).growX().left();
+            c.table(t -> {
+                t.defaults().fillX().right();
+                t.add("Alignment").padBottom(5f).row();
+                t.table(a -> {
+                    a.right();
+                    dialog.alignment(a, "align");
+                });  // TODO: this layout sucks
+            }).growX().right();
+        }).left().padTop(10f).fillX().row();
 
         return table;
     }

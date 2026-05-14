@@ -31,8 +31,9 @@ public class UIExplorerDialog extends BaseDialog{
         super("temp");
 
         addCloseButton();
-        
-        buttons.button("Preview", Icon.eye, () -> previewDialog()).disabled(b -> currentElement == null || currentElement instanceof WindowData);  // TODO: Windows are broken
+
+        // This is so broken rn
+        /*buttons.button("Preview", Icon.eye, () -> previewDialog()).disabled(b -> currentElement == null || currentElement instanceof WindowData);*/
 
         shown(this::build);
 
@@ -213,7 +214,7 @@ public class UIExplorerDialog extends BaseDialog{
         table.button(Icon.up, () -> cons.get(Align.top)).size(50f);
         table.button("", () -> cons.get(Align.right & Align.top)).size(50f);
         table.row();
-        table.button(Icon.left, () -> cons.get(Align.top)).size(50f);
+        table.button(Icon.left, () -> cons.get(Align.left)).size(50f);
             
         table.button("", () -> cons.get(Align.center)).size(50f);  // TODO: find icon for ts
         table.button(Icon.right, () -> cons.get(Align.right)).size(50f);

@@ -6,19 +6,33 @@ import arc.scene.ui.layout.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mu.ui.dialogs.*;
+import mu.ui.data.annotations.*;
 
-public class ButtonData extends ElementData{
+public class ButtonData extends TableData{
+    public boolean isChecked = false;
+    public boolean isDisabled = false;
+
+    public @NoCopy String styleName = "";
+
     public Button build(){
-        return new Button(Styles.defaultb);
+        Button button = new Button(Styles.defaultb);
+        copyFields(button);
+        return button;
     }
     
     public Button buildPreview(UIExplorerDialog dialog){
         Button button = build();
+        copyFields(button);
         button.touchable = Touchable.disabled;
         return button;
     }
 
     public Table explorerSettings(UIExplorerDialog dialog){
-        return new Table();
+        Table table = new Table();
+
+        dialog.check(table, "IsChecked", "isChecked");
+        dialog.check(table, "IsDisabled", "isDisabled");
+
+        return table;
     }
 }

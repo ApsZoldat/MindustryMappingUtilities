@@ -6,7 +6,7 @@ import mindustry.ui.dialogs.SettingsMenuDialog;
 
 import static mindustry.Vars.ui;
 import static mindustry.ui.dialogs.SettingsMenuDialog.SettingsTable.Setting;
-import static mu.MUVars.*;
+import static mu.EditorVars.*;
 
 public class SettingsDialogMod{
     public static void enable(){

@@ -18,7 +18,7 @@ import mu.ui.data.*;
 
 import static arc.Core.settings;
 import static mindustry.Vars.mods;
-import static mu.MUVars.*;
+import static mu.EditorVars.*;
 
 public class MapUtilitiesMod extends Mod{
     public MapUtilitiesMod(){

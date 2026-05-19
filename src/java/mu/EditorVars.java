@@ -9,7 +9,7 @@ import mu.mods.*;
 import mu.editor.*;
 import mu.ui.data.*;
 
-public class MUVars{
+public class EditorVars{
     // New editor
     public static MUMapEditor editor;
     public static MUMapView editorView;

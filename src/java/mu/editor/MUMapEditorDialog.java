@@ -38,9 +38,9 @@ import mu.ui.*;
 import mu.ui.dialogs.*;
 
 import static mindustry.Vars.*;
-import static mu.MUVars.editor;
-import static mu.MUVars.editorView;
-import static mu.MUVars.windows;
+import static mu.EditorVars.editor;
+import static mu.EditorVars.editorView;
+import static mu.EditorVars.windows;
 
 public class MUMapEditorDialog extends MapEditorDialog{
     public MUMapView view;  // shadows private view

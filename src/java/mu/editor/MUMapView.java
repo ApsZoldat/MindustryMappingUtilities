@@ -22,7 +22,7 @@ import mu.editor.modes.*;
 import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;
-import static mu.MUVars.editor;
+import static mu.EditorVars.editor;
 
 public class MUMapView extends MapView{
     // Shadow fields - set only through setField()

@@ -15,7 +15,7 @@ import mindustry.ui.dialogs.*;
 import mu.ui.*;
 import mu.ui.data.*;
 
-import static mu.MUVars.*;
+import static mu.EditorVars.*;
 
 public class UIExplorerDialog extends BaseDialog{
     public ElementData currentElement = null;

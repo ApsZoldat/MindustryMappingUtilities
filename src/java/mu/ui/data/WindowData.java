@@ -7,7 +7,7 @@ import mu.ui.*;
 import mu.ui.dialogs.*;
 import mu.utils.MUAnnotations.*;
 
-import static mu.MUVars.*;
+import static mu.EditorVars.*;
 
 public class WindowData extends ElementData{
     public String name;

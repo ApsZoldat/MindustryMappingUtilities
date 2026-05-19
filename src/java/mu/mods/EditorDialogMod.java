@@ -6,7 +6,7 @@ import mindustry.editor.*;
 import mindustry.ui.dialogs.*;
 import mindustry.Vars;
 import mu.editor.*;
-import mu.MUVars;
+import mu.EditorVars;
 
 import static arc.Core.settings;
 
@@ -22,8 +22,8 @@ public class EditorDialogMod extends MUMod{
 
     @Override
     public void enable(){
-        Vars.ui.editor = MUVars.editorDialog;
-        Vars.editor = MUVars.editor;
+        Vars.ui.editor = EditorVars.editorDialog;
+        Vars.editor = EditorVars.editor;
     }
 
     @Override

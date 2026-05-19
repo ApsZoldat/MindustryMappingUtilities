@@ -26,6 +26,7 @@ public class MapUtilitiesMod extends Mod{
             SettingsDialogMod.enable();
 
             editor = new MUMapEditor();
+            editorView = new MUMapView();
             editorDialog = new MUMapEditorDialog();
             windowsData = new Seq<>();
             windowsData.add(new WindowData());

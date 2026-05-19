@@ -8,7 +8,7 @@ import arc.util.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mu.ui.dialogs.*;
-import mu.ui.data.annotations.*;
+import mu.utils.MUAnnotations.*;
 
 public class CellData{
     // Element

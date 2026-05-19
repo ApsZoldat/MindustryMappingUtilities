@@ -39,6 +39,7 @@ import mu.ui.dialogs.*;
 
 import static mindustry.Vars.*;
 import static mu.MUVars.editor;
+import static mu.MUVars.editorView;
 import static mu.MUVars.windows;
 
 public class MUMapEditorDialog extends MapEditorDialog{
@@ -49,11 +50,11 @@ public class MUMapEditorDialog extends MapEditorDialog{
     public MUMapEditorDialog(){
         super();
 
-        // remove all listeners that previous constructor made
+        // Remove all listeners that previous constructor made
         // ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, this, "listeners")).clear();
         // currently not used
 
-        view = new MUMapView();
+        view = editorView;
         Reflect.set(MapEditorDialog.class, this, "view", view);
         menu = Reflect.get(MapEditorDialog.class, this, "menu");
 

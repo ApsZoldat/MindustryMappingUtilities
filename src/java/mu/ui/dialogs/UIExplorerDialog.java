@@ -312,7 +312,7 @@ public class UIExplorerDialog extends BaseDialog{
             dialog.hide();
         }).padBottom(10f).width(300f).minHeight(50f).disabled(b -> {
             if(cls == CellData.class) return false;
-            
+
             for(CellData cell : selectedCells){
                 if(cls.isInstance(cell.element)) return false;
             }

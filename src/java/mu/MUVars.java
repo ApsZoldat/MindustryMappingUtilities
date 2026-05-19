@@ -12,7 +12,10 @@ import mu.ui.data.*;
 public class MUVars{
     // New editor
     public static MUMapEditor editor;
+    public static MUMapView editorView;
     public static MUMapEditorDialog editorDialog;
+
+    // Editor UI Data
     public static Seq<WindowData> windowsData;
     public static WidgetGroup windows;
 

@@ -6,7 +6,7 @@ import arc.scene.ui.layout.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mu.ui.dialogs.*;
-import mu.ui.data.annotations.*;
+import mu.utils.MUAnnotations.*;
 
 public class ButtonData extends TableData{
     public boolean isChecked = false;

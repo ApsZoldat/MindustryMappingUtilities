@@ -4,8 +4,8 @@ import arc.struct.*;
 import arc.scene.ui.layout.*;
 import mindustry.gen.*;
 import mu.ui.*;
-import mu.ui.data.annotations.*;
 import mu.ui.dialogs.*;
+import mu.utils.MUAnnotations.*;
 
 import static mu.MUVars.*;
 

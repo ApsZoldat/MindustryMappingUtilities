@@ -7,8 +7,8 @@ import arc.struct.*;
 import arc.util.*;
 import mindustry.gen.*;
 import mindustry.ui.dialogs.*;
-import mu.ui.data.annotations.*;
 import mu.ui.dialogs.*;
+import mu.utils.MUAnnotations.*;
 
 public class TableData extends ElementData{
     // All cells

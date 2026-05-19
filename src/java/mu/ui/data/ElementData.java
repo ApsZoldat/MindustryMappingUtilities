@@ -4,8 +4,8 @@ import arc.scene.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
-import mu.ui.data.annotations.*;
 import mu.ui.dialogs.*;
+import mu.utils.MUAnnotations.*;
 
 public abstract class ElementData<T extends Element>{;
     public abstract T build();

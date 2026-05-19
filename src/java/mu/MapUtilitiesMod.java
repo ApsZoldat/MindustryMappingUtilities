@@ -15,6 +15,7 @@ import mu.mods.*;
 import mu.utils.*;
 import mu.ui.*;
 import mu.ui.data.*;
+import rhino.*;
 
 import static arc.Core.settings;
 import static mindustry.Vars.mods;
@@ -25,6 +26,7 @@ public class MapUtilitiesMod extends Mod{
         Events.on(EventType.ClientLoadEvent.class, e -> {
             SettingsDialogMod.enable();
 
+            // Initialization
             editor = new MUMapEditor();
             editorView = new MUMapView();
             editorDialog = new MUMapEditorDialog();
@@ -36,12 +38,13 @@ public class MapUtilitiesMod extends Mod{
                 windows.addChild(new Window(data));
             }
 
+            // Mods
+            allMods = new Seq<MUMod>();
+
             CustomRulesDialog infoRules = Reflect.get(MapInfoDialog.class, Reflect.get(Vars.ui.editor, "infoDialog"), "ruleInfo");
             CustomRulesDialog playRules = Reflect.get(MapPlayDialog.class, Reflect.get(Vars.ui.custom, "dialog"), "dialog");
             CustomRulesDialog playtestRules = Reflect.get(MapPlayDialog.class, Reflect.get(Vars.ui.editor, "playtestDialog"), "dialog");
             CustomRulesDialog newRules = Reflect.get(MapInfoDialog.class, Reflect.get(MapEditorDialog.class, editorDialog, "infoDialog"), "ruleInfo");
-
-            allMods = new Seq<MUMod>();
 
             // Rules mods
             allMods.add(new RulesDialogMod(infoRules));
@@ -60,6 +63,7 @@ public class MapUtilitiesMod extends Mod{
 
             if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
 
+            // Subtitle randomizing
             try{
                 LoadedMod mod = mods.getMod("mapping-utilities");
                 SubtitleRandomizer randomizer = new SubtitleRandomizer(mod);
@@ -69,6 +73,15 @@ public class MapUtilitiesMod extends Mod{
             }catch (Exception err){
                 Log.err("Oops, failed to randomize Mapping Utilities subtitle, how unfortunate!", err);
             }
+
+            // Importing all packages to Rhino JS
+            // Original source: https://github.com/SMOLKEYS/new-console-hardline/blob/master/src/newconsole/js/NCJSLink.java
+            ImporterTopLevel scope = (ImporterTopLevel) Vars.mods.getScripts().scope;
+            packageNames.each(name -> {
+                NativeJavaPackage pkg = new NativeJavaPackage(name, Vars.mods.mainLoader());
+                pkg.setParentScope(scope);
+                scope.importPackage(pkg);
+            });
         });
     }
 }

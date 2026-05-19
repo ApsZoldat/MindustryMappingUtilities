@@ -10,6 +10,9 @@ import mu.editor.*;
 import mu.ui.data.*;
 
 public class EditorVars{
+    // All package names
+    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.modes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
+
     // New editor
     public static MUMapEditor editor;
     public static MUMapView editorView;

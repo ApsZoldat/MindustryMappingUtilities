@@ -8,15 +8,20 @@ import mindustry.ui.*;
 import mu.ui.dialogs.*;
 import mu.utils.MUAnnotations.*;
 
+import static mindustry.Vars.*;
+
 public class ButtonData extends TableData{
     public boolean isChecked = false;
     public boolean isDisabled = false;
 
     public @NoCopy String styleName = "";
 
+    public @NoCopy String script = "";
+
     public Button build(){
         Button button = new Button(Styles.defaultb);
         copyFields(button);
+        button.clicked(() -> mods.getScripts().runConsole(script));
         return button;
     }
     
@@ -29,9 +34,15 @@ public class ButtonData extends TableData{
 
     public Table explorerSettings(UIExplorerDialog dialog){
         Table table = new Table();
+        table.defaults().fillX().left();
 
         dialog.check(table, "IsChecked", "isChecked");
         dialog.check(table, "IsDisabled", "isDisabled");
+
+        table.add("JS Script").padTop(10f).padBottom(2f).center().row();
+        table.field(script, v -> {
+                script = v;
+            }).size(400f, 300f).padBottom(10f).row();
 
         return table;
     }

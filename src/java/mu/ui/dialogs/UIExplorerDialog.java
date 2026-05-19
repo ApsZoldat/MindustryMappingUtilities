@@ -12,6 +12,8 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustry.io.*;
+import mindustry.Vars;
 import mu.ui.*;
 import mu.ui.data.*;
 
@@ -32,8 +34,7 @@ public class UIExplorerDialog extends BaseDialog{
 
         addCloseButton();
 
-        // This is so broken rn
-        /*buttons.button("Preview", Icon.eye, () -> previewDialog()).disabled(b -> currentElement == null || currentElement instanceof WindowData);*/
+        buttons.button("@edit", Icon.edit, this::editDialog);
 
         shown(this::build);
 
@@ -224,7 +225,32 @@ public class UIExplorerDialog extends BaseDialog{
         table.button("", () -> cons.get(Align.right & Align.bottom)).size(50f);
     }
 
-    public void previewDialog(){
+    public void editDialog(){
+        BaseDialog dialog = new BaseDialog("@edit");
+
+        dialog.cont.pane(p -> {
+            p.margin(10f);
+            p.table(Tex.button, t -> {
+                t.defaults().size(450f, 60f).left();
+
+                t.button("@waves.copy", Icon.copy, Styles.flatt, () -> {
+                    Core.app.setClipboardText(JsonIO.write(currentElement));
+                    Vars.ui.showInfoFade("@copied");
+                    dialog.hide();
+                }).marginLeft(12f).row();
+                t.button("@waves.load", Icon.download, Styles.flatt, () -> {
+                    /*locales = readBundles(Core.app.getClipboardText());
+                    build();*/
+                    dialog.hide();
+                }).disabled(Core.app.getClipboardText() == null).marginLeft(12f).row();
+            });
+        });
+
+        dialog.addCloseButton();
+        dialog.show();
+    }
+
+    public void layoutDialog(){
         BaseDialog dialog = new BaseDialog("temp");
 
         dialog.cont.pane(p -> {
@@ -259,7 +285,7 @@ public class UIExplorerDialog extends BaseDialog{
             ((TableData) currentElement).cells.add(cell);
             dialog.hide();
             prev.hide();
-            previewDialog();
+            layoutDialog();
         }).padBottom(5f).width(300f).minHeight(50f).row();
         dialog.cont.button("Table", () -> {
             CellData cell = new CellData(new TableData());
@@ -267,7 +293,7 @@ public class UIExplorerDialog extends BaseDialog{
             ((TableData) currentElement).cells.add(cell);
             dialog.hide();
             prev.hide();
-            previewDialog();
+            layoutDialog();
         }).padBottom(5f).width(300f).minHeight(50f).row();
         dialog.cont.button("Row", () -> {
             Seq<CellData> cells = ((TableData) currentElement).cells;
@@ -275,7 +301,7 @@ public class UIExplorerDialog extends BaseDialog{
             cells.get(cells.size - 1).endRow = true;
             dialog.hide();
             prev.hide();
-            previewDialog();
+            layoutDialog();
         }).padBottom(5f).width(300f).minHeight(50f).row();
 
         dialog.show();

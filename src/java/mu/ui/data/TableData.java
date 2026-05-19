@@ -80,7 +80,7 @@ public class TableData extends ElementData{
             }).growX().right();
         }).left().padTop(10f).fillX().row();
 
-        table.button("Layout", Icon.menu, () -> dialog.previewDialog()).padTop(10f).size(300f, 50f).center();
+        table.button("Layout", Icon.menu, () -> dialog.layoutDialog()).padTop(10f).size(300f, 50f).center();
 
         return table;
     }

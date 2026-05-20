@@ -6,11 +6,12 @@ import arc.scene.ui.layout.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mu.ui.dialogs.*;
+import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;
 
-public class ButtonData extends TableData{
+public class ButtonData implements UIObjectData, ElementData{
     public boolean isChecked = false;
     public boolean isDisabled = false;
 
@@ -20,14 +21,14 @@ public class ButtonData extends TableData{
 
     public Button build(){
         Button button = new Button(Styles.defaultb);
-        copyFields(button);
+        MUReflect.copyFields(this, button);
         button.clicked(() -> mods.getScripts().runConsole(script));
         return button;
     }
     
     public Button buildPreview(UIExplorerDialog dialog){
         Button button = build();
-        copyFields(button);
+        MUReflect.copyFields(this, button);
         button.touchable = Touchable.disabled;
         return button;
     }

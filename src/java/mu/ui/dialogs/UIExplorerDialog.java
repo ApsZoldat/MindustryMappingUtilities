@@ -20,14 +20,13 @@ import mu.ui.data.*;
 import static mu.EditorVars.*;
 
 public class UIExplorerDialog extends BaseDialog{
-    public ElementData currentElement = null;
+    public UIObjectData currentData = null;
+    public Seq<UIObjectData> currentGroup = new Seq<>();
 
-    // Multiple element/cell editing
     public Seq<CellData> selectedCells = new Seq<>();
-    public Class groupClass = null;
 
     public Table pathTable = new Table();
-    public Seq<ElementData> pathStack = new Seq<>();
+    public Seq<UIObjectData> pathStack = new Seq<>();
 
     public UIExplorerDialog(){
         super("temp");
@@ -46,47 +45,60 @@ public class UIExplorerDialog extends BaseDialog{
         });
     }
 
-    public Seq<Object> getCurrentGroup(){
-        Seq<Object> group = new Seq<>();
-        
-        if(selectedCells.isEmpty() || groupClass == null){
-            group.add(currentElement);
-            return group;
-        }
+    public void selectGroup(Class<?> cls){
+        currentGroup.clear();
 
-        if(groupClass == CellData.class){
-            group.addAll(selectedCells);
-            return group;
-        }
-
-        for(CellData cell : selectedCells){
-            ElementData element = cell.element;
-            if(groupClass.isInstance(element)){
-                group.add(element);
+        if(selectedCells.isEmpty() || cls == null){
+            currentGroup.add(currentData);
+        }else if(cls == CellData.class){
+            currentGroup.addAll(selectedCells);
+        }else{
+            for(CellData cell : selectedCells){
+                ElementData data = cell.element;
+                if(cls.isInstance(data)){
+                    currentGroup.add((UIObjectData) data);
+                }
             }
         }
-        
-        return group;
+    
+        currentData = currentGroup.get(0);
+        pathStack.add(currentData);
+    }
+
+    public void selectData(UIObjectData data){
+        currentData = data;
+        currentGroup.clear();
+        currentGroup.add(data);
+        cutPathTo(data);
+        if(data != null) pathStack.add(data);
+    }
+
+    public void cutPathTo(UIObjectData data){
+        if(data == null){
+            pathStack.clear();
+            return;
+        }
+
+        Seq<UIObjectData> newStack = new Seq<>();
+
+        for(UIObjectData d : pathStack){
+            if(d == data) break;
+            newStack.add(d);
+        }
+        pathStack = newStack;
     }
 
     public void build(){
         cont.clear();
 
-        if(currentElement == null){
+        if(currentData == null){
             buildWindowSelection();
         }else{
             buildPath();
             cont.add(pathTable).growX().left().row();
             cont.image().color(Pal.accent).height(3f).padTop(6f).padBottom(20).fillX().row();
-            if(!selectedCells.isEmpty() && groupClass != null){
-                if(groupClass == CellData.class){
-                    cont.pane(p -> p.add(CellData.explorerSettings(this))).grow();
-                }else{
-                    cont.pane(p -> p.add(((ElementData) getCurrentGroup().get(0)).explorerSettings(this))).grow();
-                }
-            }else{
-                cont.pane(p -> p.add(currentElement.explorerSettings(this))).grow();
-            }
+
+            cont.pane(p -> p.add(currentData.explorerSettings(this))).grow();
         }
     }
 
@@ -96,9 +108,7 @@ public class UIExplorerDialog extends BaseDialog{
                 String name = window.name;
 
                 p.button(name, Styles.flatTogglet, () -> {
-                    currentElement = window;
-                    pathStack.clear();
-                    pathStack.add(window);
+                    selectData(window);
                     build();
                 }).width(300f).minHeight(50f).row();
             }
@@ -106,8 +116,7 @@ public class UIExplorerDialog extends BaseDialog{
         cont.row();
         cont.button("@add", Icon.add, () -> {
             WindowData data = new WindowData();
-            currentElement = data;
-            pathStack.add(data);
+            selectData(data);
             windowsData.add(data);
             build();
         }).width(320f).minHeight(50f).padTop(40f);
@@ -116,51 +125,32 @@ public class UIExplorerDialog extends BaseDialog{
     public void buildPath(){
         pathTable.clear();
         pathTable.button(Icon.left, () -> {
-            currentElement = null;
-            groupClass = null;
-            selectedCells.clear();
-            pathStack.clear();
-            build();  // TODO: try using cutPathTo(null)
+            selectData(null);
+            build();
         }).size(40f).padRight(8f);
 
         pathTable.pane(p -> {
-            for(ElementData data : pathStack){
+            for(UIObjectData data : pathStack){
                 if(data instanceof WindowData w){
                     p.button(w.name, () -> {
-                        cutPathTo(data);
+                        selectData(data);
                         build();
                     }).left().height(40f).get().getLabel().setWrap(false);
-                }else{
-                    p.button(data.getClass().getSimpleName().replace("Data", ""), () -> {
-                        cutPathTo(data);
+                }else{  // TODO: remove this shit maybe
+                    String text = data.getClass().getSimpleName().replace("Data", "");
+                    if(data == pathStack.get(pathStack.size - 1) && currentGroup.size > 1) text += " x" + currentGroup.size;
+                    p.button(text, () -> {
+                        selectData(data);
                         build();
                     }).left().height(40f).get().getLabel().setWrap(false);
                 }
             }
-            if(!selectedCells.isEmpty() && groupClass != null){
-                p.button(groupClass.getSimpleName().replace("Data", "") + " x" + getCurrentGroup().size, () -> {}).left().height(40f).get().getLabel().setWrap(false);
-            }
-            p.add("").growX().left();
         }).scrollX(true).growX().left();
     }
 
-    public void cutPathTo(ElementData element){
-        currentElement = element;
-        groupClass = null;
-        selectedCells.clear();
-        Seq<ElementData> newStack = new Seq<>();
-
-        for(ElementData data : pathStack){
-            newStack.add(data);
-            if(data == element) break;
-        }
-        pathStack = newStack;
-    }
-
     public void numberi(Table table, String text, String property, int min, int max, int step){
-        Seq<Object> group = getCurrentGroup();
-        Intp prov = () -> Reflect.get(group.get(0), property);
-        Intc cons = f -> group.each(e -> Reflect.set(e, property, f));
+        Intp prov = () -> Reflect.get(currentData, property);
+        Intc cons = f -> currentGroup.each(d -> Reflect.set(d, property, f));
 
         table.table(t -> {
             t.left();
@@ -178,9 +168,8 @@ public class UIExplorerDialog extends BaseDialog{
     }
 
     public void number(Table table, String text, String property, float min, float max, float step){
-        Seq<Object> group = getCurrentGroup();
-        Floatp prov = () -> Reflect.get(group.get(0), property);
-        Floatc cons = f -> group.each(e -> Reflect.set(e, property, f));
+        Floatp prov = () -> Reflect.get(currentData, property);
+        Floatc cons = f -> currentGroup.each(d -> Reflect.set(d, property, f));
 
         table.table(t -> {
             t.left();
@@ -198,18 +187,16 @@ public class UIExplorerDialog extends BaseDialog{
     }
 
     public void check(Table table, String text, String property){
-        Seq<Object> group = getCurrentGroup();
-        Boolp prov = () -> Reflect.get(group.get(0), property);
-        Boolc cons = f -> group.each(e -> Reflect.set(e, property, f));
-
+        Boolp prov = () -> Reflect.get(currentData, property);
+        Boolc cons = f -> currentGroup.each(d -> Reflect.set(d, property, f));
 
         table.check(text, b -> cons.get(b)).checked(prov.get()).get().left().marginTop(8f);
         table.row();
     }
-    
+
     public void alignment(Table table, String property){
-        Seq<Object> group = getCurrentGroup();
-        Intc cons = f -> group.each(e -> Reflect.set(e, property, f));
+        Intp prov = () -> Reflect.get(currentData, property);
+        Intc cons = f -> currentGroup.each(d -> Reflect.set(d, property, f));
 
         table.button("", () -> cons.get(Align.left & Align.top)).size(50f);
         table.button(Icon.up, () -> cons.get(Align.top)).size(50f);
@@ -234,10 +221,10 @@ public class UIExplorerDialog extends BaseDialog{
                 t.defaults().size(450f, 60f).left();
 
                 t.button("@waves.copy", Icon.copy, Styles.flatt, () -> {
-                    Core.app.setClipboardText(JsonIO.write(currentElement));
+                    Core.app.setClipboardText(JsonIO.write(currentData));
                     Vars.ui.showInfoFade("@copied");
                     dialog.hide();
-                }).marginLeft(12f).row();
+                }).disabled(currentData == null).marginLeft(12f).row();
                 t.button("@waves.load", Icon.download, Styles.flatt, () -> {
                     /*locales = readBundles(Core.app.getClipboardText());
                     build();*/
@@ -253,23 +240,25 @@ public class UIExplorerDialog extends BaseDialog{
     public void layoutDialog(){
         BaseDialog dialog = new BaseDialog("temp");
 
-        dialog.cont.pane(p -> {
-            p.add(currentElement.buildPreview(this));
-        });
+        if(currentData instanceof ElementData elem){
+            dialog.cont.pane(p -> {
+                p.add(elem.buildPreview(this));
+            });
+        }else{
+            dialog.cont.add("Oops, perhaps this is not even an element!");
+        }
 
         dialog.addCloseButton();
         
         dialog.buttons.button("Edit", Icon.edit, () -> {
-            selectGroupClass(dialog);
+            selectGroupDialog(dialog);
         }).disabled(b -> selectedCells.isEmpty());
         dialog.buttons.button("Add", Icon.add, () -> {
             addElementDialog(dialog);
-        }).disabled(b -> !(currentElement instanceof TableData));
+        }).disabled(b -> !(currentData instanceof TableData));
 
 
-        dialog.hidden(() -> {
-            if(groupClass == null) selectedCells.clear();
-        });
+        dialog.hidden(() -> selectedCells.clear());
 
         dialog.show();
     }
@@ -278,11 +267,12 @@ public class UIExplorerDialog extends BaseDialog{
         BaseDialog dialog = new BaseDialog("temp");
 
         dialog.addCloseButton();
-        
+
+        // TODO: unholy fucking shit.
         dialog.cont.button("Button", () -> {
             CellData cell = new CellData(new ButtonData());
             cell.minWidth = cell.maxWidth = cell.minHeight = cell.maxHeight = 50f;
-            ((TableData) currentElement).cells.add(cell);
+            ((TableData) currentData).cells.add(cell);
             dialog.hide();
             prev.hide();
             layoutDialog();
@@ -290,13 +280,13 @@ public class UIExplorerDialog extends BaseDialog{
         dialog.cont.button("Table", () -> {
             CellData cell = new CellData(new TableData());
             cell.minWidth = cell.minHeight = 50f;
-            ((TableData) currentElement).cells.add(cell);
+            ((TableData) currentData).cells.add(cell);
             dialog.hide();
             prev.hide();
             layoutDialog();
         }).padBottom(5f).width(300f).minHeight(50f).row();
         dialog.cont.button("Row", () -> {
-            Seq<CellData> cells = ((TableData) currentElement).cells;
+            Seq<CellData> cells = ((TableData) currentData).cells;
             if(cells.isEmpty()) return;
             cells.get(cells.size - 1).endRow = true;
             dialog.hide();
@@ -307,7 +297,7 @@ public class UIExplorerDialog extends BaseDialog{
         dialog.show();
     }
 
-    public void selectGroupClass(BaseDialog prev){
+    public void selectGroupDialog(BaseDialog prev){
         BaseDialog dialog = new BaseDialog("temp");
 
         dialog.cont.pane(p -> {
@@ -318,22 +308,14 @@ public class UIExplorerDialog extends BaseDialog{
 
         dialog.addCloseButton();
 
-        dialog.hidden(() -> {
-            if(groupClass != null) prev.hide();
-        });
+        dialog.hidden(() -> prev.hide());
 
         dialog.show();
     }
 
     public void classButton(Table table, Class cls, BaseDialog dialog){
         table.button(cls.getSimpleName().replace("Data", ""), () -> {
-            
-            if(selectedCells.size == 1 && cls != CellData.class){
-                currentElement = selectedCells.get(0).element;
-                pathStack.add(currentElement);
-                selectedCells.clear();
-            }
-            groupClass = cls;
+            selectGroup(cls);
             build();
             dialog.hide();
         }).padBottom(10f).width(300f).minHeight(50f).disabled(b -> {

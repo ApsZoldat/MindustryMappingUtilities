@@ -8,14 +8,15 @@ import arc.util.*;
 import mindustry.gen.*;
 import mindustry.ui.dialogs.*;
 import mu.ui.dialogs.*;
+import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
-public class TableData extends ElementData{
+public class TableData implements UIObjectData, ElementData{
     // All cells
     public @NoCopy Seq<CellData> cells = new Seq<>();
 
     // Defaults
-    public @NoCopy CellData cellDefaults = new CellData(null);
+    // public @NoCopy CellData cellDefaults = new CellData(null);
 
     // Margins
     public @RequireScl float marginTop = 0f, marginLeft = 0f, marginBot = 0f, marginRight = 0f;
@@ -29,7 +30,7 @@ public class TableData extends ElementData{
     public Table build(){
         Table table = new Table();
 
-        copyFields(table);
+        MUReflect.copyFields(this, table);
 
         // Add all cells
         for(CellData cell : cells){
@@ -43,7 +44,7 @@ public class TableData extends ElementData{
     public Table buildPreview(UIExplorerDialog dialog){
         Table table = new Table();
 
-        copyFields(table);
+        MUReflect.copyFields(this, table);
 
         // Add all cells
         for(CellData cell : cells){

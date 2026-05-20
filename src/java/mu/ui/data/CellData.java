@@ -8,9 +8,10 @@ import arc.util.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 import mu.ui.dialogs.*;
+import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
-public class CellData{
+public class CellData implements UIObjectData{
     // Element
     public @NoCopy ElementData element;
     
@@ -45,7 +46,7 @@ public class CellData{
         }
         if(endRow) table.row();
 
-        copyFields(cell);
+        MUReflect.copyFields(this, cell);
 
         return cell;
     }
@@ -83,7 +84,7 @@ public class CellData{
         
         Stack stack = new Stack(elemTable, button);
         Cell outerCell = table.add(stack);
-        copyFields(outerCell);
+        MUReflect.copyFields(this, outerCell);
         /*if(maxWidth != Float.POSITIVE_INFINITY) outerCell.maxWidth(maxWidth + padLeft + padRight);
         if(maxHeight != Float.POSITIVE_INFINITY) outerCell.maxHeight(maxHeight + padTop + padBottom);*/
         // TODO: fix ts
@@ -94,7 +95,7 @@ public class CellData{
         return outerCell;
     }
 
-    public static Table explorerSettings(UIExplorerDialog dialog){
+    public Table explorerSettings(UIExplorerDialog dialog){
         Table table = new Table();
         table.defaults().fillX().left();
 
@@ -104,10 +105,10 @@ public class CellData{
         dialog.number(table, "MaxHeight", "maxHeight", 0f, Float.POSITIVE_INFINITY, 5f);
         table.table(t -> {
             t.button("No Max Width", () -> {
-                dialog.getCurrentGroup().each(c -> Reflect.set(c, "maxWidth", Float.POSITIVE_INFINITY));
+                dialog.currentGroup.each(c -> Reflect.set(c, "maxWidth", Float.POSITIVE_INFINITY));
             }).growX().uniformX();
             t.button("No Max Height", () -> {
-                dialog.getCurrentGroup().each(c -> Reflect.set(c, "maxHeight", Float.POSITIVE_INFINITY));
+                dialog.currentGroup.each(c -> Reflect.set(c, "maxHeight", Float.POSITIVE_INFINITY));
             }).growX().uniformX();
         }).padBottom(5f).padTop(3f).fillX().row();
         // TODO: move pads and other stuff from explorer methods here
@@ -141,19 +142,5 @@ public class CellData{
         }).left().padTop(10f).fillX().row();
 
         return table;
-    }
-
-    // TODO: move to utils
-    public void copyFields(Cell cell){
-        for(var field : this.getClass().getDeclaredFields()){
-            if(field.isAnnotationPresent(NoCopy.class)) continue;
-
-            String name = field.getName();
-            if(field.isAnnotationPresent(RequireScl.class)){
-                Reflect.set(cell, name, Scl.scl(Reflect.get(this, name)));
-            }else{
-                Reflect.set(cell, name, Reflect.get(this, name));
-            }
-        }
     }
 }

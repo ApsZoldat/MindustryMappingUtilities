@@ -5,11 +5,12 @@ import arc.scene.ui.layout.*;
 import mindustry.gen.*;
 import mu.ui.*;
 import mu.ui.dialogs.*;
+import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
 import static mu.EditorVars.*;
 
-public class WindowData extends ElementData{
+public class WindowData implements UIObjectData, ElementData{
     public String name;
 
     // Position
@@ -72,8 +73,7 @@ public class WindowData extends ElementData{
         dialog.number(table, "DraggedOpacity", "draggedAlpha", 0f, 1f, 0.05f);
         
         table.button("Table", Icon.menu, () -> {
-            dialog.currentElement = cont;
-            dialog.pathStack.add(cont);
+            dialog.selectData(cont);
             dialog.build();
         }).center().padTop(20f);
 

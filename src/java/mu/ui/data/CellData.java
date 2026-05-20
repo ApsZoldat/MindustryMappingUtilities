@@ -1,5 +1,7 @@
 package mu.ui.data;
 
+import arc.util.serialization.*;
+import arc.util.serialization.Json.*;
 import arc.scene.ui.layout.*;
 import arc.scene.ui.*;
 import arc.scene.*;
@@ -11,9 +13,9 @@ import mu.ui.dialogs.*;
 import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
-public class CellData implements UIObjectData{
+public class CellData extends UIObjectData{
     // Element
-    public @NoCopy ElementData element;
+    public @NoCopy ElementData element = null;
     
     // Sizing
     public @RequireScl float minWidth = Float.NEGATIVE_INFINITY, minHeight = Float.NEGATIVE_INFINITY, maxWidth = Float.NEGATIVE_INFINITY, maxHeight = Float.NEGATIVE_INFINITY;
@@ -32,6 +34,10 @@ public class CellData implements UIObjectData{
     public boolean uniformX = false, uniformY = false;
     public @NoCopy boolean endRow = false;  // it is handled by table.row()
     public int colspan = 1;
+
+    public CellData(){
+        this.element = null;
+    }
 
     public CellData(ElementData element){
         this.element = element;
@@ -142,5 +148,14 @@ public class CellData implements UIObjectData{
         }).left().padTop(10f).fillX().row();
 
         return table;
+    }
+
+    public void replaceChild(UIObjectData oldData, UIObjectData newData){
+        if(oldData != element) throw new RuntimeException("Invalid data importing target.");
+        if(newData instanceof ElementData elem){
+            element = elem;
+        }else{
+            throw new RuntimeException("Invalid data format. Expected ElementData.");
+        }
     }
 }

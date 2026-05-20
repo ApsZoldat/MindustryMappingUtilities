@@ -11,7 +11,7 @@ import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;
 
-public class ButtonData implements UIObjectData, ElementData{
+public class ButtonData extends UIObjectData implements ElementData{
     public boolean isChecked = false;
     public boolean isDisabled = false;
 
@@ -41,10 +41,12 @@ public class ButtonData implements UIObjectData, ElementData{
         dialog.check(table, "IsDisabled", "isDisabled");
 
         table.add("JS Script").padTop(10f).padBottom(2f).center().row();
-        table.field(script, v -> {
-                script = v;
-            }).size(400f, 300f).padBottom(10f).row();
+        table.field(script, v -> dialog.currentGroup.each(b -> ((ButtonData) b).script = v)).size(400f, 300f).padBottom(10f).row();
 
         return table;
+    }
+
+    public void replaceChild(UIObjectData oldData, UIObjectData newData){
+        return;
     }
 }

@@ -226,8 +226,13 @@ public class UIExplorerDialog extends BaseDialog{
                     dialog.hide();
                 }).disabled(currentData == null).marginLeft(12f).row();
                 t.button("@waves.load", Icon.download, Styles.flatt, () -> {
-                    /*locales = readBundles(Core.app.getClipboardText());
-                    build();*/
+                    try{
+                        replaceCurrentData(() -> JsonIO.read(currentData.getClass(), Core.app.getClipboardText()));
+                    }catch (Exception err){
+                        Log.err(err);
+                        Vars.ui.showErrorMessage("temp");
+                    }
+                    build();
                     dialog.hide();
                 }).disabled(Core.app.getClipboardText() == null).marginLeft(12f).row();
             });
@@ -235,6 +240,25 @@ public class UIExplorerDialog extends BaseDialog{
 
         dialog.addCloseButton();
         dialog.show();
+    }
+
+    public void replaceCurrentData(Prov<UIObjectData> prov){
+        if(currentData instanceof WindowData curdata){
+            UIObjectData newData = prov.get();
+            if(newData instanceof WindowData w){
+                if(!windowsData.replace(curdata, w)) throw new RuntimeException("Invalid data importing target.");
+            }else{
+                throw new RuntimeException("Invalid data format. Expected WindowData.");
+            }
+            currentData = newData;
+        }else{
+            currentGroup.each(d -> {
+                UIObjectData newData = prov.get();
+                currentGroup.replace(d, newData);
+                pathStack.get(pathStack.size - 2).replaceChild(d, newData);
+            });
+            currentData = currentGroup.get(0);
+        }
     }
 
     public void layoutDialog(){

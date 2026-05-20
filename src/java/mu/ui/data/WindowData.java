@@ -10,7 +10,7 @@ import mu.utils.MUAnnotations.*;
 
 import static mu.EditorVars.*;
 
-public class WindowData implements UIObjectData, ElementData{
+public class WindowData extends UIObjectData implements ElementData{
     public String name;
 
     // Position
@@ -78,5 +78,15 @@ public class WindowData implements UIObjectData, ElementData{
         }).center().padTop(20f);
 
         return table;
+    }
+
+    public void replaceChild(UIObjectData oldData, UIObjectData newData){
+        if(oldData != cont) throw new RuntimeException("Invalid data importing target.");
+        if(newData instanceof TableData data){
+            cont = data;
+        }
+        else{
+            throw new RuntimeException("Invalid data format. Expected TableData.");
+        }
     }
 }

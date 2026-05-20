@@ -8,6 +8,7 @@ import mindustry.editor.*;
 import mindustry.game.*;
 import mindustry.mod.*;
 import mindustry.mod.Mods.*;
+import mindustry.io.*;
 import mindustry.ui.dialogs.*;
 import mindustry.Vars;
 import mu.editor.*;
@@ -82,6 +83,12 @@ public class MapUtilitiesMod extends Mod{
                 pkg.setParentScope(scope);
                 scope.importPackage(pkg);
             });
+
+            // JSON Serialization class tags
+            JsonIO.classTag("MUWindowData", WindowData.class);
+            JsonIO.classTag("MUTableData", TableData.class);
+            JsonIO.classTag("MUCellData", CellData.class);
+            JsonIO.classTag("MUButtonData", ButtonData.class);
         });
     }
 }

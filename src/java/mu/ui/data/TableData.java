@@ -11,7 +11,7 @@ import mu.ui.dialogs.*;
 import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
-public class TableData implements UIObjectData, ElementData{
+public class TableData extends UIObjectData implements ElementData{
     // All cells
     public @NoCopy Seq<CellData> cells = new Seq<>();
 
@@ -84,5 +84,18 @@ public class TableData implements UIObjectData, ElementData{
         table.button("Layout", Icon.menu, () -> dialog.layoutDialog()).padTop(10f).size(300f, 50f).center();
 
         return table;
+    }
+    
+    public void replaceChild(UIObjectData oldData, UIObjectData newData){
+        if(newData instanceof CellData data){
+            // TODO: try doing smth with this
+            if(!cells.replace((CellData) oldData, data)) throw new RuntimeException("Invalid data importing target.");
+        }else if(newData instanceof ElementData data){
+            cells.each(c -> {
+                if(c.element == oldData) c.element = data;
+            });
+        }else{
+            throw new RuntimeException("Invalid data format. Expected CellData or ElementData. wait what???");
+        }
     }
 }

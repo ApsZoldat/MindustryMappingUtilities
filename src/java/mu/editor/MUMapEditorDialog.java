@@ -320,4 +320,12 @@ public class MUMapEditorDialog extends MapEditorDialog{
             }
         }
     }
+
+    public void showErrorMessage(String text){
+        showErrorMessage(text, null);
+    }
+
+    public void showErrorMessage(String text, String subtext){
+        return;  // TODO: to be implemented
+    }
 }

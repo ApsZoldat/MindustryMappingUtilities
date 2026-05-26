@@ -1,4 +1,4 @@
-package mu.editor.modes;
+package mu.editor;
 
 import arc.input.*;
 import arc.scene.event.*;
@@ -9,7 +9,7 @@ public abstract class EditorMode{
     public boolean mouseMoved(InputEvent event, float x, float y){
         return false;
     }
-    
+
     public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
         return false;
     }

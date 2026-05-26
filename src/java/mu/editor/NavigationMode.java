@@ -1,4 +1,4 @@
-package mu.editor.modes;
+package mu.editor;
 
 import arc.scene.ui.layout.*;
 import arc.input.*;

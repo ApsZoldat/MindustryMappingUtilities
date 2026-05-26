@@ -11,7 +11,7 @@ import mu.ui.data.*;
 
 public class EditorVars{
     // All package names
-    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.modes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
+    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.modes", "mu.editor.brushes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
 
     // New editor
     public static MUMapEditor editor;

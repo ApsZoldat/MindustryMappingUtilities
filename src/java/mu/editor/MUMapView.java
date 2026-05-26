@@ -17,8 +17,7 @@ import mindustry.editor.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.ui.*;
-import mu.editor.*;
-import mu.editor.modes.*;
+import mu.editor.blocks.*;
 import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;

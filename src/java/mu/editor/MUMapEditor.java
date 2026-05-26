@@ -16,15 +16,13 @@ import mindustry.io.*;
 import mindustry.maps.*;
 import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
-import mu.editor.modes.*;
+import mu.editor.blocks.*;
 import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;
 
 public class MUMapEditor extends MapEditor{
-    // Editor modes
-    public ObjectMap<String, EditorMode> modes = new ObjectMap<>();
-    public EditorMode mode = new NavigationMode();
+    public EditorMode mode = new BlocksMode();
 
     /*
     public void drawBlock(int x, int y, boolean forceOverlay, Boolf<Tile> tester){

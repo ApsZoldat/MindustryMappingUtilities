@@ -69,7 +69,7 @@ public class TableData extends UIObjectData implements ElementData{
                 t.defaults().fillX().left();
                 dialog.check(t, "Round", "round");
                 dialog.check(t, "Clip", "clip");
-                t.button("Background", Icon.image, () -> {}).padTop(5f).size(200f, 50f).get().getLabel().setWrap(false);  // TODO
+                t.button("Background", Icon.image, () -> {}).padTop(5f).size(200f, 50f).disabled(true).get().getLabel().setWrap(false);  // TODO
             }).growX().left();
             c.table(t -> {
                 t.defaults().fillX().right();

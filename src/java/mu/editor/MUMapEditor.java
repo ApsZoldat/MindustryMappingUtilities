@@ -7,6 +7,8 @@ import arc.math.*;
 import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.*;
+import arc.util.serialization.*;
+import arc.util.serialization.Json.*;
 import mindustry.content.*;
 import mindustry.editor.*;
 import mindustry.entities.units.*;
@@ -21,8 +23,23 @@ import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;
 
-public class MUMapEditor extends MapEditor{
-    public EditorMode mode = new BlocksMode();
+public class MUMapEditor extends MapEditor implements JsonSerializable{
+    public ObjectMap<String, EditorMode> modes = new ObjectMap<>();
+    public EditorMode mode;
+
+    public MUMapEditor(){
+        this.modes.put("navigation", new NavigationMode());
+        this.modes.put("blocks", new BlocksMode());
+        setMode("navigation");
+    }
+
+    public void setMode(String name){
+        EditorMode mode = modes.get(name);
+        if(mode == null){
+            throw new RuntimeException(Strings.format("EditorMode \"@\" is not defined in MUMapEditor.modes", name));
+        }
+        this.mode = mode;
+    }
 
     /*
     public void drawBlock(int x, int y, boolean forceOverlay, Boolf<Tile> tester){
@@ -97,4 +114,14 @@ public class MUMapEditor extends MapEditor{
             }
         }
     }*/
+
+    @Override
+    public void write(Json json){
+        json.writeValue("mode", modes.findKey(mode, true));
+    }
+
+    @Override
+    public void read(Json json, JsonValue jsonData){
+        setMode(jsonData.getString("mode"));
+    }
 }

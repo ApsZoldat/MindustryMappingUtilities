@@ -40,7 +40,7 @@ import mu.ui.dialogs.*;
 import static mindustry.Vars.*;
 import static mu.EditorVars.editor;
 import static mu.EditorVars.editorView;
-import static mu.EditorVars.windows;
+import static mu.EditorVars.editorUi;
 
 public class MUMapEditorDialog extends MapEditorDialog{
     public MUMapView view;  // shadows private view
@@ -258,8 +258,7 @@ public class MUMapEditorDialog extends MapEditorDialog{
                 }
             }).margin(0).left().growY();
 
-            windows.touchable = Touchable.childrenOnly;
-            cont.stack(view, windows).grow();
+            cont.stack(view, editorUi.windows).grow();
 
             cont.table(t -> Reflect.invoke(MapEditorDialog.class, this, "addBlockSelection", new Object[]{t}, Table.class)).right().growY();
 

@@ -12,9 +12,4 @@ public class MUAnnotations{
     @Target({ElementType.FIELD, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     public @interface RequireScl{}
-    
-    /** Indicates that a field shadows a parent class' field */
-    @Target({ElementType.FIELD, ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface Shadow{}
 }

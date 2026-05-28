@@ -12,22 +12,25 @@ import arc.scene.event.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import arc.util.serialization.*;
+import arc.util.serialization.Json.*;
 import mindustry.*;
 import mindustry.editor.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.ui.*;
 import mu.editor.blocks.*;
+import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;
 import static mu.EditorVars.editor;
 
-public class MUMapView extends MapView{
-    // Shadow fields - set only through setField()
-    public @Shadow float offsetx, offsety;
-    public @Shadow float zoom = 1f;
-    public @Shadow float mousex, mousey;
+public class MUMapView extends MapView implements JsonSerializable{
+    // Inner fields, always cast update() after editing these
+    public float offsetx, offsety;
+    public float zoom = 1f;
+    public float mousex, mousey;
 
     public MUMapView(){
         super();
@@ -40,6 +43,7 @@ public class MUMapView extends MapView{
             public boolean mouseMoved(InputEvent event, float x, float y){
                 mousex = x;
                 mousey = y;
+                update();
                 return editor.mode.mouseMoved(event, x, y);
             }
 
@@ -67,25 +71,8 @@ public class MUMapView extends MapView{
         });
     }
 
-    // Ideally only a temporary solution
-    public Object getField(String name){
-        try{
-            return Reflect.get(this, name);
-        }catch (Exception err){
-            Log.err("Failed to get field \"" + name + "\" in MUMapView.", err);
-            return null;
-        }
-    }
-
-    public void setField(String name, Object value){
-        try{
-            Reflect.set(this, name, value);
-            if(this.getClass().getDeclaredField(name).isAnnotationPresent(Shadow.class)){
-                Reflect.set(MapView.class, this, name, value);
-            }
-        }catch (Exception err){
-            Log.err("Failed to set field \"" + name + "\" in MUMapView.", err);
-        }
+    public void update(){
+        MUReflect.copyChildFields(this, MapView.class);
     }
 
     @Override
@@ -145,7 +132,7 @@ public class MUMapView extends MapView{
     }
 
     public void clampZoom(){
-        setField("zoom", Mathf.clamp(zoom, 0.2f, 20f));
+        zoom = Mathf.clamp(zoom, 0.2f, 20f);
     }
 
     public boolean isActive(){
@@ -173,5 +160,20 @@ public class MUMapView extends MapView{
     @Override
     public void pinchStop(){
         editor.mode.pinchStop();
+    }
+
+    @Override
+    public void write(Json json){
+        // TODO: ???
+        json.writeValue("offsetx", offsetx);
+        json.writeValue("offsety", offsety);
+        json.writeValue("zoom", zoom);
+        json.writeValue("mousex", mousex);
+        json.writeValue("mousey", mousey);
+    }
+
+    @Override
+    public void read(Json json, JsonValue jsonData){
+        json.readFields(this, jsonData);
     }
 }

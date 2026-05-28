@@ -31,13 +31,8 @@ public class MapUtilitiesMod extends Mod{
             editor = new MUMapEditor();
             editorView = new MUMapView();
             editorDialog = new MUMapEditorDialog();
-            windowsData = new Seq<>();
-            windowsData.add(new WindowData());
-            windows = new WidgetGroup();
-
-            for(WindowData data : windowsData){
-                windows.addChild(new Window(data));
-            }
+            editorUi = new EditorUI();
+            editorState = new EditorState();
 
             // Mods
             allMods = new Seq<MUMod>();
@@ -89,6 +84,9 @@ public class MapUtilitiesMod extends Mod{
             JsonIO.classTag("MUTableData", TableData.class);
             JsonIO.classTag("MUCellData", CellData.class);
             JsonIO.classTag("MUButtonData", ButtonData.class);
+            JsonIO.classTag("MUEditorUI", EditorUI.class);
+            JsonIO.classTag("MUMapEditor", MUMapEditor.class);
+            JsonIO.classTag("MUMapView", MUMapView.class);
         });
     }
 }

@@ -24,15 +24,17 @@ public class WindowData extends UIObjectData implements ElementData{
     public TableData cont;
 
     public WindowData(){
-        Seq<String> existingNames = new Seq<>();
+        /*Seq<String> existingNames = new Seq<>();
 
-        for(WindowData data: windowsData){
+        for(WindowData data: editorUi.windowsData){
             existingNames.add(data.name);
         }
 
         int i = 0;
         while(existingNames.contains("Window " + Integer.toString(++i))){};
-        name = "Window " + Integer.toString(i);
+        name = "Window " + Integer.toString(i);*/
+        // TODO: fix ts
+        name = "Window";
 
         cont = new TableData();
         cont.marginTop = 50f;

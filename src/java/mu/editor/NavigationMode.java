@@ -10,8 +10,9 @@ public class NavigationMode extends EditorMode{
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY){
         if(!editorView.isActive()) return false;
-        editorView.setField("offsetx", editorView.offsetx + (deltaX / editorView.zoom));
-        editorView.setField("offsety", editorView.offsety + (deltaY / editorView.zoom));
+        editorView.offsetx += (deltaX / editorView.zoom);
+        editorView.offsety += (deltaY / editorView.zoom);
+        editorView.update();
         return false;
     }
 
@@ -19,8 +20,9 @@ public class NavigationMode extends EditorMode{
     public boolean zoom(float initialDistance, float distance){
         if(!editorView.isActive()) return false;
         float nzoom = distance - initialDistance;
-        editorView.setField("zoom", editorView.zoom + (nzoom / 10000f / Scl.scl(1f) * editorView.zoom));
+        editorView.zoom += (nzoom / 10000f / Scl.scl(1f) * editorView.zoom);
         editorView.clampZoom();
+        editorView.update();
         return false;
     }
 }

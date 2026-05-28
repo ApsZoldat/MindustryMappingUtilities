@@ -19,6 +19,11 @@ public class BlocksPickTool extends BlocksTool{
     public void act(int x, int y){
         Tile tile = world.tiles.get(x, y);
 
+        if(tile == null){
+            editorDialog.showErrorMessage("temp");
+            return;
+        }
+
         switch(data){
             case block -> mode.block = tile.block();
             case floor -> mode.block = tile.floor();

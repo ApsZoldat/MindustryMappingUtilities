@@ -107,7 +107,7 @@ public class RulesDialogMod extends MUMod{
 
     public void addHiddenRules(){
         category("waves");
-        dialog.check("@rules.showspawns", b -> rules.showSpawns = b, () -> rules.showSpawns);
+        dialog.check("@rules.hidespawns", b -> rules.hideSpawns = b, () -> rules.hideSpawns);
 
         category("resourcesbuilding");
         dialog.check("@rules.ghostblocks", b -> rules.ghostBlocks = b, () -> rules.ghostBlocks);

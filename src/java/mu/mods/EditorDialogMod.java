@@ -22,7 +22,7 @@ public class EditorDialogMod extends MUMod{
 
     @Override
     public void enable(){
-        Vars.ui.editor = EditorVars.editorDialog;
+        Vars.ui.editor = EditorVars.dialog;
         Vars.editor = EditorVars.editor;
     }
 

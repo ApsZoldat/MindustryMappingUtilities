@@ -37,7 +37,7 @@ public class UIExplorerDialog extends BaseDialog{
 
         shown(this::build);
 
-        hidden(() -> editorUi.build());
+        hidden(() -> ui.build());
     }
 
     public void selectGroup(Class<?> cls){
@@ -99,7 +99,7 @@ public class UIExplorerDialog extends BaseDialog{
 
     public void buildWindowSelection(){
         cont.pane(p -> {
-            for(WindowData window : editorUi.windowsData){
+            for(WindowData window : ui.windowsData){
                 String name = window.name;
 
                 p.button(name, Styles.flatTogglet, () -> {
@@ -112,7 +112,7 @@ public class UIExplorerDialog extends BaseDialog{
         cont.button("@add", Icon.add, () -> {
             WindowData data = new WindowData();
             selectData(data);
-            editorUi.windowsData.add(data);
+            ui.windowsData.add(data);
             build();
         }).width(320f).minHeight(50f).padTop(40f);
     }
@@ -241,7 +241,7 @@ public class UIExplorerDialog extends BaseDialog{
         if(currentData instanceof WindowData curdata){
             UIObjectData newData = prov.get();
             if(newData instanceof WindowData w){
-                if(!editorUi.windowsData.replace(curdata, w)) throw new RuntimeException("Invalid data importing target.");
+                if(!ui.windowsData.replace(curdata, w)) throw new RuntimeException("Invalid data importing target.");
             }else{
                 throw new RuntimeException("Invalid data format. Expected WindowData.");
             }

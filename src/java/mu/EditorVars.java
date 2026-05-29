@@ -14,18 +14,22 @@ public class EditorVars{
     public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.modes", "mu.editor.brushes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
 
     // New editor
-    // TODO: consider renaming these
     public static MUMapEditor editor;
-    public static MUMapView editorView;
-    public static MUMapEditorDialog editorDialog;
-    public static EditorUI editorUi;
-    public static EditorState editorState;
-
-    // Editor UI Data
-    
+    public static MUMapView view;
+    public static EditorUI ui;
+    public static EditorState state;
+    public static MUMapEditorDialog dialog;
 
     // UI mods
     public static Seq<MUMod> allMods;
+
+    public static void init(){
+        editor = new MUMapEditor();
+        view = new MUMapView();
+        ui = new EditorUI();
+        state = new EditorState();
+        dialog = new MUMapEditorDialog();
+    }
 
     public static void updateMods(){
         allMods.each(m -> m.update());

@@ -164,7 +164,6 @@ public class MUMapView extends MapView implements JsonSerializable{
 
     @Override
     public void write(Json json){
-        // TODO: ???
         json.writeValue("offsetx", offsetx);
         json.writeValue("offsety", offsety);
         json.writeValue("zoom", zoom);
@@ -174,6 +173,11 @@ public class MUMapView extends MapView implements JsonSerializable{
 
     @Override
     public void read(Json json, JsonValue jsonData){
-        json.readFields(this, jsonData);
+        offsetx = jsonData.getFloat("offsetx", 0f);
+        offsety = jsonData.getFloat("offsety", 0f);
+        zoom = jsonData.getFloat("zoom", 1f);
+        mousex = jsonData.getFloat("mousex", 0f);
+        mousey = jsonData.getFloat("mousey", 0f);
+        update();
     }
 }

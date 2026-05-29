@@ -88,5 +88,6 @@ public class Window extends Table{
 
         data.x = Mathf.clamp(x, getPrefWidth() / 2, parent.getWidth() - getPrefWidth() / 2);
         data.y = Mathf.clamp(y, getPrefHeight() / 2, parent.getHeight() - getPrefHeight() / 2);
+        // TODO: fix portrait mode triggering clamping
     }
 }

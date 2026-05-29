@@ -24,7 +24,7 @@ public class BlocksMode extends EditorMode{
     public BlocksTool tool = new BlocksPickTool(this);
 
     public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
-        Point2 pos = editorView.project(x, y);
+        Point2 pos = view.project(x, y);
         tool.act(pos.x, pos.y);
         return true;
     }
@@ -35,7 +35,7 @@ public class BlocksMode extends EditorMode{
 
     public void touchDragged(InputEvent event, float x, float y, int pointer){
         if(!tool.isDraggable) return;
-        Point2 pos = editorView.project(x, y);
+        Point2 pos = view.project(x, y);
         tool.act(pos.x, pos.y);
     }
 }

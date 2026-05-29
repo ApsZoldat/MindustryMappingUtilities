@@ -4,7 +4,7 @@ import mindustry.world.*;
 import mu.editor.blocks.*;
 
 import static mindustry.Vars.*;
-import static mu.EditorVars.editorDialog;
+import static mu.EditorVars.dialog;
 
 public class BlocksPickTool extends BlocksTool{
     public BlocksMode mode;
@@ -20,7 +20,7 @@ public class BlocksPickTool extends BlocksTool{
         Tile tile = world.tiles.get(x, y);
 
         if(tile == null){
-            editorDialog.showErrorMessage("temp");
+            dialog.showErrorMessage("temp");
             return;
         }
 
@@ -30,14 +30,14 @@ public class BlocksPickTool extends BlocksTool{
             case overlay -> mode.overlay = tile.overlay();
             case rotation -> {
                 if(tile.build == null){
-                    editorDialog.showErrorMessage("temp");
+                    dialog.showErrorMessage("temp");
                 }else{
                     mode.rotation = tile.build.rotation;
                 }
             }
             case team -> {
                 if(tile.build == null){
-                    editorDialog.showErrorMessage("temp");
+                    dialog.showErrorMessage("temp");
                 }else{
                     mode.team = tile.build.team;
                 }

@@ -36,11 +36,9 @@ import mindustry.world.blocks.storage.CoreBlock.*;
 import mindustry.world.meta.*;
 import mu.ui.*;
 import mu.ui.dialogs.*;
+import mu.EditorVars;
 
 import static mindustry.Vars.*;
-import static mu.EditorVars.editor;
-import static mu.EditorVars.editorView;
-import static mu.EditorVars.editorUi;
 
 public class MUMapEditorDialog extends MapEditorDialog{
     public MUMapView view;  // shadows private view
@@ -54,7 +52,7 @@ public class MUMapEditorDialog extends MapEditorDialog{
         // ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, this, "listeners")).clear();
         // currently not used
 
-        view = editorView;
+        view = EditorVars.view;
         Reflect.set(MapEditorDialog.class, this, "view", view);
         menu = Reflect.get(MapEditorDialog.class, this, "menu");
 
@@ -258,14 +256,15 @@ public class MUMapEditorDialog extends MapEditorDialog{
                 }
             }).margin(0).left().growY();
 
-            cont.stack(view, editorUi.windows).grow();
+            EditorVars.ui.build();
+            cont.stack(view, EditorVars.ui.windows).grow();
 
             cont.table(t -> Reflect.invoke(MapEditorDialog.class, this, "addBlockSelection", new Object[]{t}, Table.class)).right().growY();
 
         }).grow();
     }
 
-    private void doInput(){
+    public void doInput(){
         if(Core.input.ctrl()){
             //alt mode select
             for(int i = 0; i < view.getTool().altModes.length; i++){

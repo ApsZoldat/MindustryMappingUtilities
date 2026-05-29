@@ -27,12 +27,7 @@ public class MapUtilitiesMod extends Mod{
         Events.on(EventType.ClientLoadEvent.class, e -> {
             SettingsDialogMod.enable();
 
-            // Initialization
-            editor = new MUMapEditor();
-            editorView = new MUMapView();
-            editorDialog = new MUMapEditorDialog();
-            editorUi = new EditorUI();
-            editorState = new EditorState();
+            EditorVars.init();
 
             // Mods
             allMods = new Seq<MUMod>();
@@ -40,7 +35,7 @@ public class MapUtilitiesMod extends Mod{
             CustomRulesDialog infoRules = Reflect.get(MapInfoDialog.class, Reflect.get(Vars.ui.editor, "infoDialog"), "ruleInfo");
             CustomRulesDialog playRules = Reflect.get(MapPlayDialog.class, Reflect.get(Vars.ui.custom, "dialog"), "dialog");
             CustomRulesDialog playtestRules = Reflect.get(MapPlayDialog.class, Reflect.get(Vars.ui.editor, "playtestDialog"), "dialog");
-            CustomRulesDialog newRules = Reflect.get(MapInfoDialog.class, Reflect.get(MapEditorDialog.class, editorDialog, "infoDialog"), "ruleInfo");
+            CustomRulesDialog newRules = Reflect.get(MapInfoDialog.class, Reflect.get(MapEditorDialog.class, dialog, "infoDialog"), "ruleInfo");
 
             // Rules mods
             allMods.add(new RulesDialogMod(infoRules));
@@ -50,7 +45,7 @@ public class MapUtilitiesMod extends Mod{
 
             // Resize mods
             allMods.add(new ResizeDialogMod(Reflect.get(Vars.ui.editor, "resizeDialog")));
-            allMods.add(new ResizeDialogMod(Reflect.get(MapEditorDialog.class, editorDialog, "resizeDialog")));
+            allMods.add(new ResizeDialogMod(Reflect.get(MapEditorDialog.class, dialog, "resizeDialog")));
 
             // Editor mod
             allMods.add(new EditorDialogMod(Vars.ui.editor, Vars.editor));
@@ -87,6 +82,7 @@ public class MapUtilitiesMod extends Mod{
             JsonIO.classTag("MUEditorUI", EditorUI.class);
             JsonIO.classTag("MUMapEditor", MUMapEditor.class);
             JsonIO.classTag("MUMapView", MUMapView.class);
+            JsonIO.classTag("MUEditorState", EditorState.class);
         });
     }
 }

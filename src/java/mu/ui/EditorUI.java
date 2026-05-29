@@ -32,6 +32,7 @@ public class EditorUI implements JsonSerializable{
 
     @Override
     public void read(Json json, JsonValue jsonData){
-        json.readValue(EditorUI.class, jsonData.get("windowsData"));
+        windowsData = json.readValue("windowsData", Seq.class, jsonData);
+        build();
     }
 }

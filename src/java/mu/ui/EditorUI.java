@@ -21,7 +21,7 @@ public class EditorUI implements JsonSerializable{
     public void build(){
         windows.clear();
         for(WindowData data : windowsData){
-            windows.addChild(new Window(data));
+            windows.addChild(data.build());
         }
     }
 

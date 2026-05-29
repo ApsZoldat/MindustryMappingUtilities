@@ -15,7 +15,7 @@ import mu.utils.MUAnnotations.*;
 
 public class CellData extends UIObjectData{
     // Element
-    public @NoCopy ElementData element = null;
+    public @NoCopy UIObjectData element = null;
     
     // Sizing
     public @RequireScl float minWidth = Float.NEGATIVE_INFINITY, minHeight = Float.NEGATIVE_INFINITY, maxWidth = Float.NEGATIVE_INFINITY, maxHeight = Float.NEGATIVE_INFINITY;
@@ -39,25 +39,42 @@ public class CellData extends UIObjectData{
         this.element = null;
     }
 
-    public CellData(ElementData element){
-        this.element = element;
+    public CellData(UIObjectData element, UIObjectData parent){
+        this.parent = parent;
+        if(element.isElementData()){
+            this.element = element;
+            element.parent = this;
+        }else{
+            this.element = null;
+        }
     }
 
-    public Cell build(Table table){
+    @Override
+    public boolean isElementData(){
+        return false;
+    }
+
+    public Cell build(){
+        if(parent == null || !(parent.object instanceof Table table)) return null;
+
         Cell cell;
-        if(element == null){
+        if(element == null || !element.isElementData()){
             cell = table.add("");
         }else{
-            cell = table.add(element.build());
+            cell = table.add((Element)(element.build()));
         }
+
         if(endRow) table.row();
 
         MUReflect.copyFields(this, cell);
 
+        runScript(buildScript);
         return cell;
     }
 
-    public Cell buildPreview(Table table, UIExplorerDialog dialog){
+    public Cell buildPreview( UIExplorerDialog dialog){
+        if(parent == null || !(parent.object instanceof Table table)) return null;
+
         Button button = new Button(Styles.underlineb);
         button.update(() -> {
             if(dialog.selectedCells.contains(this)){
@@ -78,10 +95,10 @@ public class CellData extends UIObjectData{
         Table elemTable = new Table();
         Cell innerCell;
 
-        if(element == null){
+        if(element == null || !element.isElementData()){
             innerCell = elemTable.add("");
         }else{
-            innerCell = elemTable.add(element.buildPreview(dialog));
+            innerCell = elemTable.add((Element)(element.buildPreview(dialog)));
         }
         
         innerCell.pad(padTop, padLeft, padBottom, padRight);
@@ -98,6 +115,7 @@ public class CellData extends UIObjectData{
         outerCell.pad(0f);
         if(endRow) table.row();
 
+        runScript(buildScript);
         return outerCell;
     }
 
@@ -147,15 +165,7 @@ public class CellData extends UIObjectData{
             }).growX().right();
         }).left().padTop(10f).fillX().row();
 
+        table.add(super.explorerSettings(dialog));
         return table;
-    }
-
-    public void replaceChild(UIObjectData oldData, UIObjectData newData){
-        if(oldData != element) throw new RuntimeException("Invalid data importing target.");
-        if(newData instanceof ElementData elem){
-            element = elem;
-        }else{
-            throw new RuntimeException("Invalid data format. Expected ElementData.");
-        }
     }
 }

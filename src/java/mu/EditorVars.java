@@ -4,10 +4,12 @@ import arc.struct.*;
 import mindustry.ctype.*;
 import mindustry.type.*;
 import mindustry.world.*;
+import mindustry.Vars;
 import mu.mods.*;
 import mu.editor.*;
 import mu.ui.*;
 import mu.ui.data.*;
+import mu.utils.*;
 
 public class EditorVars{
     // All package names
@@ -20,6 +22,9 @@ public class EditorVars{
     public static EditorState state;
     public static MUMapEditorDialog dialog;
 
+    // JS Manager
+    public static JSManager jsManager;
+
     // UI mods
     public static Seq<MUMod> allMods;
 
@@ -29,6 +34,7 @@ public class EditorVars{
         ui = new EditorUI();
         state = new EditorState();
         dialog = new MUMapEditorDialog();
+        jsManager = new JSManager(Vars.mods.getScripts());
     }
 
     public static void updateMods(){

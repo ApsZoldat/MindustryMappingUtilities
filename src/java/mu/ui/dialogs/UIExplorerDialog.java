@@ -4,6 +4,7 @@ import arc.Core;
 import arc.graphics.*;
 import arc.func.*;
 import arc.math.*;
+import arc.scene.*;
 import arc.scene.ui.layout.*;
 import arc.scene.ui.*;
 import arc.struct.*;
@@ -49,9 +50,9 @@ public class UIExplorerDialog extends BaseDialog{
             currentGroup.addAll(selectedCells);
         }else{
             for(CellData cell : selectedCells){
-                ElementData data = cell.element;
+                UIObjectData data = cell.element;
                 if(cls.isInstance(data)){
-                    currentGroup.add((UIObjectData) data);
+                    currentGroup.add(data);
                 }
             }
         }
@@ -126,8 +127,8 @@ public class UIExplorerDialog extends BaseDialog{
 
         pathTable.pane(p -> {
             for(UIObjectData data : pathStack){
-                if(data instanceof WindowData w){
-                    p.button(w.name, () -> {
+                if(pathStack.size == 1 && data.name != null){
+                    p.button(data.name, () -> {
                         selectData(data);
                         build();
                     }).left().height(40f).get().getLabel().setWrap(false);
@@ -222,7 +223,7 @@ public class UIExplorerDialog extends BaseDialog{
                 }).disabled(currentData == null).marginLeft(12f).row();
                 t.button("@waves.load", Icon.download, Styles.flatt, () -> {
                     try{
-                        replaceCurrentData(() -> JsonIO.read(currentData.getClass(), Core.app.getClipboardText()));
+                        readJson(currentData, Core.app.getClipboardText());
                     }catch (Exception err){
                         Log.err(err);
                         Vars.ui.showErrorMessage("temp");
@@ -237,31 +238,16 @@ public class UIExplorerDialog extends BaseDialog{
         dialog.show();
     }
 
-    public void replaceCurrentData(Prov<UIObjectData> prov){
-        if(currentData instanceof WindowData curdata){
-            UIObjectData newData = prov.get();
-            if(newData instanceof WindowData w){
-                if(!ui.windowsData.replace(curdata, w)) throw new RuntimeException("Invalid data importing target.");
-            }else{
-                throw new RuntimeException("Invalid data format. Expected WindowData.");
-            }
-            currentData = newData;
-        }else{
-            currentGroup.each(d -> {
-                UIObjectData newData = prov.get();
-                currentGroup.replace(d, newData);
-                pathStack.get(pathStack.size - 2).replaceChild(d, newData);
-            });
-            currentData = currentGroup.get(0);
-        }
+    private <T> void readJson(T data, String json){
+        JsonIO.read((Class<T>)data.getClass(), data, json);
     }
 
     public void layoutDialog(){
         BaseDialog dialog = new BaseDialog("temp");
 
-        if(currentData instanceof ElementData elem){
+        if(currentData != null && currentData.isElementData()){
             dialog.cont.pane(p -> {
-                p.add(elem.buildPreview(this));
+                p.add((Element)(currentData.buildPreview(this)));
             });
         }else{
             dialog.cont.add("Oops, perhaps this is not even an element!");
@@ -289,7 +275,7 @@ public class UIExplorerDialog extends BaseDialog{
 
         // TODO: unholy fucking shit.
         dialog.cont.button("Button", () -> {
-            CellData cell = new CellData(new ButtonData());
+            CellData cell = new CellData(new ButtonData(), currentData);
             cell.minWidth = cell.maxWidth = cell.minHeight = cell.maxHeight = 50f;
             ((TableData) currentData).cells.add(cell);
             dialog.hide();
@@ -297,7 +283,7 @@ public class UIExplorerDialog extends BaseDialog{
             layoutDialog();
         }).padBottom(5f).width(300f).minHeight(50f).row();
         dialog.cont.button("Table", () -> {
-            CellData cell = new CellData(new TableData());
+            CellData cell = new CellData(new TableData(), currentData);
             cell.minWidth = cell.minHeight = 50f;
             ((TableData) currentData).cells.add(cell);
             dialog.hide();

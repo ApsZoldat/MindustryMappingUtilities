@@ -11,7 +11,7 @@ import mu.ui.dialogs.*;
 import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
-public class TableData extends UIObjectData implements ElementData{
+public class TableData extends UIObjectData{
     // All cells
     public @NoCopy Seq<CellData> cells = new Seq<>();
 
@@ -22,36 +22,42 @@ public class TableData extends UIObjectData implements ElementData{
     public @RequireScl float marginTop = 0f, marginLeft = 0f, marginBot = 0f, marginRight = 0f;
 
     // Styling
-    public @NoCopy String backgroundName = "";
+    // public @NoCopy String backgroundName = "";
     public int align = Align.center;
     public boolean round = true;
     public boolean clip = false;
 
     public Table build(){
         Table table = new Table();
+        this.object = table;
 
         MUReflect.copyFields(this, table);
 
         // Add all cells
         for(CellData cell : cells){
-            cell.build(table);
+            cell.build();
         }
 
         table.invalidate();
+
+        runScript(buildScript);
         return table;
     }
 
     public Table buildPreview(UIExplorerDialog dialog){
         Table table = new Table();
+        this.object = table;
 
         MUReflect.copyFields(this, table);
 
         // Add all cells
         for(CellData cell : cells){
-            cell.buildPreview(table, dialog);
+            cell.buildPreview(dialog);
         }
 
         table.invalidate();
+
+        runScript(buildScript);
         return table;
     }
 
@@ -81,21 +87,9 @@ public class TableData extends UIObjectData implements ElementData{
             }).growX().right();
         }).left().padTop(10f).fillX().row();
 
-        table.button("Layout", Icon.menu, () -> dialog.layoutDialog()).padTop(10f).size(300f, 50f).center();
+        table.button("Layout", Icon.menu, () -> dialog.layoutDialog()).padTop(10f).size(300f, 50f).center().row();
 
+        table.add(super.explorerSettings(dialog));
         return table;
-    }
-    
-    public void replaceChild(UIObjectData oldData, UIObjectData newData){
-        if(newData instanceof CellData data){
-            // TODO: try doing smth with this
-            if(!cells.replace((CellData) oldData, data)) throw new RuntimeException("Invalid data importing target.");
-        }else if(newData instanceof ElementData data){
-            cells.each(c -> {
-                if(c.element == oldData) c.element = data;
-            });
-        }else{
-            throw new RuntimeException("Invalid data format. Expected CellData or ElementData. wait what???");
-        }
     }
 }

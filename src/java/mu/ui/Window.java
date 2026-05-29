@@ -16,8 +16,6 @@ import mu.ui.data.*;
 public class Window extends Table{
     public WindowData data;
 
-    public String name;
-
     public Table dragger;
     public Table cont;
 

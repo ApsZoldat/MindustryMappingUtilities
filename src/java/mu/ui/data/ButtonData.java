@@ -11,24 +11,27 @@ import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;
 
-public class ButtonData extends UIObjectData implements ElementData{
+public class ButtonData extends UIObjectData{
     public boolean isChecked = false;
     public boolean isDisabled = false;
 
     public @NoCopy String styleName = "";
 
-    public @NoCopy String script = "";
+    public @NoCopy String clickedScript = null;
 
     public Button build(){
         Button button = new Button(Styles.defaultb);
+        this.object = button;
+        
         MUReflect.copyFields(this, button);
-        button.clicked(() -> mods.getScripts().runConsole(script));
+        
+        button.clicked(() -> runScript(clickedScript));
+        runScript(buildScript);
         return button;
     }
     
     public Button buildPreview(UIExplorerDialog dialog){
         Button button = build();
-        MUReflect.copyFields(this, button);
         button.touchable = Touchable.disabled;
         return button;
     }
@@ -40,13 +43,10 @@ public class ButtonData extends UIObjectData implements ElementData{
         dialog.check(table, "IsChecked", "isChecked");
         dialog.check(table, "IsDisabled", "isDisabled");
 
-        table.add("JS Script").padTop(10f).padBottom(2f).center().row();
-        table.field(script, v -> dialog.currentGroup.each(b -> ((ButtonData) b).script = v)).size(400f, 300f).padBottom(10f).row();
+        table.add("JS Script (On Button Click)").padTop(10f).padBottom(2f).center().row();
+        table.field(clickedScript, v -> dialog.currentGroup.each(b -> ((ButtonData) b).clickedScript = v)).size(400f, 300f).padBottom(10f).row();
 
+        table.add(super.explorerSettings(dialog));
         return table;
-    }
-
-    public void replaceChild(UIObjectData oldData, UIObjectData newData){
-        return;
     }
 }

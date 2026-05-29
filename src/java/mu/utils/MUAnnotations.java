@@ -12,4 +12,9 @@ public class MUAnnotations{
     @Target({ElementType.FIELD, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     public @interface RequireScl{}
+
+    /** Indicates that a field must not be Json serialized directly. */
+    @Target({ElementType.FIELD, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface NoJson{}
 }

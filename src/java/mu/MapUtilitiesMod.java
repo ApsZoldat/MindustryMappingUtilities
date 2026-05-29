@@ -16,7 +16,6 @@ import mu.mods.*;
 import mu.utils.*;
 import mu.ui.*;
 import mu.ui.data.*;
-import rhino.*;
 
 import static arc.Core.settings;
 import static mindustry.Vars.mods;
@@ -66,13 +65,7 @@ public class MapUtilitiesMod extends Mod{
             }
 
             // Importing all packages to Rhino JS
-            // Original source: https://github.com/SMOLKEYS/new-console-hardline/blob/master/src/newconsole/js/NCJSLink.java
-            ImporterTopLevel scope = (ImporterTopLevel) Vars.mods.getScripts().scope;
-            packageNames.each(name -> {
-                NativeJavaPackage pkg = new NativeJavaPackage(name, Vars.mods.mainLoader());
-                pkg.setParentScope(scope);
-                scope.importPackage(pkg);
-            });
+            jsManager.importPackages();
 
             // JSON Serialization class tags
             JsonIO.classTag("MUWindowData", WindowData.class);

@@ -2,6 +2,7 @@ package mu.ui.data;
 
 import arc.struct.*;
 import arc.scene.ui.layout.*;
+import arc.util.*;
 import mindustry.gen.*;
 import mu.ui.*;
 import mu.ui.dialogs.*;
@@ -10,9 +11,7 @@ import mu.utils.MUAnnotations.*;
 
 import static mu.EditorVars.*;
 
-public class WindowData extends UIObjectData implements ElementData{
-    public String name;
-
+public class WindowData extends UIObjectData{
     // Position
     public float x = 0f, y = 0f;
     public boolean isDraggable = true;
@@ -37,6 +36,7 @@ public class WindowData extends UIObjectData implements ElementData{
         name = "Window";
 
         cont = new TableData();
+        cont.parent = this;
         cont.marginTop = 50f;
         cont.marginLeft = 50f;
         cont.marginBot = 50f;
@@ -44,13 +44,17 @@ public class WindowData extends UIObjectData implements ElementData{
     }
 
     public Window build(){
-        return new Window(this);
-        // Yep it's that easy but only for WindowData
+        Window window = new Window(this);
+        this.object = window;
+        runScript(buildScript);
+        return window;
     }
 
     // This method shouldn't be called anywhere but just in case
     public Window buildPreview(UIExplorerDialog dialog){
         Window window = new Window(this);
+        this.object = window;
+        runScript(buildScript);
         window.isDraggable = false;
         return window;
     }
@@ -77,18 +81,9 @@ public class WindowData extends UIObjectData implements ElementData{
         table.button("Table", Icon.menu, () -> {
             dialog.selectData(cont);
             dialog.build();
-        }).center().padTop(20f);
+        }).center().padTop(20f).row();
 
+        table.add(super.explorerSettings(dialog));
         return table;
-    }
-
-    public void replaceChild(UIObjectData oldData, UIObjectData newData){
-        if(oldData != cont) throw new RuntimeException("Invalid data importing target.");
-        if(newData instanceof TableData data){
-            cont = data;
-        }
-        else{
-            throw new RuntimeException("Invalid data format. Expected TableData.");
-        }
     }
 }

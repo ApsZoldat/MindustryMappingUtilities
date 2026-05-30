@@ -183,7 +183,7 @@ public class BetterBannedContentDialog<T extends UnlockableContent> extends Bann
     private void rebuildTable(Table table, boolean isSelected){
         table.clear();
         
-        int buttonSize = settings.getInt("editor_content_buttons_size");
+        int buttonSize = settings.getInt("editor_content_buttons_size", 40);
 
         int cols;
         if(Core.graphics.isPortrait()){

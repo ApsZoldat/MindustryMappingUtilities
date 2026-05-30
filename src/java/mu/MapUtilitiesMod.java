@@ -51,7 +51,7 @@ public class MapUtilitiesMod extends Mod{
 
             updateMods();
 
-            if(settings.getBool("mu_check_for_updates")) UpdateChecker.run();
+            if(settings.getBool("mu_check_for_updates", false)) UpdateChecker.run();
 
             // Subtitle randomizing
             try{

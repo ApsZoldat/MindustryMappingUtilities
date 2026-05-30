@@ -1,4 +1,4 @@
-# Small Mindustry mod improving map editor convenience and possibilities
+# Mindustry mod improving map editor convenience and possibilities
 
 **Maps created with this mod are fully compatible with vanilla Mindustry**
 

@@ -9,7 +9,7 @@ public abstract class MUMod{
     public abstract void disable();
 
     public void update(){
-        if(settings.getBool(settingName)){
+        if(settings.getBool(settingName, true)){
             enable();
         }else{
             disable();

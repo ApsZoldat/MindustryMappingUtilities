@@ -68,7 +68,7 @@ public class RulesDialogMod extends MUMod{
     public void enable(){
         dialog.additionalSetup.add(setupFunc);
         ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, dialog, "listeners")).insert(0, categoryFix);
-        if(settings.getBool("editor_better_content_dialogs")){
+        if(settings.getBool("editor_better_content_dialogs", true)){
             Reflect.set(dialog, "bannedBlocks", betterBannedBlocks);
             Reflect.set(dialog, "bannedUnits", betterBannedUnits);
         }
@@ -88,11 +88,11 @@ public class RulesDialogMod extends MUMod{
         // Ensure it exists in categories Seq before doing all the stuff
         dialog.category("miscellaneous");
 
-        if(settings.getBool("editor_hidden_rules")) addHiddenRules();
-        if(settings.getBool("editor_revealed_blocks")){
+        if(settings.getBool("editor_hidden_rules", true)) addHiddenRules();
+        if(settings.getBool("editor_revealed_blocks", true)){
             addRevealedBlocks();
         }
-        if(settings.getBool("editor_planet_background")){
+        if(settings.getBool("editor_planet_background", true)){
             addPlanetBackground();
         }
     }
@@ -156,7 +156,7 @@ public class RulesDialogMod extends MUMod{
 
         dialog.number("@rules.dragmultiplier", f -> rules.dragMultiplier = f, () -> rules.dragMultiplier);
 
-        if(Core.bundle.get("rules.environmentsettings").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_environment_settings")){
+        if(Core.bundle.get("rules.environmentsettings").toLowerCase().contains(dialog.ruleSearch) && settings.getBool("editor_environment_settings", true)){
             dialog.current.button("@rules.environmentsettings", () -> environmentDialog(rules)).left().width(300f).fillX().row();
         }
 

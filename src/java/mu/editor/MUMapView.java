@@ -19,6 +19,7 @@ import mindustry.editor.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.ui.*;
+import mindustry.world.*;
 import mu.editor.blocks.*;
 import mu.utils.*;
 import mu.utils.MUAnnotations.*;
@@ -32,8 +33,12 @@ public class MUMapView extends MapView implements JsonSerializable{
     public float zoom = 1f;
     public float mousex, mousey;
 
+    public Vec2 vec;
+
     public MUMapView(){
         super();
+
+        vec = new Vec2();
 
         // Remove all listeners that previous constructor made
         ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, this, "listeners")).clear();
@@ -75,6 +80,17 @@ public class MUMapView extends MapView implements JsonSerializable{
         MUReflect.copyChildFields(this, MapView.class);
     }
 
+    public Vec2 unproject(int x, int y){
+        float ratio = 1f / ((float)editor.width() / editor.height());
+        float size = Math.min(width, height);
+        float sclwidth = size * zoom;
+        float sclheight = size * zoom * ratio;
+        float px = ((float)x / editor.width()) * sclwidth + offsetx * zoom - sclwidth / 2 + getWidth() / 2;
+        float py = ((float)(y) / editor.height()) * sclheight
+        + offsety * zoom - sclheight / 2 + getHeight() / 2;
+        return vec.set(px, py);
+    }
+
     @Override
     public void draw(){
         float ratio = 1f / ((float)editor.width() / editor.height());
@@ -83,6 +99,7 @@ public class MUMapView extends MapView implements JsonSerializable{
         float sclheight = size * zoom * ratio;
         float centerx = x + width / 2 + offsetx * zoom;
         float centery = y + height / 2 + offsety * zoom;
+        float scaling = zoom * Math.min(width, height) / editor.width();
 
         GridImage image = Reflect.get(MapView.class, this, "image");
         image.setImageSize(editor.width(), editor.height());
@@ -97,6 +114,13 @@ public class MUMapView extends MapView implements JsonSerializable{
         Lines.rect(centerx - sclwidth / 2 - 1, centery - sclheight / 2 - 1, sclwidth + 2, sclheight + 2);
         editor.renderer.draw(centerx - sclwidth / 2 + Core.scene.marginLeft, centery - sclheight / 2 + Core.scene.marginBottom, sclwidth, sclheight);
         Draw.reset();
+
+        for(Tile tile : world.tiles){
+            if(editor.blocksMode.selection.get(tile.x, tile.y)){
+                Vec2 v = unproject(tile.x, tile.y).add(x, y);
+                Draw.rect(Core.atlas.white(), v.x + scaling/2f, v.y + scaling/2f, scaling, scaling);
+            }
+        }
 
         /*if(grid){
             Draw.color(Color.gray);
@@ -117,8 +141,6 @@ public class MUMapView extends MapView implements JsonSerializable{
 
             Draw.reset();
         }*/
-
-        float scaling = zoom * Math.min(width, height) / editor.width();
 
         Draw.color(Pal.accent);
         Lines.stroke(Scl.scl(2f));

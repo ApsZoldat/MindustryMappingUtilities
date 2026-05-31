@@ -24,12 +24,15 @@ import mu.utils.MUAnnotations.*;
 import static mindustry.Vars.*;
 
 public class MUMapEditor extends MapEditor implements JsonSerializable{
+    // Editor modes
     public ObjectMap<String, EditorMode> modes = new ObjectMap<>();
+    public NavigationMode navigationMode = new NavigationMode();
+    public BlocksMode blocksMode = new BlocksMode();
     public EditorMode mode;
 
     public MUMapEditor(){
-        this.modes.put("navigation", new NavigationMode());
-        this.modes.put("blocks", new BlocksMode());
+        this.modes.put("navigation", navigationMode);
+        this.modes.put("blocks", blocksMode);
         setMode("navigation");
     }
 

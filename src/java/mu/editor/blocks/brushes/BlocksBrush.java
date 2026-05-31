@@ -4,8 +4,7 @@ import arc.struct.*;
 
 public abstract class BlocksBrush{
     public GridBits area;
-    public int width, height;
-    public int shiftX, shiftY;
+    public int width, height;  // TODO: maybe remov this
 
     public void resize(int size){
         resize(size, size);

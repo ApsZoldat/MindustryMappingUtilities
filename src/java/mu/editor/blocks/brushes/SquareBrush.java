@@ -9,7 +9,5 @@ public class SquareBrush extends BlocksBrush{
         this.width = width;
         this.height = height;
         ((Bits) Reflect.get(this.area, "bits")).set(0, width * height);
-        this.shiftX = (int)(width / 2);
-        this.shiftY = (int)(height / 2);
     }
 }

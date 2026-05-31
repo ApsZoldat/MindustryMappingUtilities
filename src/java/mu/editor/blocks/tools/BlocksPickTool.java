@@ -4,15 +4,13 @@ import mindustry.world.*;
 import mu.editor.blocks.*;
 
 import static mindustry.Vars.*;
+import static mu.EditorVars.editor;
 import static mu.EditorVars.dialog;
 
 public class BlocksPickTool extends BlocksTool{
-    public BlocksMode mode;
-
     public TileData data = TileData.block;
 
-    public BlocksPickTool(BlocksMode mode){
-        this.mode = mode;
+    public BlocksPickTool(){
         this.isDraggable = false;
     }
 
@@ -25,21 +23,21 @@ public class BlocksPickTool extends BlocksTool{
         }
 
         switch(data){
-            case block -> mode.block = tile.block();
-            case floor -> mode.block = tile.floor();
-            case overlay -> mode.overlay = tile.overlay();
+            case block -> editor.blocksMode.block = tile.block();
+            case floor -> editor.blocksMode.block = tile.floor();
+            case overlay -> editor.blocksMode.overlay = tile.overlay();
             case rotation -> {
                 if(tile.build == null){
                     dialog.showErrorMessage("temp");
                 }else{
-                    mode.rotation = tile.build.rotation;
+                    editor.blocksMode.rotation = tile.build.rotation;
                 }
             }
             case team -> {
                 if(tile.build == null){
                     dialog.showErrorMessage("temp");
                 }else{
-                    mode.team = tile.build.team;
+                    editor.blocksMode.team = tile.build.team;
                 }
             }
         }

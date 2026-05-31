@@ -22,9 +22,10 @@ public class ButtonData extends UIObjectData{
     public Button build(){
         Button button = new Button(Styles.defaultb);
         this.object = button;
-        
+
         MUReflect.copyFields(this, button);
-        
+
+        // TODO: all kinds of listeners
         button.clicked(() -> runScript(clickedScript));
         runScript(buildScript);
         return button;

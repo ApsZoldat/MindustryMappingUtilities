@@ -14,6 +14,10 @@ public class BlocksPickTool extends BlocksTool{
         this.isDraggable = false;
     }
 
+    public void setData(String name){
+        data = TileData.valueOf(name);
+    }
+
     public void act(int x, int y){
         Tile tile = world.tiles.get(x, y);
 

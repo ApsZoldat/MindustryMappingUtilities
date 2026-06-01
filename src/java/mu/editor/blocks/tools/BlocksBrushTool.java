@@ -41,14 +41,17 @@ public class BlocksBrushTool extends BlocksTool{
     }
 
     public void act(int x, int y){
+        int shiftX = (int)((brushWidth - 1) / 2);
+        int shiftY = (int)((brushHeight - 1) / 2);
+
         for(int curX = 0; curX < brushWidth; ++curX){
             for(int curY = 0; curY < brushHeight; ++curY){
                 if(!brush.area.get(curX, curY)) continue;
 
-                Tile tile = world.tiles.get(curX + x, curY + y);
+                Tile tile = world.tiles.get(curX + x - shiftX, curY + y - shiftY);
 
                 if(tile == null) continue;
-                editor.blocksMode.selection.set(tile.x, tile.y);
+                editor.blocksMode.action.execute(tile);
             }
         }
     }

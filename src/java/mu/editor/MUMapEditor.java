@@ -118,6 +118,14 @@ public class MUMapEditor extends MapEditor implements JsonSerializable{
         }
     }*/
 
+    public void updateRendererBlock(int x, int y){
+        Reflect.invoke(this.renderer, "updateBlock", new Object[]{x, y}, int.class, int.class);
+    }
+
+    public void updateRendererStatic(int x, int y){
+        Reflect.invoke(this.renderer, "updateStatic", new Object[]{x, y}, int.class, int.class);
+    }
+
     @Override
     public void write(Json json){
         json.writeValue("mode", modes.findKey(mode, true));

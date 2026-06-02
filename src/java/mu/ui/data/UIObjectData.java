@@ -1,5 +1,6 @@
 package mu.ui.data;
 
+import arc.struct.*;
 import arc.scene.ui.layout.*;
 import arc.util.serialization.*;
 import arc.util.serialization.Json.*;
@@ -10,8 +11,8 @@ import mu.utils.MUAnnotations.*;
 import static mu.EditorVars.jsManager;
 
 public abstract class UIObjectData implements JsonSerializable{
-    public @NoJson @NoCopy UIObjectData parent = null;
-    public @NoJson @NoCopy Object object = null;
+    public transient @NoCopy UIObjectData parent = null;
+    public transient @NoCopy Object object = null;
     public @NoCopy String buildScript = null;
     public @NoCopy String name;
 
@@ -39,22 +40,11 @@ public abstract class UIObjectData implements JsonSerializable{
 
     @Override
     public void write(Json json){
-        // Only write fields without NoJson
-        for(var fieldMeta : json.getFields(this.getClass()).values()){
-            if(!fieldMeta.field.isAnnotationPresent(NoJson.class)){
-                json.writeField(this, fieldMeta.field.getName());
-            }
-        }
+        json.writeFields(this);
     }
 
     @Override
     public void read(Json json, JsonValue jsonData){
-        // Remove NoJson fields from data
-        for(var fieldMeta : json.getFields(this.getClass()).values()){
-            if(fieldMeta.field.isAnnotationPresent(NoJson.class)){
-                jsonData.remove(fieldMeta.field.getName());
-            }
-        }
         json.readFields(this, jsonData);
     }
 }

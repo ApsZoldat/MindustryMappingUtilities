@@ -36,7 +36,6 @@ public class WindowData extends UIObjectData{
         name = "Window";
 
         cont = new TableData();
-        cont.parent = this;
         cont.marginTop = 50f;
         cont.marginLeft = 50f;
         cont.marginBot = 50f;
@@ -45,6 +44,7 @@ public class WindowData extends UIObjectData{
 
     public Window build(){
         Window window = new Window(this);
+        cont.parent = this;
         this.object = window;
         runScript(buildScript);
         return window;
@@ -53,6 +53,7 @@ public class WindowData extends UIObjectData{
     // This method shouldn't be called anywhere but just in case
     public Window buildPreview(UIExplorerDialog dialog){
         Window window = new Window(this);
+        cont.parent = this;
         this.object = window;
         runScript(buildScript);
         window.isDraggable = false;

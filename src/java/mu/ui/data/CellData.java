@@ -39,14 +39,8 @@ public class CellData extends UIObjectData{
         this.element = null;
     }
 
-    public CellData(UIObjectData element, UIObjectData parent){
-        this.parent = parent;
-        if(element.isElementData()){
-            this.element = element;
-            element.parent = this;
-        }else{
-            this.element = null;
-        }
+    public CellData(UIObjectData element){
+        this.element = (element.isElementData() ? element : null);
     }
 
     @Override
@@ -56,6 +50,7 @@ public class CellData extends UIObjectData{
 
     public Cell build(){
         if(parent == null || !(parent.object instanceof Table table)) return null;
+        element.parent = this;
 
         Cell cell;
         if(element == null || !element.isElementData()){
@@ -74,6 +69,7 @@ public class CellData extends UIObjectData{
 
     public Cell buildPreview( UIExplorerDialog dialog){
         if(parent == null || !(parent.object instanceof Table table)) return null;
+        element.parent = this;
 
         Button button = new Button(Styles.underlineb);
         button.update(() -> {

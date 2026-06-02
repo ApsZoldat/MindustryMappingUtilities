@@ -3,7 +3,7 @@ package mu.editor.blocks.brushes;
 import arc.struct.*;
 import arc.util.*;
 
-public class SquareBrush extends BlocksBrush{
+public class RectBrush extends BlocksBrush{
     public void resize(int width, int height){
         area = new GridBits(width, height);
         this.width = width;

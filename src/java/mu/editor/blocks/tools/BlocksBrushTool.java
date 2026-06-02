@@ -11,14 +11,14 @@ import static mu.EditorVars.*;
 
 public class BlocksBrushTool extends BlocksTool{
     public ObjectMap<String, BlocksBrush> brushes = new ObjectMap<>();
-    public SquareBrush squareBrush = new SquareBrush();
+    public RectBrush rectBrush = new RectBrush();
     public BlocksBrush brush;
 
     public int brushWidth = 3, brushHeight = 3;
 
     public BlocksBrushTool(){
-        this.brushes.put("square", squareBrush);
-        setBrush("square");
+        this.brushes.put("rect", rectBrush);
+        setBrush("rect");
     }
 
     public void setBrush(String name){

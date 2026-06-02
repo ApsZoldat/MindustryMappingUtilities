@@ -35,6 +35,7 @@ public class TableData extends UIObjectData{
 
         // Add all cells
         for(CellData cell : cells){
+            cell.parent = this;
             cell.build();
         }
 
@@ -52,6 +53,7 @@ public class TableData extends UIObjectData{
 
         // Add all cells
         for(CellData cell : cells){
+            cell.parent = this;
             cell.buildPreview(dialog);
         }
 

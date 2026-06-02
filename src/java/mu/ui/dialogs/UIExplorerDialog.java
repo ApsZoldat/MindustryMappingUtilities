@@ -275,7 +275,7 @@ public class UIExplorerDialog extends BaseDialog{
 
         // TODO: unholy fucking shit.
         dialog.cont.button("Button", () -> {
-            CellData cell = new CellData(new ButtonData(), currentData);
+            CellData cell = new CellData(new ButtonData());
             cell.minWidth = cell.maxWidth = cell.minHeight = cell.maxHeight = 50f;
             ((TableData) currentData).cells.add(cell);
             dialog.hide();
@@ -283,7 +283,7 @@ public class UIExplorerDialog extends BaseDialog{
             layoutDialog();
         }).padBottom(5f).width(300f).minHeight(50f).row();
         dialog.cont.button("Table", () -> {
-            CellData cell = new CellData(new TableData(), currentData);
+            CellData cell = new CellData(new TableData());
             cell.minWidth = cell.minHeight = 50f;
             ((TableData) currentData).cells.add(cell);
             dialog.hide();

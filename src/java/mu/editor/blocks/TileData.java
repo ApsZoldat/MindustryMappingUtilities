@@ -1,9 +1,9 @@
 package mu.editor.blocks;
 
 public enum TileData{
-    block
+    block,
     floor,
     overlay,
-    block,
     team,
+    rotation
 }

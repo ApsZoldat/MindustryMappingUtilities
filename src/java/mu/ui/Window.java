@@ -1,5 +1,6 @@
 package mu.ui;
 
+import arc.Core;
 import arc.input.*;
 import arc.math.*;
 import arc.math.geom.*;
@@ -16,7 +17,6 @@ import mu.ui.data.*;
 public class Window extends Table{
     public WindowData data;
 
-    public Table dragger;
     public Table cont;
 
     public boolean isDraggable;
@@ -27,21 +27,18 @@ public class Window extends Table{
         this.data = data;
         this.isDraggable = data.isDraggable;
         
-        dragger = new Table();
         cont = data.cont.build();
+        add(cont).grow();
+        setBackground(Styles.black3);
+        touchable = Touchable.enabled;
+        pack();  // i spent like 3 hours to discover ts :sob:
 
-        dragger.setBackground(Styles.black3);
-        dragger.touchable = Touchable.enabled;
+        Window w = this;  // yep stoopid i know
 
-        cont = data.cont.build();
-        
-        dragger.add(cont);
-        add(dragger);
-
-        dragger.addListener(new InputListener(){
+        addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
-                if(event.targetActor != dragger || !isDraggable) return false;
+                if(event.targetActor != w || !isDraggable) return false;
                 dragOffsetX = x;
                 dragOffsetY = y;
                 isDragging = true;
@@ -61,10 +58,11 @@ public class Window extends Table{
 
         update(() -> {
             color.a = isDragging ? data.draggedAlpha : 1f;
-
-            // Just clamping the position
-            setPos(data.x, data.y);  // TODO: Only do this once somehow
         });
+        
+        // Just clamping the position
+        Core.app.post(() -> setPos(data.x, data.y));
+        // TODO: maybe make different positions for portrait/landscape modes
     }
 
     public void updateDrag(float x, float y){
@@ -80,12 +78,11 @@ public class Window extends Table{
 
     public void setPos(float x, float y){
         setPosition(
-            Mathf.clamp(x, getPrefWidth() / 2, parent.getWidth() - getPrefWidth() / 2),
-            Mathf.clamp(y, getPrefHeight() / 2, parent.getHeight() - getPrefHeight() / 2)
+            Mathf.clamp(x, 0, parent.getWidth() - getPrefWidth()),
+            Mathf.clamp(y, 0, parent.getHeight() - getPrefHeight())
         );
 
-        data.x = Mathf.clamp(x, getPrefWidth() / 2, parent.getWidth() - getPrefWidth() / 2);
-        data.y = Mathf.clamp(y, getPrefHeight() / 2, parent.getHeight() - getPrefHeight() / 2);
-        // TODO: fix portrait mode triggering clamping
+        data.x = Mathf.clamp(x, 0, parent.getWidth() - getPrefWidth());
+        data.y = Mathf.clamp(y, 0, parent.getHeight() - getPrefHeight());
     }
 }

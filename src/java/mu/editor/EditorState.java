@@ -7,6 +7,7 @@ import arc.util.*;
 import mindustry.io.*;
 import mu.editor.*;
 import mu.ui.*;
+import mu.utils.*;
 import mu.EditorVars;
 
 /** This class contains references to all objects representing current map editor state (for serialization) */
@@ -42,17 +43,13 @@ public class EditorState implements JsonSerializable{
     
     @Override
     public void read(Json json, JsonValue jsonData){
-        // All this just to make sure new instances of editor/view/ui don't get created
-        if(!json.getClass().getSimpleName().equals("CustomJson")){
-            throw new RuntimeException("Only call EditorState.read() using jsonBase (use JsonIO.read(type, base, string) method)");
+        // All this just to make sure new instances of state/editor/view/ui don't get created
+        if(json.getClass() != MUJson.class){
+            throw new RuntimeException("Only call EditorState.read() using MUJson methods");
         }
         json.readField(this, "vars", jsonData);
-
-        Reflect.set(json, "baseObject", editor);
         json.readField(this, "editor", jsonData);
-        Reflect.set(json, "baseObject", view);
         json.readField(this, "view", jsonData);
-        Reflect.set(json, "baseObject", ui);
         json.readField(this, "ui", jsonData);
     }
 }

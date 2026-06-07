@@ -12,7 +12,7 @@ import mindustry.gen.*;
 import mindustry.ui.*;
 import mu.ui.data.*;
 
-// yep this is quite literally https://github.com/mnemotechnician/new-console/blob/master/src%2Fnewconsole%2Fui%2FFloatingWidget.java copy (thank you very much Mnemotechnician <3)
+// yep this was created using https://github.com/mnemotechnician/new-console/blob/master/src%2Fnewconsole%2Fui%2FFloatingWidget.java as a base (thank you very much Mnemotechnician <3)
 
 public class Window extends Table{
     public WindowData data;

@@ -17,6 +17,7 @@ import mindustry.io.*;
 import mindustry.Vars;
 import mu.ui.*;
 import mu.ui.data.*;
+import mu.utils.*;
 
 import static mu.EditorVars.*;
 
@@ -217,7 +218,7 @@ public class UIExplorerDialog extends BaseDialog{
                 t.defaults().size(450f, 60f).left();
 
                 t.button("@waves.copy", Icon.copy, Styles.flatt, () -> {
-                    Core.app.setClipboardText(JsonIO.write(currentData));
+                    Core.app.setClipboardText(MUJson.write(currentData));
                     Vars.ui.showInfoFade("@copied");
                     dialog.hide();
                 }).disabled(currentData == null).marginLeft(12f).row();
@@ -239,7 +240,7 @@ public class UIExplorerDialog extends BaseDialog{
     }
 
     private <T> void readJson(T data, String json){
-        JsonIO.read((Class<T>)data.getClass(), data, json);
+        MUJson.read((Class<T>)data.getClass(), data, json);
     }
 
     public void layoutDialog(){

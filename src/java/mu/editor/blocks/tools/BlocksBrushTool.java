@@ -2,6 +2,8 @@ package mu.editor.blocks.tools;
 
 import arc.struct.*;
 import arc.util.*;
+import arc.util.serialization.*;
+import arc.util.serialization.Json.*;
 import mindustry.world.*;
 import mu.editor.blocks.*;
 import mu.editor.blocks.brushes.*;
@@ -9,10 +11,10 @@ import mu.editor.blocks.brushes.*;
 import static mindustry.Vars.world;
 import static mu.EditorVars.*;
 
-public class BlocksBrushTool extends BlocksTool{
+public class BlocksBrushTool extends BlocksTool implements JsonSerializable{
     public ObjectMap<String, BlocksBrush> brushes = new ObjectMap<>();
-    public RectBrush rectBrush = new RectBrush();
-    public BlocksBrush brush;
+    public transient RectBrush rectBrush = new RectBrush();
+    public transient BlocksBrush brush;
 
     public int brushWidth = 3, brushHeight = 3;
 
@@ -54,5 +56,17 @@ public class BlocksBrushTool extends BlocksTool{
                 editor.blocksMode.action.execute(tile);
             }
         }
+    }
+
+    @Override
+    public void write(Json json){
+        json.writeFields(this);
+        json.writeValue("brush", brushes.findKey(brush, true));
+    }
+
+    @Override
+    public void read(Json json, JsonValue jsonData){
+        json.readFields(this, jsonData);
+        setBrush(jsonData.getString("brush"));
     }
 }

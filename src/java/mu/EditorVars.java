@@ -13,7 +13,19 @@ import mu.utils.*;
 
 public class EditorVars{
     // All package names
-    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.modes", "mu.editor.brushes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
+    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.blocks", "mu.editor.blocks.tools", "mu.editor.blocks.brushes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
+
+    // All JSON class tags
+    public static ObjectMap<String, Class<?>> classTags = ObjectMap.of(
+        "MUMapEditor", MUMapEditor.class,
+        "MUEditorUI", EditorUI.class,
+        "MUMapView", MUMapView.class,
+        "MUEditorState", EditorState.class,
+        "MUWindowData", WindowData.class,
+        "MUTableData", TableData.class,
+        "MUCellData", CellData.class,
+        "MUButtonData", ButtonData.class
+    );
 
     // New editor
     public static MUMapEditor editor;
@@ -35,6 +47,12 @@ public class EditorVars{
         state = new EditorState();
         dialog = new MUMapEditorDialog();
         jsManager = new JSManager(Vars.mods.getScripts());
+        
+        // Mark these as singletons so they don't get copied on deserialization
+        MUJson.addSingleton(editor);
+        MUJson.addSingleton(view);
+        MUJson.addSingleton(ui);
+        MUJson.addSingleton(state);
     }
 
     public static void updateMods(){

@@ -4,6 +4,7 @@ import arc.Events;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import arc.util.serialization.*;
 import mindustry.editor.*;
 import mindustry.game.*;
 import mindustry.mod.*;
@@ -67,15 +68,9 @@ public class MapUtilitiesMod extends Mod{
             // Importing all packages to Rhino JS
             jsManager.importPackages();
 
-            // JSON Serialization class tags
-            JsonIO.classTag("MUWindowData", WindowData.class);
-            JsonIO.classTag("MUTableData", TableData.class);
-            JsonIO.classTag("MUCellData", CellData.class);
-            JsonIO.classTag("MUButtonData", ButtonData.class);
-            JsonIO.classTag("MUEditorUI", EditorUI.class);
-            JsonIO.classTag("MUMapEditor", MUMapEditor.class);
-            JsonIO.classTag("MUMapView", MUMapView.class);
-            JsonIO.classTag("MUEditorState", EditorState.class);
+            // Adding all class tags
+            MUJson.classTags(Reflect.get(Json.class, JsonIO.json, "tagToClass"));
+            MUJson.classTags(classTags);
         });
     }
 }

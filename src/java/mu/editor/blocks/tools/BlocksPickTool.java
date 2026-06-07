@@ -1,5 +1,7 @@
 package mu.editor.blocks.tools;
 
+import arc.util.serialization.*;
+import arc.util.serialization.Json.*;
 import mindustry.world.*;
 import mu.editor.blocks.*;
 
@@ -7,8 +9,8 @@ import static mindustry.Vars.*;
 import static mu.EditorVars.editor;
 import static mu.EditorVars.dialog;
 
-public class BlocksPickTool extends BlocksTool{
-    public TileData data = TileData.block;
+public class BlocksPickTool extends BlocksTool implements JsonSerializable{
+    public transient TileData data = TileData.block;
 
     public BlocksPickTool(){
         this.isDraggable = false;
@@ -45,5 +47,17 @@ public class BlocksPickTool extends BlocksTool{
                 }
             }
         }
+    }
+
+    @Override
+    public void write(Json json){
+        json.writeFields(this);
+        json.writeValue("data", data.toString());
+    }
+
+    @Override
+    public void read(Json json, JsonValue jsonData){
+        json.readFields(this, jsonData);
+        setData(jsonData.getString("data"));
     }
 }

@@ -6,6 +6,8 @@ import arc.scene.ui.layout.*;
 import arc.input.*;
 import arc.math.geom.*;
 import arc.util.*;
+import arc.util.serialization.*;
+import arc.util.serialization.Json.*;
 import mindustry.game.*;
 import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
@@ -15,8 +17,9 @@ import mu.editor.blocks.tools.*;
 import static mindustry.Vars.world;
 import static mu.EditorVars.*;
 
-public class BlocksMode extends EditorMode{
-    public GridBits selection;
+public class BlocksMode extends EditorMode implements JsonSerializable{
+    // TODO: transient just for now
+    public transient GridBits selection;
 
     public Block block = null;
     public Floor floor = null;
@@ -28,16 +31,16 @@ public class BlocksMode extends EditorMode{
 
     // Blocks mode tools
     public ObjectMap<String, BlocksTool> tools = new ObjectMap<>();
-    public BlocksPickTool pickTool = new BlocksPickTool();
-    public BlocksBrushTool brushTool = new BlocksBrushTool();
-    public BlocksTool tool;
+    public transient BlocksPickTool pickTool = new BlocksPickTool();
+    public transient BlocksBrushTool brushTool = new BlocksBrushTool();
+    public transient BlocksTool tool;
 
     // Blocks mode actions
     public ObjectMap<String, BlocksAction> actions = new ObjectMap<>();
-    public BlocksSelectAction selectAction = new BlocksSelectAction();
-    public BlocksDeselectAction deselectAction = new BlocksDeselectAction();
-    public BlocksDrawAction drawAction = new BlocksDrawAction();
-    public BlocksAction action;
+    public transient BlocksSelectAction selectAction = new BlocksSelectAction();
+    public transient BlocksDeselectAction deselectAction = new BlocksDeselectAction();
+    public transient BlocksDrawAction drawAction = new BlocksDrawAction();
+    public transient BlocksAction action;
     
     public BlocksMode(){
         this.tools.put("pick", pickTool);
@@ -134,7 +137,22 @@ public class BlocksMode extends EditorMode{
                 updateStatic = true;
             }
 
-            
+            if(updateBlock) editor.updateRendererBlock(tile.x, tile.y);
+            if(updateStatic) editor.updateRendererStatic(tile.x, tile.y);
         }
+    }
+
+    @Override
+    public void write(Json json){
+        json.writeFields(this);
+        json.writeValue("tool", tools.findKey(tool, true));
+        json.writeValue("action", actions.findKey(action, true));
+    }
+
+    @Override
+    public void read(Json json, JsonValue jsonData){
+        json.readFields(this, jsonData);
+        setTool(jsonData.getString("tool"));
+        setAction(jsonData.getString("action"));
     }
 }

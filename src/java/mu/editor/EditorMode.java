@@ -4,7 +4,7 @@ import arc.input.*;
 import arc.scene.event.*;
 import arc.math.geom.*;
 
-/** This class combines all the listeners which define how map editor should behave in this mode */
+/** This class combines all the listeners and methods which define how map editor should behave in this mode */
 public abstract class EditorMode{
     public boolean mouseMoved(InputEvent event, float x, float y){
         return false;
@@ -35,6 +35,14 @@ public abstract class EditorMode{
     }
 
     public void pinchStop(){
+        return;
+    }
+
+    public void beginEdit(int width, int height){
+        return;
+    }
+
+    public void resize(int width, int height, int shiftX, int shiftY){
         return;
     }
 }

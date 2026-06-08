@@ -18,8 +18,7 @@ import static mindustry.Vars.world;
 import static mu.EditorVars.*;
 
 public class BlocksMode extends EditorMode implements JsonSerializable{
-    // TODO: transient just for now
-    public transient GridBits selection;
+    public GridBits selection;
 
     public Block block = null;
     public Floor floor = null;
@@ -50,8 +49,6 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
         this.actions.put("select", selectAction);
         this.actions.put("deselect", deselectAction);
         this.actions.put("draw", drawAction);
-        
-        selection = new GridBits(1000, 1000); // TODO: I JUST NEED TO TEST THIS
 
         setTool("brush");
         setAction("select");
@@ -91,6 +88,25 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
         Bresenham2.line(lastX, lastY, pos.x, pos.y, (cx, cy) -> tool.act(cx, cy));
         lastX = pos.x;
         lastY = pos.y;
+    }
+
+    public void beginEdit(int width, int height){
+        selection = new GridBits(width, height);
+    }
+
+    public void resize(int width, int height, int shiftX, int shiftY){
+        int offsetX = (editor.width() - width) / 2 - shiftX;
+        int offsetY = (editor.height() - height) / 2 - shiftY;
+        GridBits grid = new GridBits(width, height);
+
+        for(int x = 0; x < width; x++){
+            for(int y = 0; y < height; y++){
+                int px = offsetX + x;
+                int py = offsetY + y;
+                grid.set(x, y, selection.get(px, py));
+            }
+        }
+        selection = grid;
     }
 
     public interface BlocksAction{

@@ -86,16 +86,8 @@ public class MUJson extends Json{
     public static void apply(Json json){
         Reflect.invoke(JsonIO.class, "apply", new Object[]{json}, Json.class);
 
-        /*
-        json.setElementType(MUMapEditor.class, "modes", EditorMode.class);
-        json.setElementType(BlocksMode.class, "actions", BlocksMode.BlocksAction.class);
-        json.setElementType(BlocksMode.class, "tools", BlocksTool.class);
-        json.setElementType(BlocksBrushTool.class, "brushes", BlocksBrush.class);*/
-
-        // Serialization class tags
-        
-
-        // TODO: later.
+        // GridBits to Base64 serializer
+        // TODO: actually rethink whether this is the best format
         /*
         json.setSerializer(GridBits.class, new Serializer<GridBits>(){
             @Override
@@ -105,8 +97,18 @@ public class MUJson extends Json{
                 json.writeValue("width", object.width());
                 json.writeValue("height", object.height());
 
-                byte[] bitsData = Reflect.get(object, "bits").toByteArray();
-                String encoded = Base64Coder.encodeString(new String(bitsData, Strings.utf8));
+                long[] longs = Reflect.get(Bits.class, Reflect.get(object, "bits"), "bits");
+                byte[] bytes = new byte[longs.length * Long.BYTES];
+
+                // long[] to byte[] conversion
+                for(int i = 0; i < longs.length; i++){
+                    for(int j = 0; j < Long.BYTES; j++){
+                        bytes[i * Long.BYTES + j] = (byte) ((longs[i] >> (8 * j)) & 0xFF);
+                    }
+                }
+                // Log.info(printBytes(bytes));
+
+                String encoded = new String(Base64Coder.encode(bytes));
                 json.writeValue("bits", encoded);
 
                 json.writeObjectEnd();
@@ -117,16 +119,40 @@ public class MUJson extends Json{
                 int width = jsonData.getInt("width");
                 int height = jsonData.getInt("height");
 
-                GridBits grid = new GridBits(width, height);
                 String encoded = jsonData.getString("bits");
-                byte[] bitsData = Base64Coder.decode(encoded).getBytes(Strings.utf8);
-                grid.bits.fromByteArray(bitsData);
+                byte[] bytes = Base64Coder.decode(encoded);
+                GridBits grid = new GridBits(width, height);
+
+                long[] longs = Reflect.get(Bits.class, Reflect.get(grid, "bits"), "bits");
+
+                // byte[] to long[] conversion
+                for(int i = 0; i < longs.length; i++){
+                    for(int j = 0; j < Long.BYTES; j++){
+                        longs[i] |= (bytes[i * Long.BYTES + j] & 0xFFL) << (8 * j);
+                    }
+                }
 
                 return grid;
             }
         });*/
     }
-    
+
+    public static String printBytes(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+
+        for(int i = 0; i < bytes.length; i++){
+            // Convert byte to 8-bit binary string
+            String binaryString = String.format("%8s", Integer.toBinaryString(bytes[i] & 0xFF)).replace(' ', '0');
+            result.append(binaryString);
+
+            // Add separator between bytes (except after the last one)
+            if(i < bytes.length - 1){
+                result.append(" | ");
+            }
+        }
+        return result.toString();
+    }
+
     @Override
     public <T> T fromJson(Class<T> type, String json){
         return fromBaseJson(type, null, json);

@@ -30,6 +30,8 @@ public class MUMapEditor extends MapEditor implements JsonSerializable{
     public transient BlocksMode blocksMode = new BlocksMode();
     public transient EditorMode mode;  // only mode name is serialized
 
+    // TODO: Additional onLoad, onSave and onResize Seq<Runnable>
+
     public MUMapEditor(){
         this.modes.put("navigation", navigationMode);
         this.modes.put("blocks", blocksMode);
@@ -50,6 +52,38 @@ public class MUMapEditor extends MapEditor implements JsonSerializable{
 
     public void updateRendererStatic(int x, int y){
         Reflect.invoke(this.renderer, "updateStatic", new Object[]{x, y}, int.class, int.class);
+    }
+
+    @Override
+    public void beginEdit(int width, int height){
+        super.beginEdit(width, height);
+        for(EditorMode mode : modes.values()){
+            mode.beginEdit(width, height);
+        }
+    }
+
+    @Override
+    public void beginEdit(Map map){
+        super.beginEdit(map);
+        for(EditorMode mode : modes.values()){
+            mode.beginEdit(width(), height());
+        }
+    }
+
+    @Override
+    public void beginEdit(Pixmap pixmap){
+        super.beginEdit(pixmap);
+        for(EditorMode mode : modes.values()){
+            mode.beginEdit(pixmap.width, pixmap.height);
+        }
+    }
+
+    @Override
+    public void resize(int width, int height, int shiftX, int shiftY){
+        super.resize(width, height, shiftX, shiftY);
+        for(EditorMode mode : modes.values()){
+            mode.resize(width, height, shiftX, shiftY);
+        }
     }
 
     @Override

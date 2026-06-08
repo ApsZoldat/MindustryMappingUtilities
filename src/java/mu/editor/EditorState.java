@@ -16,7 +16,7 @@ public class EditorState implements JsonSerializable{
     public MUMapView view;
     public EditorUI ui;
 
-    /** Custom user-defined and serialized variables */
+    /** Custom user-defined and serialized variables. Put only basic types and serializable objects here. */
     public ObjectMap<String, Object> vars = new ObjectMap<>();
 
     public EditorState(){

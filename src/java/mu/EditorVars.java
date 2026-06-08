@@ -7,6 +7,10 @@ import mindustry.world.*;
 import mindustry.Vars;
 import mu.mods.*;
 import mu.editor.*;
+import mu.editor.blocks.*;
+import mu.editor.blocks.BlocksMode.*;
+import mu.editor.blocks.tools.*;
+import mu.editor.blocks.brushes.*;
 import mu.ui.*;
 import mu.ui.data.*;
 import mu.utils.*;
@@ -24,8 +28,16 @@ public class EditorVars{
         "MUWindowData", WindowData.class,
         "MUTableData", TableData.class,
         "MUCellData", CellData.class,
-        "MUButtonData", ButtonData.class
-    );
+        "MUButtonData", ButtonData.class,
+        "MUNavigationMode", NavigationMode.class,
+        "MUBlocksMode", BlocksMode.class,
+        "MUBlocksPickTool", BlocksPickTool.class,
+        "MUBlocksBrushTool", BlocksBrushTool.class,
+        "MURectBrush", RectBrush.class,
+        "MUBlocksSelectAction", BlocksSelectAction.class,
+        "MUBlocksDeselectAction", BlocksDeselectAction.class,
+        "MUBlocksDrawAction", BlocksDrawAction.class
+    );  // TODO: ?
 
     // New editor
     public static MUMapEditor editor;

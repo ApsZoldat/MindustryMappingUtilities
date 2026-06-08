@@ -36,7 +36,8 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
     public transient BlocksTool tool;
 
     // Blocks mode actions
-    public ObjectMap<String, BlocksAction> actions = new ObjectMap<>();
+    // TODO: temporarily transient
+    public transient ObjectMap<String, BlocksAction> actions = new ObjectMap<>();
     public transient BlocksSelectAction selectAction = new BlocksSelectAction();
     public transient BlocksDeselectAction deselectAction = new BlocksDeselectAction();
     public transient BlocksDrawAction drawAction = new BlocksDrawAction();

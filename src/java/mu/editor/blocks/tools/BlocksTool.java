@@ -1,7 +1,9 @@
 package mu.editor.blocks.tools;
 
-public abstract class BlocksTool{
-    public boolean isDraggable = true;
+public interface BlocksTool{
+    public abstract void start(int x, int y);
 
     public abstract void act(int x, int y);
+
+    public abstract void end(int x, int y);
 }

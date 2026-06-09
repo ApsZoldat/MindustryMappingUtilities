@@ -106,7 +106,6 @@ public class MUJson extends Json{
                         bytes[i * Long.BYTES + j] = (byte) ((longs[i] >> (8 * j)) & 0xFF);
                     }
                 }
-                // Log.info(printBytes(bytes));
 
                 String encoded = new String(Base64Coder.encode(bytes));
                 json.writeValue("bits", encoded);

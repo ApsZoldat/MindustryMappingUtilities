@@ -9,18 +9,22 @@ import static mindustry.Vars.*;
 import static mu.EditorVars.editor;
 import static mu.EditorVars.dialog;
 
-public class BlocksPickTool extends BlocksTool implements JsonSerializable{
+public class BlocksPickTool implements BlocksTool, JsonSerializable{
     public transient TileData data = TileData.block;
-
-    public BlocksPickTool(){
-        this.isDraggable = false;
-    }
 
     public void setData(String name){
         data = TileData.valueOf(name);
     }
 
+    public void start(int x, int y){
+        return;
+    }
+
     public void act(int x, int y){
+        return;
+    }
+
+    public void end(int x, int y){
         Tile tile = world.tiles.get(x, y);
 
         if(tile == null){

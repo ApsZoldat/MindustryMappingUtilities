@@ -5,6 +5,7 @@ import arc.scene.event.*;
 import arc.scene.ui.layout.*;
 import arc.input.*;
 import arc.math.geom.*;
+import arc.func.*;
 import arc.util.*;
 import arc.util.serialization.*;
 import arc.util.serialization.Json.*;
@@ -13,6 +14,7 @@ import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
 import mu.editor.*;
 import mu.editor.blocks.tools.*;
+import mu.editor.blocks.operations.*;
 
 import static mindustry.Vars.world;
 import static mu.EditorVars.*;
@@ -34,21 +36,26 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
     public transient BlocksBrushTool brushTool = new BlocksBrushTool();
     public transient BlocksTool tool;
 
-    // Blocks mode actions
-    // TODO: temporarily transient
-    public transient ObjectMap<String, BlocksAction> actions = new ObjectMap<>();
-    public transient BlocksSelectAction selectAction = new BlocksSelectAction();
-    public transient BlocksDeselectAction deselectAction = new BlocksDeselectAction();
-    public transient BlocksDrawAction drawAction = new BlocksDrawAction();
-    public transient BlocksAction action;
-    
+    // Blocks mode actions (suppliers for new operations)
+    public transient ObjectMap<String, Prov<BlocksOperation>> actions = new ObjectMap<>();
+    public transient Prov<BlocksOperation> action;
+
+    // Operation stack
+    public transient EditorOperationStack<BlocksOperation> operationStack;
+
     public BlocksMode(){
         this.tools.put("pick", pickTool);
         this.tools.put("brush", brushTool);
         
-        this.actions.put("select", selectAction);
-        this.actions.put("deselect", deselectAction);
-        this.actions.put("draw", drawAction);
+        this.actions.put("select", () -> new BlocksSelectionOperation());
+        this.actions.put("deselect", () -> {
+            BlocksSelectionOperation op = new BlocksSelectionOperation();
+            op.select = false;
+            return op;
+        });
+        //this.actions.put("draw", drawAction);
+
+        operationStack = new EditorOperationStack<>();
 
         setTool("brush");
         setAction("select");
@@ -63,27 +70,41 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
     }
 
     public void setAction(String name){
-        BlocksAction action = actions.get(name);
+        Prov<BlocksOperation> action = actions.get(name);
         if(action == null){
             throw new RuntimeException(Strings.format("BlocksAction \"@\" is not defined in BlocksMode.actions", name));
         }
         this.action = action;
     }
 
+    public BlocksOperation getOperation(){
+        BlocksOperation op = action.get();
+        operationStack.add(op);
+        return op;
+    }
+
+    public void undo(){
+        operationStack.undo();
+    }
+
+    public void redo(){
+        operationStack.redo();
+    }
+
     public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
         Point2 pos = view.project(x, y);
         lastX = pos.x;
         lastY = pos.y;
-        tool.act(pos.x, pos.y);
+        tool.start(pos.x, pos.y);
         return true;
     }
 
     public void touchUp(InputEvent event, float x, float y, int pointer, KeyCode button){
-        return;
+        Point2 pos = view.project(x, y);
+        tool.end(pos.x, pos.y);
     }
 
     public void touchDragged(InputEvent event, float x, float y, int pointer){
-        if(!tool.isDraggable) return;
         Point2 pos = view.project(x, y);
         Bresenham2.line(lastX, lastY, pos.x, pos.y, (cx, cy) -> tool.act(cx, cy));
         lastX = pos.x;

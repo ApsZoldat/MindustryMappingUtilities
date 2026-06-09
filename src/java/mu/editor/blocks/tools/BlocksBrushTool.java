@@ -7,14 +7,16 @@ import arc.util.serialization.Json.*;
 import mindustry.world.*;
 import mu.editor.blocks.*;
 import mu.editor.blocks.brushes.*;
+import mu.editor.blocks.operations.*;
 
 import static mindustry.Vars.world;
 import static mu.EditorVars.*;
 
-public class BlocksBrushTool extends BlocksTool implements JsonSerializable{
+public class BlocksBrushTool implements BlocksTool, JsonSerializable{
     public ObjectMap<String, BlocksBrush> brushes = new ObjectMap<>();
     public transient RectBrush rectBrush = new RectBrush();
     public transient BlocksBrush brush;
+    public transient BlocksOperation operation;
 
     public int brushWidth = 3, brushHeight = 3;
 
@@ -42,10 +44,16 @@ public class BlocksBrushTool extends BlocksTool implements JsonSerializable{
         brushHeight = height;
     }
 
+    public void start(int x, int y){
+        operation = editor.blocksMode.getOperation();
+        operation.start();
+    }
+
     public void act(int x, int y){
         int shiftX = (int)((brushWidth - 1) / 2);
         int shiftY = (int)((brushHeight - 1) / 2);
 
+        operation.stepStart();
         for(int curX = 0; curX < brushWidth; ++curX){
             for(int curY = 0; curY < brushHeight; ++curY){
                 if(!brush.area.get(curX, curY)) continue;
@@ -53,9 +61,14 @@ public class BlocksBrushTool extends BlocksTool implements JsonSerializable{
                 Tile tile = world.tiles.get(curX + x - shiftX, curY + y - shiftY);
 
                 if(tile == null) continue;
-                editor.blocksMode.action.execute(tile);
+                operation.act(tile);
             }
         }
+        operation.stepEnd();
+    }
+
+    public void end(int x, int y){
+        operation.end();
     }
 
     @Override

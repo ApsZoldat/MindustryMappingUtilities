@@ -8,7 +8,6 @@ import mindustry.Vars;
 import mu.mods.*;
 import mu.editor.*;
 import mu.editor.blocks.*;
-import mu.editor.blocks.BlocksMode.*;
 import mu.editor.blocks.tools.*;
 import mu.editor.blocks.brushes.*;
 import mu.ui.*;
@@ -17,7 +16,7 @@ import mu.utils.*;
 
 public class EditorVars{
     // All package names
-    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.blocks", "mu.editor.blocks.tools", "mu.editor.blocks.brushes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
+    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.blocks", "mu.editor.blocks.operations", "mu.editor.blocks.tools", "mu.editor.blocks.brushes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
 
     // All JSON class tags
     public static ObjectMap<String, Class<?>> classTags = ObjectMap.of(
@@ -33,10 +32,7 @@ public class EditorVars{
         "MUBlocksMode", BlocksMode.class,
         "MUBlocksPickTool", BlocksPickTool.class,
         "MUBlocksBrushTool", BlocksBrushTool.class,
-        "MURectBrush", RectBrush.class,
-        "MUBlocksSelectAction", BlocksSelectAction.class,
-        "MUBlocksDeselectAction", BlocksDeselectAction.class,
-        "MUBlocksDrawAction", BlocksDrawAction.class
+        "MURectBrush", RectBrush.class
     );  // TODO: ?
 
     // New editor

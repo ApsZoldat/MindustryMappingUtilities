@@ -21,11 +21,13 @@ import mindustry.input.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 import mu.editor.blocks.*;
+import mu.editor.blocks.operations.*;
 import mu.utils.*;
 import mu.utils.MUAnnotations.*;
 
 import static mindustry.Vars.*;
 import static mu.EditorVars.editor;
+import static mu.EditorVars.debug;
 
 public class MUMapView extends MapView implements JsonSerializable{
     // Inner fields, always cast update() after editing these
@@ -119,10 +121,23 @@ public class MUMapView extends MapView implements JsonSerializable{
         for(Tile tile : world.tiles){
             if(editor.blocksMode.selection.get(tile.x, tile.y)){
                 Vec2 v = unproject(tile.x, tile.y).add(x, y);
-                Draw.rect(Core.atlas.white(), v.x + scaling/2f, v.y + scaling/2f, scaling, scaling);
+                Draw.rect(Core.atlas.white(), v.x + scaling / 2f, v.y + scaling / 2f, scaling, scaling);
             }
         }
         Draw.reset();
+
+        // Blocks draw operation borders
+        if(debug){
+            Lines.stroke(2f);
+            for(BlocksOperation operation : editor.blocksMode.operationStack.stack){
+                if(operation instanceof BlocksSelectionOperation op){
+                    Draw.color((op.select ? color.green : Color.red));
+                    Vec2 v = unproject(op.startX, op.startY).add(x, y);
+                    Lines.rect(v.x, v.y, scaling * (op.endX - op.startX + 1), scaling * (op.endY - op.startY + 1));
+                }
+            }
+            Draw.reset();
+        }
 
         /*if(grid){
             Draw.color(Color.gray);

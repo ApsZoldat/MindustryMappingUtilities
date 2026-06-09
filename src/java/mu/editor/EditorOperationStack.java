@@ -3,9 +3,9 @@ package mu.editor;
 import arc.struct.*;
 
 public class EditorOperationStack<T extends EditorOperation>{
-    private int maxSize = 10;
-    private Seq<T> stack = new Seq<>();
-    private int index = 0;
+    public int maxSize = 10;
+    public Seq<T> stack = new Seq<>();
+    public int index = 0;
 
     public EditorOperationStack(){}
 

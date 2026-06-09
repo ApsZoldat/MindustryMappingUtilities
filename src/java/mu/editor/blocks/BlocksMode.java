@@ -92,6 +92,9 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
     }
 
     public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
+        // On mobile it must be the first finger touching the screen
+        if(pointer != 0) return false;
+
         Point2 pos = view.project(x, y);
         lastX = pos.x;
         lastY = pos.y;

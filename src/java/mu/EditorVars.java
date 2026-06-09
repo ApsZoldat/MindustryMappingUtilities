@@ -35,6 +35,8 @@ public class EditorVars{
         "MURectBrush", RectBrush.class
     );  // TODO: ?
 
+    public static boolean debug = false;
+
     // New editor
     public static MUMapEditor editor;
     public static MUMapView view;

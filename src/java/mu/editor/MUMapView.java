@@ -129,6 +129,19 @@ public class MUMapView extends MapView implements JsonSerializable{
         // Blocks draw operation borders
         if(debug){
             Lines.stroke(2f);
+            /* I was testing ChunkedGridBits on selection layer
+            Draw.color(Pal.accent);
+            if(editor.blocksMode.selection != null){
+                for(int cx = 0; cx < editor.width() / 16; ++cx){
+                    for(int cy = 0; cy < editor.width() / 16; ++cy){
+                        if(editor.blocksMode.selection.getChunk(cx, cy) == null) continue;
+
+                        Vec2 v = unproject(cx * 16, cy * 16).add(x, y);
+                        Lines.rect(v.x, v.y, 16 * scaling, 16 * scaling);
+                    }
+                }
+            }*/
+
             for(BlocksOperation operation : editor.blocksMode.operationStack.stack){
                 if(operation instanceof BlocksSelectionOperation op){
                     Draw.color((op.select ? color.green : Color.red));

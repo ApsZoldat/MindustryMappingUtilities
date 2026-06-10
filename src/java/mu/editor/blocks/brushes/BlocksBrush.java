@@ -6,7 +6,7 @@ import arc.struct.*;
 
 public abstract class BlocksBrush implements JsonSerializable{
     public GridBits area;
-    public int width, height;  // TODO: maybe remov this
+    public int width, height;
 
     public void resize(int size){
         resize(size, size);

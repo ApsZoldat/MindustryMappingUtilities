@@ -18,8 +18,6 @@ public class BlocksBrushTool implements BlocksTool, JsonSerializable{
     public transient BlocksBrush brush;
     public transient BlocksOperation operation;
 
-    public int brushWidth = 3, brushHeight = 3;
-
     public BlocksBrushTool(){
         this.brushes.put("rect", rectBrush);
         setBrush("rect");
@@ -30,7 +28,6 @@ public class BlocksBrushTool implements BlocksTool, JsonSerializable{
         if(brush == null){
             throw new RuntimeException(Strings.format("BlocksBrush \"@\" is not defined in BlocksBrushTool.brushes", name));
         }
-        brush.resize(brushWidth, brushHeight);
         this.brush = brush;
     }
 
@@ -40,8 +37,6 @@ public class BlocksBrushTool implements BlocksTool, JsonSerializable{
 
     public void resizeBrush(int width, int height){
         brush.resize(width, height);
-        brushWidth = width;
-        brushHeight = height;
     }
 
     public void start(int x, int y){
@@ -50,12 +45,12 @@ public class BlocksBrushTool implements BlocksTool, JsonSerializable{
     }
 
     public void act(int x, int y){
-        int shiftX = (int)((brushWidth - 1) / 2);
-        int shiftY = (int)((brushHeight - 1) / 2);
+        int shiftX = (int)((brush.width - 1) / 2);
+        int shiftY = (int)((brush.height - 1) / 2);
 
         operation.stepStart();
-        for(int curX = 0; curX < brushWidth; ++curX){
-            for(int curY = 0; curY < brushHeight; ++curY){
+        for(int curX = 0; curX < brush.width; ++curX){
+            for(int curY = 0; curY < brush.height; ++curY){
                 if(!brush.area.get(curX, curY)) continue;
 
                 Tile tile = world.tiles.get(curX + x - shiftX, curY + y - shiftY);

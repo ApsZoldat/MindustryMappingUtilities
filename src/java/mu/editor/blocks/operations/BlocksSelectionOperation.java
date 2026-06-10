@@ -19,8 +19,8 @@ public class BlocksSelectionOperation implements BlocksOperation{
     }
 
     public void act(Tile tile){
-        // Check if this tile actually changed before writing any info about it
         int x = (int)tile.x, y = (int)tile.y;
+        // Check if this tile actually changes before doing anything with it
         if(editor.blocksMode.selection.get(x, y) == select) return;
 
         grid.set(x, y);

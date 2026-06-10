@@ -45,7 +45,7 @@ public class ButtonData extends UIObjectData{
         dialog.check(table, "IsDisabled", "isDisabled");
 
         table.add("JS Script (On Button Click)").padTop(10f).padBottom(2f).center().row();
-        table.field(clickedScript, v -> dialog.currentGroup.each(b -> ((ButtonData) b).clickedScript = v)).size(400f, 300f).padBottom(10f).row();
+        table.area(clickedScript, v -> dialog.currentGroup.each(b -> ((ButtonData) b).clickedScript = v)).size(400f, 300f).padBottom(10f).maxTextLength(Integer.MAX_VALUE).row();
 
         table.add(super.explorerSettings(dialog));
         return table;

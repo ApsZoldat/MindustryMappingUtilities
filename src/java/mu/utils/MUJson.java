@@ -173,13 +173,24 @@ public class MUJson extends Json{
     }
 
     @Override
+    protected <T> Class<T> resolveClass(String className){
+        Class<T> result = super.resolveClass(className);
+        if(Serializable.class.isAssignableFrom(result) || JsonSerializable.class.isAssignableFrom(result)){
+            return result;
+        }
+        throw new SerializationException("Class deserialization not allowed: " + result);
+    }
+
+    @Override
     public <T> T fromJson(Class<T> type, String json){
         return fromBaseJson(type, null, json);
     }
 
     public <T> T fromBaseJson(Class<T> type, T base, String json){
         this.baseObject = base;
-        return readValue(type, null, new JsonReader().parse(json));
+        T object = readValue(type, null, new JsonReader().parse(json));
+        this.baseObject = null;
+        return object;
     }
 
     @Override

@@ -78,11 +78,14 @@ public class BlocksBrushTool implements BlocksTool, JsonSerializable{
     public void write(Json json){
         json.writeFields(this);
         json.writeValue("brush", brushes.findKey(brush, true));
+        // TODO: make this safer
+        json.writeValue("action", editor.blocksMode.actions.findKey(action, true));
     }
 
     @Override
     public void read(Json json, JsonValue jsonData){
         json.readFields(this, jsonData);
         setBrush(jsonData.getString("brush"));
+        setAction(jsonData.getString("action"));
     }
 }

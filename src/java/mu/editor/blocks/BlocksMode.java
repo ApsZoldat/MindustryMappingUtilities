@@ -15,13 +15,12 @@ import mindustry.world.blocks.environment.*;
 import mu.editor.*;
 import mu.editor.blocks.tools.*;
 import mu.editor.blocks.operations.*;
-import mu.utils.*;
 
 import static mindustry.Vars.world;
 import static mu.EditorVars.*;
 
 public class BlocksMode extends EditorMode implements JsonSerializable{
-    public ChunkedGridBits selection;
+    public GridBits selection;  // TODO: Make multiple of them?
 
     public Block block = null;
     public Floor floor = null;
@@ -116,13 +115,13 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
     }
 
     public void beginEdit(int width, int height){
-        selection = new ChunkedGridBits();
+        selection = new GridBits(width, height);
     }
 
     public void resize(int width, int height, int shiftX, int shiftY){
         int offsetX = (editor.width() - width) / 2 - shiftX;
         int offsetY = (editor.height() - height) / 2 - shiftY;
-        ChunkedGridBits grid = new ChunkedGridBits();
+        GridBits grid = new GridBits(width, height);
 
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){

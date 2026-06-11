@@ -7,7 +7,7 @@ public class RectBrush extends BlocksBrush{
     public RectBrush(){
         resize(3);
     }
-    
+
     public void resize(int width, int height){
         area = new GridBits(width, height);
         this.width = width;

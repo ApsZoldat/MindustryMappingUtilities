@@ -4,6 +4,7 @@ import arc.struct.*;
 import arc.util.*;
 import arc.util.serialization.*;
 import arc.util.serialization.Json.*;
+import mindustry.ctype.*;
 import mindustry.io.*;
 import mu.editor.*;
 import mu.editor.blocks.*;
@@ -22,7 +23,7 @@ public class MUJson extends Json{
     public static MUJson get(){
         if(jsonInstance == null){
             jsonInstance = new MUJson();
-            apply(jsonInstance);
+            apply(this);
         }
         return jsonInstance;
     }
@@ -136,7 +137,7 @@ public class MUJson extends Json{
         });*/
     }
 
-    public static String printBytes(byte[] bytes) {
+    /*public static String printBytes(byte[] bytes) {
         StringBuilder result = new StringBuilder();
 
         for(int i = 0; i < bytes.length; i++){
@@ -150,6 +151,25 @@ public class MUJson extends Json{
             }
         }
         return result.toString();
+    }*/
+
+    @Override
+    public void writeValue(Object value, Class knownType, Class elementType){
+        if(value instanceof MappableContent c){
+            try{
+                getWriter().value(c.name);
+            }catch(IOException e){
+                throw new RuntimeException(e);
+            }
+        }else{
+            super.writeValue(value, knownType, elementType);
+        }
+    }
+
+    @Override
+    protected String convertToString(Object object){
+        if(object instanceof MappableContent c) return c.name;
+        return super.convertToString(object);
     }
 
     @Override
@@ -169,9 +189,8 @@ public class MUJson extends Json{
         }
 
         if(baseObject == null || baseObject.getClass() != type){
-                return super.newInstance(type);
-            }
-            return baseObject;
-
+            return super.newInstance(type);
+        }
+        return baseObject;
     }
 }

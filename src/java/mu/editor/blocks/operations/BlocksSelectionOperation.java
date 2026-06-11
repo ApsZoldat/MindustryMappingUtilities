@@ -1,30 +1,24 @@
 package mu.editor.blocks.operations;
 
 import arc.struct.*;
+import arc.util.*;
 import mindustry.world.*;
+import mu.editor.*;
 
 import static mu.EditorVars.*;
 
-public class BlocksSelectionOperation implements BlocksOperation{
+public class BlocksSelectionOperation implements EditorOperation{
     public GridBits grid;
     public boolean select = true;
     public int startX = -1, startY = -1, endX = -1, endY = -1;
 
-    public void start(){
-        grid = new GridBits(editor.width(), editor.height());
-    };
-
-    public void stepStart(){
-        return;
+    public BlocksSelectionOperation(int width, int height, boolean select){
+        grid = new GridBits(width, height);
+        this.select = select;
     }
 
-    public void act(Tile tile){
-        int x = (int)tile.x, y = (int)tile.y;
-        // Check if this tile actually changes before doing anything with it
-        if(editor.blocksMode.selection.get(x, y) == select) return;
-
+    public void addTile(int x, int y){
         grid.set(x, y);
-        editor.blocksMode.selection.set(x, y, select);
 
         if(startX == -1){
             startX = endX = x;
@@ -36,11 +30,7 @@ public class BlocksSelectionOperation implements BlocksOperation{
         endY = Math.max(y, endY);
     }
 
-    public void stepEnd(){
-        return;
-    }
-
-    public void end(){
+    public void cropGrid(){
         if(startX == -1) return;  // Should never happen but still
 
         // Crop grid to its final size

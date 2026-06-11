@@ -6,7 +6,7 @@ import arc.math.geom.*;
 import arc.util.*;
 
 public class ChunkedGridBits{
-    public int chunkSizeBits = 4;  // Each chunk's width/heigth is 2^(this value)
+    public int chunkSizeBits = 3;  // Each chunk's width/heigth is 2^(this value)
     public int chunkSize;
     public int chunkMask;
 

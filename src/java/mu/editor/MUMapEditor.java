@@ -30,11 +30,15 @@ public class MUMapEditor extends MapEditor implements JsonSerializable{
     public transient BlocksMode blocksMode = new BlocksMode();
     public transient EditorMode mode;  // only mode name is serialized
 
+    // Global operations stack
+    public transient EditorOperationStack operations;
+
     // TODO: Additional onLoad, onSave and onResize Seq<Runnable>
 
     public MUMapEditor(){
         this.modes.put("navigation", navigationMode);
         this.modes.put("blocks", blocksMode);
+        this.operations = new EditorOperationStack();
         setMode("navigation");
     }
 
@@ -44,6 +48,18 @@ public class MUMapEditor extends MapEditor implements JsonSerializable{
             throw new RuntimeException(Strings.format("EditorMode \"@\" is not defined in MUMapEditor.modes", name));
         }
         this.mode = mode;
+    }
+
+    public void addOperation(EditorOperation op){
+        operations.add(op);
+    }
+
+    public void undo(){
+        operations.undo();
+    }
+
+    public void redo(){
+        operations.redo();
     }
 
     public void updateRendererBlock(int x, int y){
@@ -84,6 +100,7 @@ public class MUMapEditor extends MapEditor implements JsonSerializable{
         for(EditorMode mode : modes.values()){
             mode.resize(width, height, shiftX, shiftY);
         }
+        operations.clear();  // TODO: maybe keep it
     }
 
     @Override

@@ -16,7 +16,7 @@ import mu.utils.*;
 
 public class EditorVars{
     // All package names
-    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.blocks", "mu.editor.blocks.operations", "mu.editor.blocks.tools", "mu.editor.blocks.brushes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
+    public static Seq<String> packageNames = Seq.with("mu", "mu.mods", "mu.utils", "mu.editor", "mu.editor.blocks", "mu.editor.blocks.actions", "mu.editor.blocks.operations", "mu.editor.blocks.tools", "mu.editor.blocks.brushes", "mu.ui", "mu.ui.data", "mu.ui.dialogs");
 
     // All JSON class tags
     public static ObjectMap<String, Class<?>> classTags = ObjectMap.of(

@@ -23,7 +23,7 @@ public class MUJson extends Json{
     public static MUJson get(){
         if(jsonInstance == null){
             jsonInstance = new MUJson();
-            apply(this);
+            apply(jsonInstance);
         }
         return jsonInstance;
     }

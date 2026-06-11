@@ -20,6 +20,7 @@ import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.ui.*;
 import mindustry.world.*;
+import mu.editor.*;
 import mu.editor.blocks.*;
 import mu.editor.blocks.operations.*;
 import mu.utils.*;
@@ -142,7 +143,7 @@ public class MUMapView extends MapView implements JsonSerializable{
                 }
             }*/
 
-            for(BlocksOperation operation : editor.blocksMode.operationStack.stack){
+            for(EditorOperation operation : editor.operations.stack){
                 if(operation instanceof BlocksSelectionOperation op){
                     Draw.color((op.select ? color.green : Color.red));
                     Vec2 v = unproject(op.startX, op.startY).add(x, y);

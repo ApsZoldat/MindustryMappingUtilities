@@ -2,12 +2,13 @@ package mu.editor.blocks.operations;
 
 import arc.struct.*;
 import mindustry.world.*;
+import mu.editor.*;
 
 import static mindustry.Vars.content;
 import static mindustry.Vars.world;
 import static mu.EditorVars.*;
 
-public class BlocksDrawOperation implements BlocksOperation{
+public class BlocksDrawOperation implements EditorOperation{
     public GridBits grid;  // already changed tiles
 
     public void start(){

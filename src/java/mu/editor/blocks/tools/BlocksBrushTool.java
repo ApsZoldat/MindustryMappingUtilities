@@ -34,8 +34,8 @@ public class BlocksBrushTool implements BlocksTool, JsonSerializable{
 
     public void setAction(String name){
         BlocksAction action = editor.blocksMode.actions.get(name);
-        if(brush == null){
-            throw new RuntimeException(Strings.format("BlocksBrush \"@\" is not defined in BlocksBrushTool.brushes", name));
+        if(action == null){
+            throw new RuntimeException(Strings.format("BlocksAction \"@\" is not defined in BlocksMode.actions", name));
         }
         this.action = action;
     }

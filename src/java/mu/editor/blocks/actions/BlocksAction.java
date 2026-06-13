@@ -4,6 +4,7 @@ import mindustry.world.*;
 import mu.editor.*;
 
 // TODO: docs
+// TODO: serializable
 public interface BlocksAction{
     public void startAction();
 

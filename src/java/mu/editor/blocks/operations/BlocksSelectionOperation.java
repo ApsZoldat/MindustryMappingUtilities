@@ -8,17 +8,17 @@ import mu.editor.*;
 import static mu.EditorVars.*;
 
 public class BlocksSelectionOperation implements EditorOperation{
-    public GridBits grid;
+    public GridBits updatedTiles;
     public boolean select = true;
     public int startX = -1, startY = -1, endX = -1, endY = -1;
 
     public BlocksSelectionOperation(int width, int height, boolean select){
-        grid = new GridBits(width, height);
+        updatedTiles = new GridBits(width, height);
         this.select = select;
     }
 
     public void addTile(int x, int y){
-        grid.set(x, y);
+        updatedTiles.set(x, y);
 
         if(startX == -1){
             startX = endX = x;
@@ -37,16 +37,16 @@ public class BlocksSelectionOperation implements EditorOperation{
         GridBits newGrid = new GridBits(endX - startX + 1, endY - startY + 1);
         for(int x = 0; x < (endX - startX + 1); x++){
             for(int y = 0; y < (endY - startY + 1); y++){
-                newGrid.set(x, y, grid.get(x + startX, y + startY));
+                newGrid.set(x, y, updatedTiles.get(x + startX, y + startY));
             }
         }
-        grid = newGrid;
+        updatedTiles = newGrid;
     }
 
     public void undo(){
         for(int x = 0; x < (endX - startX + 1); x++){
             for(int y = 0; y < (endY - startY + 1); y++){
-                if(!grid.get(x, y)) continue;
+                if(!updatedTiles.get(x, y)) continue;
 
                 editor.blocksMode.selection.set(x + startX, y + startY, !select);
             }
@@ -56,7 +56,7 @@ public class BlocksSelectionOperation implements EditorOperation{
     public void redo(){
         for(int x = 0; x < (endX - startX + 1); x++){
             for(int y = 0; y < (endY - startY + 1); y++){
-                if(!grid.get(x, y)) continue;
+                if(!updatedTiles.get(x, y)) continue;
 
                 editor.blocksMode.selection.set(x + startX, y + startY, select);
             }

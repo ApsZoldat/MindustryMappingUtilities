@@ -22,12 +22,6 @@ import static mu.EditorVars.*;
 public class BlocksMode extends EditorMode implements JsonSerializable{
     public GridBits selection;  // TODO: Make multiple of them?
 
-    public Block block = null;
-    public Floor floor = null;
-    public Floor overlay = null;
-    public Team team = null;
-    public int rotation = -1;
-
     public int lastX, lastY;
 
     // Blocks mode tools
@@ -46,8 +40,7 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
         // TODO: maybe variables for ts
         this.actions.put("select", new BlocksSelectionAction(true));
         this.actions.put("deselect", new BlocksSelectionAction(false));
-
-        //this.actions.put("draw", drawAction);
+        this.actions.put("draw", new BlocksDrawAction());
     }
 
     public void setTool(String name){
@@ -84,6 +77,7 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
     public void beginEdit(int width, int height){
         selection = new GridBits(width, height);
         setTool("brush");
+        pickTool.setAction("draw");
         brushTool.setAction("select");
     }
 

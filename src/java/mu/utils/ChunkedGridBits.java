@@ -32,7 +32,7 @@ public class ChunkedGridBits{
         int localX = x & chunkMask;
         int localY = y & chunkMask;
         
-        GridBits chunk = getOrCreateChunk(chunkX, chunkY);
+        GridBits chunk = getChunk(chunkX, chunkY, b);
         chunk.set(localX, localY, b);
         if(b == false) removeChunkIfEmpty(chunkX, chunkY);
     }
@@ -59,20 +59,20 @@ public class ChunkedGridBits{
         return ((long)chunkX << 32) | chunkY;
     }
 
-    public GridBits getOrCreateChunk(int chunkX, int chunkY){
+    public GridBits getChunk(int chunkX, int chunkY){
+        return getChunk(chunkX, chunkY, false);
+    }
+
+    public GridBits getChunk(int chunkX, int chunkY, boolean createNew){
         long key = chunkKey(chunkX, chunkY);
         GridBits chunk = chunks.get(key);
 
-        if(chunk == null){
+        if(chunk == null && createNew){
             chunk = new GridBits(chunkSize, chunkSize);
             chunks.put(key, chunk);
         }
 
         return chunk;
-    }
-
-    public GridBits getChunk(int chunkX, int chunkY){
-        return chunks.get(chunkKey(chunkX, chunkY));
     }
 
     private void removeChunkIfEmpty(int chunkX, int chunkY){

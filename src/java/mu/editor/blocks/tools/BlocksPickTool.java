@@ -1,19 +1,31 @@
 package mu.editor.blocks.tools;
 
+import arc.util.*;
 import arc.util.serialization.*;
 import arc.util.serialization.Json.*;
 import mindustry.world.*;
 import mu.editor.blocks.*;
+import mu.editor.blocks.actions.*;
 
 import static mindustry.Vars.*;
 import static mu.EditorVars.editor;
 import static mu.EditorVars.dialog;
 
 public class BlocksPickTool implements BlocksTool, JsonSerializable{
-    public transient TileData data = TileData.block;
+    public transient TileData type = TileData.block;
+    public transient BlocksDrawAction action;
 
-    public void setData(String name){
-        data = TileData.valueOf(name);
+    public void setDataType(String name){
+        type = TileData.valueOf(name);
+    }
+
+    public void setAction(String name){
+        BlocksAction action = editor.blocksMode.actions.get(name);
+        if(action == null){
+            throw new RuntimeException(Strings.format("BlocksAction \"@\" is not defined in BlocksMode.actions", name));
+        }
+        if(!(action instanceof BlocksDrawAction draw)) throw new RuntimeException(Strings.format("BlocksAction \"@\" is not a BlocksDrawAction", name));
+        this.action = draw;
     }
 
     public void start(int x, int y){
@@ -32,36 +44,18 @@ public class BlocksPickTool implements BlocksTool, JsonSerializable{
             return;
         }
 
-        switch(data){
-            case block -> editor.blocksMode.block = tile.block();
-            case floor -> editor.blocksMode.block = tile.floor();
-            case overlay -> editor.blocksMode.overlay = tile.overlay();
-            case rotation -> {
-                if(tile.build == null){
-                    dialog.showErrorMessage("temp");
-                }else{
-                    editor.blocksMode.rotation = tile.build.rotation;
-                }
-            }
-            case team -> {
-                if(tile.build == null){
-                    dialog.showErrorMessage("temp");
-                }else{
-                    editor.blocksMode.team = tile.build.team;
-                }
-            }
-        }
+        action.copyData(type, tile);
     }
 
     @Override
     public void write(Json json){
         json.writeFields(this);
-        json.writeValue("data", data.toString());
+        json.writeValue("type", type.toString());
     }
 
     @Override
     public void read(Json json, JsonValue jsonData){
         json.readFields(this, jsonData);
-        setData(jsonData.getString("data"));
+        setDataType(jsonData.getString("type"));
     }
 }

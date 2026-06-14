@@ -37,8 +37,16 @@ public class BlocksDrawAction implements BlocksAction{
         }
     }
 
-    public void removeData(TileData type){
+    public void enableDataType(TileData type){
+        this.dataTypes |= (1 << type.ordinal());
+    }
+
+    public void disableDataType(TileData type){
         this.dataTypes &= ~(1 << type.ordinal());
+    }
+
+    public void toggleDataType(TileData type){
+        this.dataTypes ^= (1 << type.ordinal());
     }
 
     public void startAction(){
@@ -52,12 +60,29 @@ public class BlocksDrawAction implements BlocksAction{
     public void act(Tile tile){
         int x = (int)tile.x, y = (int)tile.y;
 
-        //if(editor.blocksMode.selection.get(x, y) == select) return;
-        //operation.addTile(x, y);
+        for(TileData type : TileData.values()){
+            if((dataTypes & (1 << type.ordinal())) == 0) continue;
+
+            Object oldData = BlocksTilesOperation.getTileData(type, tile);
+            Object newData = null;
+            switch(type){
+                case floor -> newData = this.floor;
+                case overlay -> newData = this.overlay;
+                case block -> newData = this.block;
+                case team -> newData = this.team;
+                case rotation -> newData = this.rotation;
+                case data -> newData = this.data;
+                case extraData -> newData = this.extraData;
+            }
+            if(oldData == newData) continue;  // nothing ever changes
+            BlocksTilesOperation.setTileData(type, tile, newData);
+            operation.addTileChange(type, tile, oldData, newData);
+        }
+        operation.setUpdated(tile);
     }
 
     public void endStep(){
-        return;
+        operation.updateRenderer();
     }
 
     public EditorOperation endAction(){

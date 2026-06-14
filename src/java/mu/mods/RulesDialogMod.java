@@ -8,6 +8,7 @@ import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.core.Version;
 import mindustry.content.*;
 import mindustry.ctype.*;
 import mindustry.editor.*;
@@ -107,7 +108,12 @@ public class RulesDialogMod extends MUMod{
 
     public void addHiddenRules(){
         category("waves");
-        dialog.check("@rules.hidespawns", b -> rules.hideSpawns = b, () -> rules.hideSpawns);
+
+        if((Version.build * 10 + Version.revision) > 1581){
+            dialog.check("@rules.hidespawns", b -> Reflect.set(rules, "hideSpawns", b), () -> Reflect.get(rules, "hideSpawns"));
+        }else{
+            dialog.check("@rules.showspawns", b -> Reflect.set(rules, "showSpawns", b), () -> Reflect.get(rules, "showSpawns"));
+        }
 
         category("resourcesbuilding");
         dialog.check("@rules.ghostblocks", b -> rules.ghostBlocks = b, () -> rules.ghostBlocks);

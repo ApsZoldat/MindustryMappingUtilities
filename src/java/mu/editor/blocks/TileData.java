@@ -17,15 +17,15 @@ public enum TileData{
         return blockData | (overlayData << 8) | (floorData << 16);
     }
 
-    public static int unpackBlockData(int mergedData){
-        return mergedData & 0xFF;
+    public static byte unpackFloorData(int mergedData){
+        return (byte)((mergedData & 0xFF0000) >> 16);
     }
 
-    public static int unpackOverlayData(int mergedData){
-        return mergedData & 0xFF00;
+    public static byte unpackOverlayData(int mergedData){
+        return (byte)((mergedData & 0xFF00) >> 8);
     }
 
-    public static int unpackFloorData(int mergedData){
-        return mergedData & 0xFF0000;
+    public static byte unpackBlockData(int mergedData){
+        return (byte)(mergedData & 0xFF);
     }
 }

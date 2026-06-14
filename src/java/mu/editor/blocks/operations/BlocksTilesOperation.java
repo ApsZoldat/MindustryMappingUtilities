@@ -1,5 +1,6 @@
 package mu.editor.blocks.operations;
 
+import arc.func.*;
 import arc.struct.*;
 import mindustry.game.*;
 import mindustry.world.*;
@@ -14,75 +15,74 @@ import static mu.EditorVars.*;
 public class BlocksTilesOperation implements EditorOperation{
     public static Seq<Class<?>> dataTypeClasses = Seq.with(Floor.class, Floor.class, Block.class, Team.class, Integer.class, Integer.class, Integer.class);
 
-    public GridBits updatedTiles;
-    public GridBits blockUpdates;  // Tiles which require block update in the renderer
-    public GridBits staticUpdates;  // Tiles which require static update in the renderer
+    public ChunkedGridBits updatedTiles;
 
     public TilesState oldState;
     public TilesState newState;
 
     public BlocksTilesOperation(int width, int height){
-        updatedTiles = new GridBits(width, height);
-        blockUpdates = new GridBits(width, height);
-        staticUpdates = new GridBits(width, height);
+        updatedTiles = new ChunkedGridBits();
 
         oldState = new TilesState();
         newState = new TilesState();
     }
 
-    public void act(Tile tile){
-        int x = (int)tile.x, y = (int)tile.y;
-
-        // Check that this tile was not changed before
-        /*if(grid.get(x, y)) return;
-        grid.set(x, y);
-
-        if(block != null && !block.isMultiblock() && !tile.block().isMultiblock()){
-            tile.setBlock(block, (team == null ? Team.sharded : team), (rotation == -1 ? 0 : rotation));
-            updateBlock = true;
-        }else if(block == null){  // Just change team/rotation
-            if(team != null || tile.build != null){
-                tile.build.team(team);
-                updateBlock = true;
-            }
-            if(rotation != -1 || tile.build != null){
-                tile.build.rotation = (byte)rotation;
-                updateBlock = true;
-            }
-        }
-
-        if(floor != null){
-            
-            tile.setFloor(floor);
-            updateStatic = true;
-        }
-
-        if(overlay != null){
-            tile.setOverlay(overlay);
-            updateStatic = true;
-        }
-
-        if(updateBlock) editor.updateRendererBlock(tile.x, tile.y);
-        if(updateStatic) editor.updateRendererStatic(tile.x, tile.y);*/
-    }
-
     public void undo(){
-        return;
+        oldState.load();
+        updateRenderer();
     }
 
     public void redo(){
-        return;
+        newState.load();
+        updateRenderer();
     }
 
     public void updateRenderer(){
-        for(int x = 0; x < blockUpdates.width(); x++){
-            for(int y = 0; y < blockUpdates.height(); y++){
-                if(blockUpdates.get(x, y)) editor.updateRendererBlock(x, y);
-                if(staticUpdates.get(x, y)) editor.updateRendererStatic(x, y);
+        updatedTiles.each((x, y) -> {
+            editor.updateRendererBlock(x, y);
+            editor.updateRendererStatic(x, y);
+        });
+    }
+
+    public void setUpdated(Tile tile){
+        updatedTiles.set((int)tile.x, (int)tile.y);
+    }
+
+    public static Object getTileData(TileData type, Tile tile){
+        return switch(type){
+            case floor -> tile.floor();
+            case overlay -> tile.overlay();
+            case block -> tile.block();
+            case team -> tile.team();
+            case rotation -> (tile.build == null ? 0 : tile.build.rotation);
+            case data -> TileData.packMergedData(tile.data, tile.overlayData, tile.floorData);
+            case extraData -> tile.extraData;
+        };
+    }
+
+    // If you call this method with the wrong data type - it is your fault.
+    public static void setTileData(TileData type, Tile tile, Object data){
+        switch(type){
+            case floor -> tile.setFloor((Floor)data);
+            case overlay -> tile.setOverlay((Floor)data);
+            case block -> tile.setBlock((Block)data, tile.team(), tile.build == null ? 0 : tile.build.rotation);
+            case team -> tile.setTeam((Team)data);
+            case rotation -> {
+                if(tile.build != null) tile.build.rotation = (int)data;
             }
+            case data -> {
+                int mergedData = (int)data;
+                tile.floorData = TileData.unpackFloorData(mergedData);
+                tile.overlayData = TileData.unpackOverlayData(mergedData);
+                tile.data = TileData.unpackBlockData(mergedData);
+            }
+            case extraData -> tile.extraData = (int)data;
         }
-        blockUpdates.clear();
-        staticUpdates.clear();
+    }
+
+    public void addTileChange(TileData type, Tile tile, Object oldData, Object newData){
+        oldState.addData(type, tile, oldData);
+        newState.addData(type, tile, newData);
     }
 
     public class TilesState{
@@ -97,6 +97,7 @@ public class BlocksTilesOperation implements EditorOperation{
         public Seq<ObjectMap<?, ChunkedGridBits>> allMaps = new Seq<>();
 
         public TilesState(){
+            // TODO: maybe refactor
             allMaps.add(floors);
             allMaps.add(overlays);
             allMaps.add(blocks);
@@ -106,15 +107,19 @@ public class BlocksTilesOperation implements EditorOperation{
             allMaps.add(extraDatas);
         }
 
+        public void addData(TileData type, Tile tile, Object data){
+            addData(type, (int)tile.x, (int)tile.y, data);
+        }
+
         // TODO: maybe simple Ctrl+C Ctrl+V switch is still better...
-        public void addData(TileData type, Object value, int x, int y){
+        public void addData(TileData type, int x, int y, Object data){
             int index = type.ordinal();
             Class<?> expectedType = dataTypeClasses.get(index);
-            if(!expectedType.isInstance(value)) return;
+            if(!expectedType.isInstance(data)) return;
 
-            Object casted = expectedType.cast(value);
+            Object casted = expectedType.cast(data);
 
-            ObjectMap<Object, ChunkedGridBits> map = (ObjectMap<Object, ChunkedGridBits>) allMaps.get(index);
+            ObjectMap<Object, ChunkedGridBits> map = (ObjectMap<Object, ChunkedGridBits>) allMaps.get(type.ordinal());
 
             if(!map.containsKey(casted)){
                 map.put(casted, new ChunkedGridBits());
@@ -122,21 +127,20 @@ public class BlocksTilesOperation implements EditorOperation{
             map.get(casted).set(x, y);
         }
 
-        /*public void addData(TileData type, Object value, int x, int y){
-            int index = type.ordinal();
-            if(allTypes.get(index).isInstance(value)){
-                Object casted = allTypes.get(index).cast(value);
-                if(!allMaps.get(index).containsKey(casted)){
-                    allMaps.get(index).put(casted, new ChunkedGridBits());
-                }
-                allMaps.get(index).get(casted).set(x, y);
-            }
-        }*/
-
         public void removeData(TileData type, int x, int y){
             int index = type.ordinal();
             for(var grid : allMaps.get(index).values()){
                 grid.set(x, y, false);
+            }
+        }
+
+        public void load(){
+            for(TileData type : TileData.values()){
+                for(ObjectMap.Entry<?, ChunkedGridBits> entry : allMaps.get(type.ordinal())){
+                    entry.value.each((x, y) -> {
+                        setTileData(type, world.tiles.get(x, y), entry.key);
+                    });
+                }
             }
         }
     }

@@ -118,6 +118,7 @@ public class MUMapView extends MapView implements JsonSerializable{
         editor.renderer.draw(centerx - sclwidth / 2 + Core.scene.marginLeft, centery - sclheight / 2 + Core.scene.marginBottom, sclwidth, sclheight);
         Draw.reset();
 
+        // TODO: optimize
         Draw.color(Color.valueOf("ffd37f67"));
         for(Tile tile : world.tiles){
             if(editor.blocksMode.selection.get(tile.x, tile.y)){

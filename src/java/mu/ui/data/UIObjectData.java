@@ -28,13 +28,14 @@ public abstract class UIObjectData implements JsonSerializable{
         Table table = new Table();
         table.defaults().fillX().left();
         table.add("JS Script (On Object Build)").padTop(10f).padBottom(2f).center().row();
-        table.field(buildScript, v -> dialog.currentGroup.each(b -> b.buildScript = v)).size(400f, 300f).padBottom(10f).maxTextLength(Integer.MAX_VALUE).row();
+        table.area(buildScript, v -> dialog.currentGroup.each(b -> b.buildScript = v)).size(400f, 300f).padBottom(10f).maxTextLength(Integer.MAX_VALUE).row();
         return table;
     }
 
     public void runScript(String script){
         if(script == null) return;
         jsManager.setVar("thisData", this);
+        jsManager.setVar("thisObject", this.object);
         jsManager.run(script);
     }
 

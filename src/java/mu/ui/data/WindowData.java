@@ -36,10 +36,10 @@ public class WindowData extends UIObjectData{
         name = "Window";
 
         cont = new TableData();
-        cont.marginTop = 50f;
-        cont.marginLeft = 50f;
-        cont.marginBot = 50f;
-        cont.marginRight = 50f;
+        cont.marginTop = 20f;
+        cont.marginLeft = 20f;
+        cont.marginBot = 20f;
+        cont.marginRight = 20f;
     }
 
     public Window build(){

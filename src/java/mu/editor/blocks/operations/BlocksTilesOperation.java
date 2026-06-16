@@ -121,6 +121,7 @@ public class BlocksTilesOperation implements EditorOperation{
 
             ObjectMap<Object, ChunkedGridBits> map = (ObjectMap<Object, ChunkedGridBits>) allMaps.get(type.ordinal());
 
+            // TODO: equals?
             if(!map.containsKey(casted)){
                 map.put(casted, new ChunkedGridBits());
             }

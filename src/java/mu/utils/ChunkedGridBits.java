@@ -10,6 +10,7 @@ public class ChunkedGridBits{
     public int chunkSize;
     public int chunkMask;
 
+    // TODO: optimize with Bits
     public LongMap<GridBits> chunks;
 
     public ChunkedGridBits(int chunkSizeBits){

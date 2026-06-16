@@ -36,13 +36,14 @@ import mindustry.world.blocks.storage.CoreBlock.*;
 import mindustry.world.meta.*;
 import mu.ui.*;
 import mu.ui.dialogs.*;
+import mu.utils.*;
 import mu.EditorVars;
 
 import static mindustry.Vars.*;
 
 public class MUMapEditorDialog extends MapEditorDialog{
     public MUMapView view;  // shadows private view
-    public BaseDialog menu; // shadows private menu
+    public BaseDialog menu;  // shadows private menu
     public BaseDialog modMenu;
     public UIExplorerDialog explorer;
 
@@ -76,6 +77,59 @@ public class MUMapEditorDialog extends MapEditorDialog{
         buttons.align(Align.topLeft);
         buttons.marginLeft(3f).marginTop(3f);
         stack(view, EditorVars.ui.windows, buttons).grow();
+    }
+
+    @Override
+    public @Nullable Map save(){
+        boolean isEditor = state.rules.editor;
+        state.rules.editor = false;
+        state.rules.allowEditRules = false;
+        state.rules.objectiveFlags.clear();
+        state.rules.objectives.each(MapObjective::reset);
+        state.stats = new GameStats();
+        String name = editor.tags.get("name", "").trim();
+        editor.tags.put("rules", JsonIO.write(state.rules));
+        editor.tags.remove("width");
+        editor.tags.remove("height");
+
+        player.clearUnit();
+
+        // Remove player unit
+        Unit unit = Groups.unit.find(u -> u.spawnedByCore);
+        if(unit != null){
+            unit.remove();
+        }
+
+        Map returned = null;
+
+        if(name.isEmpty()){
+            MapInfoDialog info = Reflect.get(MapEditorDialog.class, this, "infoDialog");
+            info.show();
+            Core.app.post(() -> ui.showErrorMessage("@editor.save.noname"));
+        }else{
+            Map map = maps.all().find(m -> m.name().equalsIgnoreCase(name));
+            if(map != null && !map.custom && !map.workshop){
+                handleSaveBuiltin(map);
+            }else{
+                boolean workshop = false;
+                // Try to preserve Steam ID
+                if(map != null && map.tags.containsKey("steamid")){
+                    editor.tags.put("steamid", map.tags.get("steamid"));
+                    workshop = true;
+                }
+                returned = maps.saveMap(editor.tags);
+                MUFiles.moveMapToFolder(returned);
+                if(workshop){
+                    returned.workshop = workshop;
+                }
+                ui.showInfoFade("@editor.saved");
+            }
+        }
+
+        menu.hide();
+        Reflect.set(MapEditorDialog.class, this, "saved", true);
+        state.rules.editor = isEditor;
+        return returned;
     }
 
     public void showErrorMessage(String text){

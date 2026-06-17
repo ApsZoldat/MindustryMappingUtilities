@@ -20,7 +20,8 @@ import static mindustry.Vars.world;
 import static mu.EditorVars.*;
 
 public class BlocksMode extends EditorMode implements JsonSerializable{
-    public GridBits selection;  // TODO: Make multiple of them?
+    // Temporarily transient
+    public transient GridBits selection;  // TODO: Make multiple of them?
 
     public int lastX, lastY;
 
@@ -41,6 +42,8 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
         this.actions.put("select", new BlocksSelectionAction(true));
         this.actions.put("deselect", new BlocksSelectionAction(false));
         this.actions.put("draw", new BlocksDrawAction());
+        this.actions.put("cliffsup", new BlocksCliffsAction(false));
+        this.actions.put("cliffsdown", new BlocksCliffsAction(true));
     }
 
     public void setTool(String name){

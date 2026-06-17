@@ -17,8 +17,7 @@ public class MUFiles{
     
         if(!folder.exists()){
             if(!folder.mkdirs()){
-                Log.err("MUFiles: Could not create directory for map: @", folder.path());
-                return;
+                throw new RuntimeException(Strings.format("MUFiles: Could not create directory for map: @", folder.path()));
             };
         }
 
@@ -35,8 +34,8 @@ public class MUFiles{
                 Reflect.set(map, "file", newFile);
                 Log.info("MUFiles: Successfully moved map file to @", newFile.path());
             }else{
-                Log.err("MUFiles: Invalid map file copy.");
-                newFile.delete(); 
+                newFile.delete();
+                throw new RuntimeException("MUFiles: Invalid map file copy.");
             }
         }catch(Exception ex){
             Log.err("MUFiles: Exception during move: @", ex);

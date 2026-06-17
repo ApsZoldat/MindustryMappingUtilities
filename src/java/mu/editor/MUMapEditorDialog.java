@@ -50,10 +50,6 @@ public class MUMapEditorDialog extends MapEditorDialog{
     public MUMapEditorDialog(){
         super();
 
-        // Remove all listeners that previous constructor made
-        // ((DelayedRemovalSeq<EventListener>)Reflect.get(Element.class, this, "listeners")).clear();
-        // currently not used
-
         view = EditorVars.view;
         Reflect.set(MapEditorDialog.class, this, "view", view);
         menu = Reflect.get(MapEditorDialog.class, this, "menu");
@@ -118,7 +114,11 @@ public class MUMapEditorDialog extends MapEditorDialog{
                     workshop = true;
                 }
                 returned = maps.saveMap(editor.tags);
-                MUFiles.moveMapToFolder(returned);
+                try{
+                    MUFiles.moveMapToFolder(returned);
+                }catch(Exception ex){
+                    Log.err("Failed to move map file to a designated subfolder and save editor state.", ex);
+                }
                 if(workshop){
                     returned.workshop = workshop;
                 }

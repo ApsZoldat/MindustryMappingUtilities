@@ -15,7 +15,7 @@ public class BlocksSelectionAction implements BlocksAction{
     }
 
     public void startAction(){
-        operation = new BlocksSelectionOperation(editor.width(), editor.height(), select);
+        operation = new BlocksSelectionOperation(select);
     }
 
     public void startStep(){
@@ -23,11 +23,10 @@ public class BlocksSelectionAction implements BlocksAction{
     }
 
     public void act(Tile tile){
-        int x = (int)tile.x, y = (int)tile.y;
         // Check if this tile actually changes before doing anything with it
-        if(editor.blocksMode.selection.get(x, y) == select) return;
-        editor.blocksMode.selection.set(x, y, select);
-        operation.addTile(x, y);
+        if(editor.blocksMode.selection.get(tile.x, tile.y) == select) return;
+        editor.blocksMode.selection.set(tile.x, tile.y, select);
+        operation.addTile(tile.x, tile.y);
     }
 
     public void endStep(){
@@ -35,7 +34,6 @@ public class BlocksSelectionAction implements BlocksAction{
     }
 
     public EditorOperation endAction(){
-        operation.cropGrid();
         return operation;
     }
 }

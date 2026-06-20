@@ -15,6 +15,7 @@ import arc.util.*;
 import arc.util.serialization.*;
 import arc.util.serialization.Json.*;
 import mindustry.*;
+import mindustry.game.*;
 import mindustry.editor.*;
 import mindustry.graphics.*;
 import mindustry.input.*;
@@ -131,24 +132,26 @@ public class MUMapView extends MapView implements JsonSerializable{
         // Blocks draw operation borders
         if(debug){
             Lines.stroke(2f);
-            /* I was testing ChunkedGridBits on selection layer
-            Draw.color(Pal.accent);
-            if(editor.blocksMode.selection != null){
-                for(int cx = 0; cx < editor.width() / 16; ++cx){
-                    for(int cy = 0; cy < editor.width() / 16; ++cy){
-                        if(editor.blocksMode.selection.getChunk(cx, cy) == null) continue;
+            for(int i = 0; i < editor.operations.stack.size; ++i){
+                Draw.color(Team.get(i % 255).color);
+                ChunkedGridBits grid = null;
 
-                        Vec2 v = unproject(cx * 16, cy * 16).add(x, y);
-                        Lines.rect(v.x, v.y, 16 * scaling, 16 * scaling);
-                    }
+                EditorOperation op = editor.operations.stack.get(i);
+                if(op instanceof BlocksSelectionOperation opp){
+                    grid = opp.updatedTiles;
+                }else if(op instanceof BlocksTilesOperation opp){
+                    grid = opp.updatedTiles;
                 }
-            }*/
+                // TODO: maybe show a big error or smth
+                if(grid == null) continue;
 
-            for(EditorOperation operation : editor.operations.stack){
-                if(operation instanceof BlocksSelectionOperation op){
-                    Draw.color((op.select ? color.green : Color.red));
-                    Vec2 v = unproject(op.startX, op.startY).add(x, y);
-                    Lines.rect(v.x, v.y, scaling * (op.endX - op.startX + 1), scaling * (op.endY - op.startY + 1));
+                for(int cx = 0; cx < editor.width() / 8; ++cx){
+                    for(int cy = 0; cy < editor.width() / 8; ++cy){
+                        if(grid.getChunk(cx, cy) == null) continue;
+
+                        Vec2 v = unproject(cx * 8, cy * 8).add(x, y);
+                        Lines.rect(v.x, v.y, 8 * scaling, 8 * scaling);
+                    }
                 }
             }
             Draw.reset();

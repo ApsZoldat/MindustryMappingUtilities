@@ -40,32 +40,55 @@ public class BlocksCliffsAction implements BlocksAction{
     }
 
     public void endStep(){
-    for(Tile tile : world.tiles){
-        if(!cliffGrid.get(tile.x, tile.y)) continue;
+        for(Tile tile : world.tiles){
+            if(!cliffGrid.get(tile.x, tile.y)) continue;
+    
+            byte rotation = (down ? getCliffDownData(tile) : getCliffUpData(tile));
+
+            if(rotation != 0){
+                tile.setBlock(Blocks.cliff);
+            }else{
+                if(tile.block() == Blocks.cliff){
+                    tile.setBlock(Blocks.air);
+                }
+            }
+            tile.data = (byte) rotation;
+        }
+        operation.updateRenderer();
+    }
+
+    // TODO: custom cliff data strategies
+    public byte getCliffUpData(Tile tile){
+        byte rotation = 0;
+        for(int i = 0; i < 8; ++i){
+            Tile other = world.tiles.get(tile.x + Geometry.d8[i].x, tile.y + Geometry.d8[i].y);
+            if(other == null) continue;
+    
+            if(!cliffGrid.get(other.x, other.y)) rotation |= (1 << i);
+        }
+        return rotation;
+    }
+
+    public byte getCliffDownData(Tile tile){
+        if(isMiddleTile(tile)) return 0;
 
         byte rotation = 0;
         for(int i = 0; i < 8; ++i){
             Tile other = world.tiles.get(tile.x + Geometry.d8[i].x, tile.y + Geometry.d8[i].y);
-            if(other != null){
-                boolean otherBit = cliffGrid.get(other.x, other.y);
-                if (!otherBit) {
-                    rotation |= (1 << i);
-                }
+            if(other == null) continue;
+
+            if(cliffGrid.get(other.x, other.y) && isMiddleTile(other)) rotation |= (1 << i);
+        }
+        return rotation;
+    }
+
+    public boolean isMiddleTile(Tile tile){
+        for(int i = 0; i < 4; ++i){
+            if(!cliffGrid.get((tile.x + Geometry.d4[i].x), (tile.y + Geometry.d4[i].y))){
+                return false;
             }
         }
-
-        // TODO: i am SICK of it, write some clever bitwise operation for down mode here later.
-
-        if(rotation != 0){
-            tile.setBlock(Blocks.cliff);
-            tile.data = (byte) rotation;
-        }else{
-            if(tile.block() == Blocks.cliff){
-                tile.setBlock(Blocks.air);
-                tile.data = 0;
-            }
-        }
-        operation.updateRenderer();
+        return true;
     }
 
     public EditorOperation endAction(){

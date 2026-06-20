@@ -3,7 +3,7 @@ package mu.editor;
 import arc.struct.*;
 
 public class EditorOperationStack{
-    public int maxSize = 10;
+    public int maxSize = 50;
     public Seq<EditorOperation> stack = new Seq<>();
     public int index = 0;
 

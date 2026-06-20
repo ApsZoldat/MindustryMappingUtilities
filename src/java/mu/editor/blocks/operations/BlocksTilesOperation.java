@@ -20,7 +20,7 @@ public class BlocksTilesOperation implements EditorOperation{
     public TilesState oldState;
     public TilesState newState;
 
-    public BlocksTilesOperation(int width, int height){
+    public BlocksTilesOperation(){
         updatedTiles = new ChunkedGridBits();
 
         oldState = new TilesState();
@@ -132,6 +132,16 @@ public class BlocksTilesOperation implements EditorOperation{
             int index = type.ordinal();
             for(var grid : allMaps.get(index).values()){
                 grid.set(x, y, false);
+            }
+        }
+
+        public void loadTile(Tile tile){
+            for(TileData type : TileData.values()){
+                for(ObjectMap.Entry<?, ChunkedGridBits> entry : allMaps.get(type.ordinal())){
+                    if(entry.value.get(tile.x, tile.y)){
+                        setTileData(type, tile, entry.key);
+                    }
+                }
             }
         }
 

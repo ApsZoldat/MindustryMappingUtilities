@@ -50,7 +50,7 @@ public class BlocksDrawAction implements BlocksAction{
     }
 
     public void startAction(){
-        operation = new BlocksTilesOperation(editor.width(), editor.height());
+        operation = new BlocksTilesOperation();
     }
 
     public void startStep(){

@@ -16,7 +16,7 @@ import static mu.EditorVars.*;
 public class BlocksCliffsAction implements BlocksAction{
     public BlocksTilesOperation operation;
 
-    public GridBits cliffGrid;
+    public ChunkedGridBits cliffGrid;
     public boolean down;
 
     public BlocksCliffsAction(boolean down){
@@ -24,8 +24,8 @@ public class BlocksCliffsAction implements BlocksAction{
     }
 
     public void startAction(){
-        cliffGrid = new GridBits(editor.width(), editor.height());
-        operation = new BlocksTilesOperation(editor.width(), editor.height());
+        cliffGrid = new ChunkedGridBits();
+        operation = new BlocksTilesOperation();
     }
 
     public void startStep(){
@@ -33,27 +33,27 @@ public class BlocksCliffsAction implements BlocksAction{
     }
 
     public void act(Tile tile){
-        int x = (int)tile.x, y = (int)tile.y;
-        cliffGrid.set(x, y);
+        cliffGrid.set(tile.x, tile.y);
 
-        operation.setUpdated(tile);
+        if(!operation.updatedTiles.get(tile.x, tile.y)){
+            operation.oldState.addData(TileData.block, tile, BlocksTilesOperation.getTileData(TileData.block, tile));
+            operation.oldState.addData(TileData.data, tile, BlocksTilesOperation.getTileData(TileData.data, tile));
+            operation.setUpdated(tile);
+        }
     }
 
     public void endStep(){
-        for(Tile tile : world.tiles){
-            if(!cliffGrid.get(tile.x, tile.y)) continue;
-    
+        cliffGrid.each((x, y) -> {
+            Tile tile = world.tiles.get(x, y);
             byte rotation = (down ? getCliffDownData(tile) : getCliffUpData(tile));
 
             if(rotation != 0){
                 tile.setBlock(Blocks.cliff);
             }else{
-                if(tile.block() == Blocks.cliff){
-                    tile.setBlock(Blocks.air);
-                }
+                operation.oldState.loadTile(tile);
             }
-            tile.data = (byte) rotation;
-        }
+            tile.data = (byte)rotation;
+        });
         operation.updateRenderer();
     }
 
@@ -92,6 +92,13 @@ public class BlocksCliffsAction implements BlocksAction{
     }
 
     public EditorOperation endAction(){
+        cliffGrid.each((x, y) -> {
+            Tile tile = world.tiles.get(x, y);
+            if(tile == null) return;  // how though?
+            if(tile.block() != Blocks.cliff) return;
+            operation.newState.addData(TileData.block, tile, Blocks.cliff);
+            operation.newState.addData(TileData.data, tile, BlocksTilesOperation.getTileData(TileData.data, tile));
+        });
         return operation;
     }
 }

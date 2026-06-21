@@ -10,23 +10,23 @@ main: "mu.MapUtilitiesMod"
 
 description: 
     '''
-    Mindustry mod improving map editor convenience and possibilities
-    Maps created with this mod are fully compatible with vanilla
+    [#fed570] The[] [#feba93]Map[] [#fea0b6]Edi[][#ff85d9]tor[] [#ff6afc]mod []
+
+    [#fff580] Improves Editor convenience and possibilities[]
+    Maps created with this mod are [#89ff7a]fully compatible with vanilla []
 
 
-    Improvements:
+    [#fff580] Features:[]
 
-    - Complete Rework of The Editor
-    - More Rules Available
-    - Better Map Editor Dialogs
-    - Planet Background Editing
-    - Map Size Bypass
+    [#efa8ff]- Complete Rework of The Editor [] - Full Customization of UI And Behavior
+    [#efa8ff]- Revealed Hidden Features [] - Cliffs, Numbered Teams, Hidden Rules, Planet Background
+    [#efa8ff]- Improved Dialogs [] - Better Banned Content Dialogs
+    [#efa8ff]- Map Size Bypass [] - Map Size Up To 2147483647
 
 
-    Check README.md in GitHub repo for more detailed information about these features
+    [#fff580] Check README.md[] in  GitHub repo for [#89ff7a]more detailed information[] about these features
 
-    ! Work In Progress !
-    More map making tools will be added in future
+    [#ff8e82]⚠ In case of some other mods incompatibilities, feel free to open an issue on GitHub 
     '''
 
 repo: "ApsZoldat/MindustryMappingUtilities"

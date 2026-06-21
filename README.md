@@ -4,14 +4,14 @@
 
 ## Improvements:
 
-* **Complete Rework of The Editor**: Fully customizable and scriptable editor UI, some additional features
-* **More Rules Available**: Reveals some hidden vanilla map rules *(Custom Mode Name, Unit Possession Allowed, Show Enemy Spawns, etc.)*
-* **Better Map Editor Dialogs:** Banned blocks/units dialogs now have planet filters and customizable button sizes *(so it is not so painful on mobile now, check mod's settings)*
-* **Planet Background**: Allows to edit planet background rendered on map *(yes, it's still just hidden vanilla features)*
-* **Map Size Bypass**: New map size limits are 1-2147483647. Abusing this can easily crash your game, so have fun.
+* **Complete Rework of The Editor**: Fully customizable and scriptable editor UI, custom brushes and actions
+* **Enabling Hidden Features**: Ability to draw cliffs, use extra 250 teams, hidden map rules and planet backgrounds
+* **Improved Dialogs**: Better banned content dialogs (that's it rn)
+* **Map Size Bypass**: New map size limits are from 1 up to 2147483647
 
 **⚠️ Work In Progress ⚠️**
-More map making tools will be added in future
+
+In case of some other mods incompatibilities, feel free to open an issue on GitHub
 
 ## Contributors:
 

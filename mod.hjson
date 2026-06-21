@@ -10,23 +10,29 @@ main: "mu.MapUtilitiesMod"
 
 description: 
     '''
-    [#fed570] The[] [#feba93]Map[] [#fea0b6]Edi[][#ff85d9]tor[] [#ff6afc]mod []
+    [[]#fed570] The[[]] [[]#feba93]Map[[]] [[]#fea0b6]Edi[[]][[]#ff85d9]tor[[]] [[]#ff6afc]mod [[]]
 
-    [#fff580] Improves Editor convenience and possibilities[]
-    Maps created with this mod are [#89ff7a]fully compatible with vanilla []
+    [[]#fff580] Improves Editor convenience and possibilities[[]]
 
-
-    [#fff580] Features:[]
-
-    [#efa8ff]- Complete Rework of The Editor [] - Full Customization of UI And Behavior
-    [#efa8ff]- Revealed Hidden Features [] - Cliffs, Numbered Teams, Hidden Rules, Planet Background
-    [#efa8ff]- Improved Dialogs [] - Better Banned Content Dialogs
-    [#efa8ff]- Map Size Bypass [] - Map Size Up To 2147483647
+    Maps created with this mod are [[]#89ff7a]fully compatible with vanilla [[]]
 
 
-    [#fff580] Check README.md[] in  GitHub repo for [#89ff7a]more detailed information[] about these features
+    [[]#fff580] Features:[[]]
 
-    [#ff8e82]⚠ In case of some other mods incompatibilities, feel free to open an issue on GitHub 
+    [[]#efa8ff]- Complete Rework of The Editor  -[[]]
+    Fully customizable and scriptable editor UI, custom brushes and actions
+    
+    [[]#efa8ff]- Revealed Hidden Features  -[[]]
+    Ability to draw cliffs, use extra 250 teams, hidden map rules and planet backgrounds
+
+    [[]#efa8ff]- Improved Dialogs  -[[]]
+    Better banned content dialogs (that's it rn)
+    
+    [[]#efa8ff]- Map Size Bypass  -[[]]
+    New map size limits are from 1 up to 2147483647
+
+
+    [[]#ff8e82]⚠ In case of some other mods incompatibilities, feel free to open an issue on GitHub [[]]
     '''
 
 repo: "ApsZoldat/MindustryMappingUtilities"

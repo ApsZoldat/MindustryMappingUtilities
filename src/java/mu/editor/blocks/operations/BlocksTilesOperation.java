@@ -47,7 +47,7 @@ public class BlocksTilesOperation implements EditorOperation{
     }
 
     public void setUpdated(Tile tile){
-        updatedTiles.set((int)tile.x, (int)tile.y);
+        updatedTiles.set(tile.x, tile.y);
     }
 
     public static Object getTileData(TileData type, Tile tile){
@@ -166,7 +166,6 @@ public class BlocksTilesOperation implements EditorOperation{
                 }
             }
             buildings.each(build -> {
-                Log.info("@ @", build, build.tile);
                 build.tile.setBlock(build.block, build.team, build.rotation, () -> build);
             });
         }

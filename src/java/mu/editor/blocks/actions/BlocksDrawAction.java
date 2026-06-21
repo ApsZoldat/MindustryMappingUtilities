@@ -58,10 +58,6 @@ public class BlocksDrawAction implements BlocksAction{
     }
 
     public void act(Tile tile){
-        int x = (int)tile.x, y = (int)tile.y;
-
-        tile.getLinkedTiles(t -> operation.setUpdated(t));
-
         for(TileData type : TileData.values()){
             if((dataTypes & (1 << type.ordinal())) == 0) continue;
 
@@ -79,14 +75,22 @@ public class BlocksDrawAction implements BlocksAction{
                 case extraData -> newData = this.extraData;
             }
             if(oldData == newData) continue;  // nothing ever changes
+
+            // Handle buildings separately
             if(type == TileData.block && tile.build != null){
                 operation.oldState.addBuilding(tile.build);
-                BlocksTilesOperation.setTileData(type, tile, newData);
-                operation.newState.addBuilding(tile.build);
+                tile.build.tile.getLinkedTiles(t -> {
+                    operation.setUpdated(t);
+                });
             }else{
-                BlocksTilesOperation.setTileData(type, tile, newData);
                 operation.addTileChange(type, tile, oldData, newData);
             }
+            if(tile.build != null){
+                operation.newState.addBuilding(tile.build);
+            }
+            BlocksTilesOperation.setTileData(type, tile, newData);
+
+            operation.setUpdated(tile);
         }
     }
 

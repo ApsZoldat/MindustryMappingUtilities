@@ -134,6 +134,7 @@ public class MUMapView extends MapView implements JsonSerializable{
             Lines.stroke(2f);
             for(int i = 0; i < editor.operations.stack.size; ++i){
                 Draw.color(Team.get(i % 255).color);
+                Draw.alpha(1f);
                 ChunkedGridBits grid = null;
 
                 EditorOperation op = editor.operations.stack.get(i);
@@ -153,6 +154,11 @@ public class MUMapView extends MapView implements JsonSerializable{
                         Lines.rect(v.x, v.y, 8 * scaling, 8 * scaling);
                     }
                 }
+                Draw.alpha(0.3f);
+                grid.each((tx, ty) -> {
+                    Vec2 v = unproject(tx, ty).add(x, y);
+                    Draw.rect(Core.atlas.white(), v.x + scaling / 2f, v.y + scaling / 2f, scaling, scaling);
+                });
             }
             Draw.reset();
         }

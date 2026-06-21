@@ -36,9 +36,15 @@ public class BlocksCliffsAction implements BlocksAction{
         cliffGrid.set(tile.x, tile.y);
 
         if(!operation.updatedTiles.get(tile.x, tile.y)){
-            operation.oldState.addData(TileData.block, tile, BlocksTilesOperation.getTileData(TileData.block, tile));
-            operation.oldState.addData(TileData.data, tile, BlocksTilesOperation.getTileData(TileData.data, tile));
-            tile.getLinkedTiles(t -> operation.setUpdated(t));
+            if(tile.build != null){
+                operation.oldState.addBuilding(tile.build);
+                tile.build.tile.getLinkedTiles(t -> {
+                    operation.setUpdated(t);
+                });
+            }else{
+                operation.oldState.addData(TileData.block, tile, BlocksTilesOperation.getTileData(TileData.block, tile));
+            }
+            operation.setUpdated(tile);
         }
     }
 
@@ -48,9 +54,6 @@ public class BlocksCliffsAction implements BlocksAction{
             byte rotation = (down ? getCliffDownData(t) : getCliffUpData(t));
 
             if(rotation != 0){
-                if(t.build != null){
-                    operation.oldState.addBuilding(t.build);
-                }
                 t.setBlock(Blocks.cliff);
             }else{
                 operation.oldState.loadTile(t);

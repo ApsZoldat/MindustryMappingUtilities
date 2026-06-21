@@ -2,7 +2,9 @@ package mu.editor.blocks.operations;
 
 import arc.func.*;
 import arc.struct.*;
+import arc.util.*;
 import mindustry.game.*;
+import mindustry.gen.*;
 import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
 import mu.editor.*;
@@ -93,6 +95,7 @@ public class BlocksTilesOperation implements EditorOperation{
         public ObjectMap<Integer, ChunkedGridBits> rotations = new ObjectMap<>();
         public ObjectMap<Integer, ChunkedGridBits> datas = new ObjectMap<>();
         public ObjectMap<Integer, ChunkedGridBits> extraDatas = new ObjectMap<>();
+        public Seq<Building> buildings = new Seq<>();
 
         public Seq<ObjectMap<?, ChunkedGridBits>> allMaps = new Seq<>();
 
@@ -135,6 +138,10 @@ public class BlocksTilesOperation implements EditorOperation{
             }
         }
 
+        public void addBuilding(Building build){
+            buildings.add(build);
+        }
+
         public void loadTile(Tile tile){
             for(TileData type : TileData.values()){
                 for(ObjectMap.Entry<?, ChunkedGridBits> entry : allMaps.get(type.ordinal())){
@@ -143,6 +150,11 @@ public class BlocksTilesOperation implements EditorOperation{
                     }
                 }
             }
+            buildings.each(build -> {
+                if(tile == build.tile){
+                    build.tile.setBlock(build.block, build.team, build.rotation, () -> build);
+                }
+            });
         }
 
         public void load(){
@@ -153,6 +165,10 @@ public class BlocksTilesOperation implements EditorOperation{
                     });
                 }
             }
+            buildings.each(build -> {
+                Log.info("@ @", build, build.tile);
+                build.tile.setBlock(build.block, build.team, build.rotation, () -> build);
+            });
         }
     }
 }

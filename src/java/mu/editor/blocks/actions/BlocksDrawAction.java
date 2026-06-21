@@ -53,15 +53,19 @@ public class BlocksDrawAction implements BlocksAction{
         operation = new BlocksTilesOperation();
     }
 
-    public void startStep(){
+    public void startStep(Tile tile){
         return;
     }
 
     public void act(Tile tile){
         int x = (int)tile.x, y = (int)tile.y;
 
+        tile.getLinkedTiles(t -> operation.setUpdated(t));
+
         for(TileData type : TileData.values()){
             if((dataTypes & (1 << type.ordinal())) == 0) continue;
+
+            if(type == TileData.block && this.block.isMultiblock()) continue;  // only place one in the middle
 
             Object oldData = BlocksTilesOperation.getTileData(type, tile);
             Object newData = null;
@@ -75,13 +79,18 @@ public class BlocksDrawAction implements BlocksAction{
                 case extraData -> newData = this.extraData;
             }
             if(oldData == newData) continue;  // nothing ever changes
-            BlocksTilesOperation.setTileData(type, tile, newData);
-            operation.addTileChange(type, tile, oldData, newData);
+            if(type == TileData.block && tile.build != null){
+                operation.oldState.addBuilding(tile.build);
+                BlocksTilesOperation.setTileData(type, tile, newData);
+                operation.newState.addBuilding(tile.build);
+            }else{
+                BlocksTilesOperation.setTileData(type, tile, newData);
+                operation.addTileChange(type, tile, oldData, newData);
+            }
         }
-        operation.setUpdated(tile);
     }
 
-    public void endStep(){
+    public void endStep(Tile tile){
         operation.updateRenderer();
     }
 

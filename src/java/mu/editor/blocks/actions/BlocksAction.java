@@ -8,11 +8,11 @@ import mu.editor.*;
 public interface BlocksAction{
     public void startAction();
 
-    public void startStep();
+    public void startStep(Tile tile);
 
     public void act(Tile tile);
 
-    public void endStep();
+    public void endStep(Tile tile);
 
     public EditorOperation endAction();
 }

@@ -28,7 +28,7 @@ public class BlocksCliffsAction implements BlocksAction{
         operation = new BlocksTilesOperation();
     }
 
-    public void startStep(){
+    public void startStep(Tile tile){
         return;
     }
 
@@ -38,21 +38,24 @@ public class BlocksCliffsAction implements BlocksAction{
         if(!operation.updatedTiles.get(tile.x, tile.y)){
             operation.oldState.addData(TileData.block, tile, BlocksTilesOperation.getTileData(TileData.block, tile));
             operation.oldState.addData(TileData.data, tile, BlocksTilesOperation.getTileData(TileData.data, tile));
-            operation.setUpdated(tile);
+            tile.getLinkedTiles(t -> operation.setUpdated(t));
         }
     }
 
-    public void endStep(){
+    public void endStep(Tile tile){
         cliffGrid.each((x, y) -> {
-            Tile tile = world.tiles.get(x, y);
-            byte rotation = (down ? getCliffDownData(tile) : getCliffUpData(tile));
+            Tile t = world.tiles.get(x, y);
+            byte rotation = (down ? getCliffDownData(t) : getCliffUpData(t));
 
             if(rotation != 0){
-                tile.setBlock(Blocks.cliff);
+                if(t.build != null){
+                    operation.oldState.addBuilding(t.build);
+                }
+                t.setBlock(Blocks.cliff);
             }else{
-                operation.oldState.loadTile(tile);
+                operation.oldState.loadTile(t);
             }
-            tile.data = (byte)rotation;
+            t.data = (byte)rotation;
         });
         operation.updateRenderer();
     }

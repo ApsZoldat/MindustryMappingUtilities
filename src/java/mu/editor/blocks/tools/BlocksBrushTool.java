@@ -56,7 +56,8 @@ public class BlocksBrushTool implements BlocksTool, JsonSerializable{
         int shiftX = (int)((brush.width - 1) / 2);
         int shiftY = (int)((brush.height - 1) / 2);
 
-        action.startStep();
+        Tile middleTile = world.tiles.get(x, y);
+        action.startStep(middleTile);
         for(int curX = 0; curX < brush.width; ++curX){
             for(int curY = 0; curY < brush.height; ++curY){
                 if(!brush.area.get(curX, curY)) continue;
@@ -67,7 +68,7 @@ public class BlocksBrushTool implements BlocksTool, JsonSerializable{
                 action.act(tile);
             }
         }
-        action.endStep();
+        action.endStep(middleTile);
     }
 
     public void end(int x, int y){

@@ -18,7 +18,7 @@ public class BlocksSelectionAction implements BlocksAction{
         operation = new BlocksSelectionOperation(select);
     }
 
-    public void startStep(){
+    public void startStep(Tile tile){
         return;
     }
 
@@ -29,7 +29,7 @@ public class BlocksSelectionAction implements BlocksAction{
         operation.addTile(tile.x, tile.y);
     }
 
-    public void endStep(){
+    public void endStep(Tile tile){
         return;
     }
 

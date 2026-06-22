@@ -1,4 +1,4 @@
-displayName: "Mapping Utilities"
+displayName: "[[]#fed570] Map[[]][[]#feba93]ping[[]] [[]#fea0b6]Uti[[]][[]#ff85d9]lit[[]][[]#ff6afc]ies [[]]"
 
 subtitle: "Remember that you are loved."
 
@@ -28,8 +28,8 @@ description:
     [[]#efa8ff]- Improved Dialogs  -[[]]
     Better banned content dialogs (that's it rn)
     
-    [[]#efa8ff]- Map Size Bypass  -[[]]
-    New map size limits are from 1 up to 2147483647
+    [[]#efa8ff]- Limit Bypasses  -[[]]
+    Map sizes from 1 up to 2147483647, infinite brush sizes
 
 
     [[]#ff8e82]⚠ In case of some other mods incompatibilities, feel free to open an issue on GitHub [[]]

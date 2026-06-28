@@ -4,10 +4,9 @@
 
 ## Features:
 
-* **Complete Rework of The Editor**: Fully customizable and scriptable editor UI, custom brushes and actions
 * **Enabling Hidden Features**: Ability to draw cliffs, use extra 250 teams, hidden map rules and planet backgrounds
 * **Improved Dialogs**: Better banned content dialogs (that's it rn)
-* **Map Size Bypass**: Map sizes from 1 up to 2147483647, infinite brush sizes
+* **Map Size Bypass**: Map sizes from 1 up to 2147483647
 
 **⚠️ Work In Progress ⚠️**
 

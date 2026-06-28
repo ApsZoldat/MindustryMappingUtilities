@@ -19,9 +19,6 @@ description:
 
     [[]#fff580] Features:[[]]
 
-    [[]#efa8ff]- Complete Rework of The Editor  -[[]]
-    Fully customizable and scriptable editor UI, custom brushes and actions
-    
     [[]#efa8ff]- Revealed Hidden Features  -[[]]
     Ability to draw cliffs, use extra 250 teams, hidden map rules and planet backgrounds
 
@@ -29,7 +26,7 @@ description:
     Better banned content dialogs (that's it rn)
     
     [[]#efa8ff]- Limit Bypasses  -[[]]
-    Map sizes from 1 up to 2147483647, infinite brush sizes
+    Map sizes from 1 up to 2147483647
 
 
     [[]#ff8e82]⚠ In case of some other mods incompatibilities, feel free to open an issue on GitHub [[]]
@@ -37,7 +34,7 @@ description:
 
 repo: "ApsZoldat/MindustryMappingUtilities"
 
-version: 1.8
+version: 1.9
 
 minGameVersion: 158
 

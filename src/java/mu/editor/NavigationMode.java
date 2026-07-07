@@ -14,7 +14,6 @@ public class NavigationMode extends EditorMode implements JsonSerializable{
         if(!view.isActive()) return false;
         view.offsetx += (deltaX / view.zoom);
         view.offsety += (deltaY / view.zoom);
-        view.update();
         return false;
     }
 
@@ -24,7 +23,6 @@ public class NavigationMode extends EditorMode implements JsonSerializable{
         float nzoom = distance - initialDistance;
         view.zoom += (nzoom / 10000f / Scl.scl(1f) * view.zoom);
         view.clampZoom();
-        view.update();
         return false;
     }
 

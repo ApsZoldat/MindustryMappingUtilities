@@ -22,8 +22,8 @@ import static arc.Core.settings;
 import static mindustry.Vars.mods;
 import static mu.EditorVars.*;
 
-public class MapUtilitiesMod extends Mod{
-    public MapUtilitiesMod(){
+public class MUMain extends Mod{
+    public MUMain(){
         Events.on(EventType.ClientLoadEvent.class, e -> {
             SettingsDialogMod.enable();
 
@@ -48,7 +48,7 @@ public class MapUtilitiesMod extends Mod{
             allMods.add(new ResizeDialogMod(Reflect.get(MapEditorDialog.class, dialog, "resizeDialog")));
 
             // Editor mod
-            // allMods.add(new EditorDialogMod(Vars.ui.editor, Vars.editor));
+            allMods.add(new EditorDialogMod(Vars.ui.editor, Vars.editor));
 
             updateMods();
 

@@ -6,7 +6,7 @@ name: "mapping-utilities"
 
 author: "ApsZoldat"
 
-main: "mu.MapUtilitiesMod"
+main: "mu.MUMain"
 
 description: 
     '''
@@ -20,7 +20,7 @@ description:
     [[]#fff580] Features:[[]]
 
     [[]#efa8ff]- Revealed Hidden Features  -[[]]
-    Ability to draw cliffs, use extra 250 teams, hidden map rules and planet backgrounds
+    Hidden map rules and planet backgrounds
 
     [[]#efa8ff]- Improved Dialogs  -[[]]
     Better banned content dialogs (that's it rn)
@@ -36,7 +36,7 @@ repo: "ApsZoldat/MindustryMappingUtilities"
 
 version: 1.9
 
-minGameVersion: 158
+minGameVersion: 159
 
 java: true
 

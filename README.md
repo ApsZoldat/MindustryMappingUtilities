@@ -4,7 +4,7 @@
 
 ## Features:
 
-* **Enabling Hidden Features**: Ability to draw cliffs, use extra 250 teams, hidden map rules and planet backgrounds
+* **Enabling Hidden Features**: Hidden map rules and planet backgrounds
 * **Improved Dialogs**: Better banned content dialogs (that's it rn)
 * **Map Size Bypass**: Map sizes from 1 up to 2147483647
 

@@ -16,7 +16,7 @@ public class SettingsDialogMod{
             table.sliderPref("editor_content_buttons_size", 50, 30, 80, i -> i + "px");
 
             table.pref(new Title("@settings.mu_mods", "@settings.mu_mods.info"));
-            // table.checkPref("mu_editor_mod", true, b -> updateMods(EditorDialogMod.class));
+            table.checkPref("mu_editor_mod", true, b -> updateMods(EditorDialogMod.class));
             table.checkPref("mu_rules_mod", true, b -> updateMods(RulesDialogMod.class));
             table.checkPref("mu_resize_mod", true, b -> updateMods(ResizeDialogMod.class));
 

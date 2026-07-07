@@ -23,7 +23,7 @@ public class BlocksMode extends EditorMode implements JsonSerializable{
     // Temporarily transient
     public transient GridBits selection;  // TODO: Make multiple of them?
 
-    public int lastX, lastY;
+    public transient int lastX, lastY;
 
     // Blocks mode tools
     public ObjectMap<String, BlocksTool> tools = new ObjectMap<>();

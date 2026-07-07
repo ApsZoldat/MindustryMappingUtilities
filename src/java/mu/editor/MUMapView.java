@@ -52,7 +52,6 @@ public class MUMapView extends MapView implements JsonSerializable{
             public boolean mouseMoved(InputEvent event, float x, float y){
                 mousex = x;
                 mousey = y;
-                update();
                 return editor.mode.mouseMoved(event, x, y);
             }
 
@@ -80,8 +79,20 @@ public class MUMapView extends MapView implements JsonSerializable{
         });
     }
 
-    public void update(){
-        MUReflect.copyChildFields(this, MapView.class);
+    @Override
+    public Point2 project(float x, float y){
+        float ratio = 1f / ((float)editor.width() / editor.height());
+        float size = Math.min(width, height);
+        float sclwidth = size * zoom;
+        float sclheight = size * zoom * ratio;
+        x = (x - getWidth() / 2 + sclwidth / 2 - offsetx * zoom) / sclwidth * editor.width();
+        y = (y - getHeight() / 2 + sclheight / 2 - offsety * zoom) / sclheight * editor.height();
+
+        /*if(editor.drawBlock.size % 2 == 0 && tool != EditorTool.eraser){
+            return Tmp.p1.set((int)(x - 0.5f), (int)(y - 0.5f));
+        }else{*/
+        return Tmp.p1.set((int)x, (int)y);
+        //}
     }
 
     public Vec2 unproject(int x, int y){
@@ -241,6 +252,5 @@ public class MUMapView extends MapView implements JsonSerializable{
         zoom = jsonData.getFloat("zoom", 1f);
         mousex = jsonData.getFloat("mousex", 0f);
         mousey = jsonData.getFloat("mousey", 0f);
-        update();
     }
 }

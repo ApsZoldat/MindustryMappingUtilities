@@ -1,23 +1,20 @@
 package mu.utils;
 
-import arc.input.KeyCode;
-import arc.util.Align;
-import arc.util.Http;
-import arc.util.Log;
-import arc.util.Strings;
-import arc.util.serialization.Jval;
-import mindustry.gen.Icon;
-import mindustry.graphics.Pal;
-import mindustry.mod.Mods.LoadedMod;
-import mindustry.ui.dialogs.BaseDialog;
-import mu.MapUtilitiesMod;
+import arc.input.*;
+import arc.util.*;
+import arc.util.serialization.*;
+import mindustry.gen.*;
+import mindustry.graphics.*;
+import mindustry.mod.Mods.*;
+import mindustry.ui.dialogs.*;
+import mu.*;
 
 import static arc.Core.bundle;
 import static mindustry.Vars.*;
 
 public class UpdateChecker{
     public static void run(){
-        LoadedMod mod = mods.getMod(MapUtilitiesMod.class);
+        LoadedMod mod = mods.getMod(MUMain.class);
         Http.get(ghApi + "/repos/" + mod.getRepo() + "/releases", res -> {
             var json = Jval.read(res.getResultAsString());
             Jval.JsonArray releases = json.asArray();

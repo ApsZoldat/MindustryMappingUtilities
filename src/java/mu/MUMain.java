@@ -48,7 +48,7 @@ public class MUMain extends Mod{
             allMods.add(new ResizeDialogMod(Reflect.get(MapEditorDialog.class, dialog, "resizeDialog")));
 
             // Editor mod
-            allMods.add(new EditorDialogMod(Vars.ui.editor, Vars.editor));
+            // allMods.add(new EditorDialogMod(Vars.ui.editor, Vars.editor));
 
             updateMods();
 

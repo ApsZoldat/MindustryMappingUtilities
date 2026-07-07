@@ -54,6 +54,10 @@ public class MUMapEditorDialog extends MapEditorDialog{
         Reflect.set(MapEditorDialog.class, this, "view", view);
         menu = Reflect.get(MapEditorDialog.class, this, "menu");
 
+        // A little hack so the game won't crash from trying to change these
+        Reflect.set(MapEditorDialog.class, this, "blockSelection", new Table());
+        Reflect.set(MapEditorDialog.class, this, "pane", new ScrollPane(Reflect.get(MapEditorDialog.class, this, "blockSelection"), Styles.smallPane));
+
         modMenu = new BaseDialog("temp");
         modMenu.addCloseButton();
         explorer = new UIExplorerDialog();

@@ -23,7 +23,6 @@ public class MUJson extends Json{
     public static MUJson get(){
         if(jsonInstance == null){
             jsonInstance = new MUJson();
-            apply(jsonInstance);
         }
         return jsonInstance;
     }
@@ -83,75 +82,6 @@ public class MUJson extends Json{
             get().addClassTag(entry.key, entry.value);
         }
     }
-
-    public static void apply(Json json){
-        Reflect.invoke(JsonIO.class, "apply", new Object[]{json}, Json.class);
-
-        // GridBits to Base64 serializer
-        // TODO: actually rethink whether this is the best format
-        /*
-        json.setSerializer(GridBits.class, new Serializer<GridBits>(){
-            @Override
-            public void write(Json json, GridBits object, Class knownType){
-                json.writeObjectStart();
-
-                json.writeValue("width", object.width());
-                json.writeValue("height", object.height());
-
-                long[] longs = Reflect.get(Bits.class, Reflect.get(object, "bits"), "bits");
-                byte[] bytes = new byte[longs.length * Long.BYTES];
-
-                // long[] to byte[] conversion
-                for(int i = 0; i < longs.length; i++){
-                    for(int j = 0; j < Long.BYTES; j++){
-                        bytes[i * Long.BYTES + j] = (byte) ((longs[i] >> (8 * j)) & 0xFF);
-                    }
-                }
-
-                String encoded = new String(Base64Coder.encode(bytes));
-                json.writeValue("bits", encoded);
-
-                json.writeObjectEnd();
-            }
-
-            @Override
-            public GridBits read(Json json, JsonValue jsonData, Class type){
-                int width = jsonData.getInt("width");
-                int height = jsonData.getInt("height");
-
-                String encoded = jsonData.getString("bits");
-                byte[] bytes = Base64Coder.decode(encoded);
-                GridBits grid = new GridBits(width, height);
-
-                long[] longs = Reflect.get(Bits.class, Reflect.get(grid, "bits"), "bits");
-
-                // byte[] to long[] conversion
-                for(int i = 0; i < longs.length; i++){
-                    for(int j = 0; j < Long.BYTES; j++){
-                        longs[i] |= (bytes[i * Long.BYTES + j] & 0xFFL) << (8 * j);
-                    }
-                }
-
-                return grid;
-            }
-        });*/
-    }
-
-    /*public static String printBytes(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-
-        for(int i = 0; i < bytes.length; i++){
-            // Convert byte to 8-bit binary string
-            String binaryString = String.format("%8s", Integer.toBinaryString(bytes[i] & 0xFF)).replace(' ', '0');
-            result.append(binaryString);
-
-            // Add separator between bytes (except after the last one)
-            if(i < bytes.length - 1){
-                result.append(" | ");
-            }
-        }
-        return result.toString();
-    }*/
 
     @Override
     public void writeValue(Object value, Class knownType, Class elementType){

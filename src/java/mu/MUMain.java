@@ -69,8 +69,8 @@ public class MUMain extends Mod{
             jsManager.importPackages();
 
             // Adding all class tags
-            MUJson.classTags(Reflect.get(Json.class, JsonIO.json, "tagToClass"));
-            MUJson.classTags(classTags);
+            // MUJson.classTags(Reflect.get(Json.class, JsonIO.json, "tagToClass"));
+            // MUJson.classTags(classTags);
         });
     }
 }

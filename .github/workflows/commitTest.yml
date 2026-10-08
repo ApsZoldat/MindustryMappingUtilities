@@ -16,12 +16,12 @@ jobs:
           fileName: "Mindustry-BE-Desktop-*.jar"
           out-file-path: "libs"
       - name: Rename JAR
-        run: mv libs/Mindustry-BE-Desktop-${{steps.download.outputs.tag_name}}.jar libs/MindustryBE.jar
+        run: mv libs/Mindustry-BE-Desktop-${{steps.download.outputs.tag_name}}.jar libs/Mindustry.jar
       - name: Upload downloaded BE jar file
         uses: actions/upload-artifact@master
         with:
-          name: MindustryBE
-          path: libs/MindustryBE.jar
+          name: Mindustry
+          path: libs/Mindustry.jar
           retention-days: 1
 
   buildJar:

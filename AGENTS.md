@@ -27,6 +27,13 @@ There are too many things to list, but here are some highlights:
 - Java 8 target, heavy usage of lambdas in Scene2D code
 - Massive amount of refactored, merged, deleted classes
 
+## Key decisions
+
+Binding constraints. Violating one of these makes a task wrong - when in doubt, follow them.
+
+- Target the Mindustry **`v9` branch**, including APIs that only exist there. Stock (current release) compatibility is not a goal right now - it can be added later, when v9 releases. Reasoning: [`ai-artifacts/decisions/TargetV9.md`](ai-artifacts/decisions/TargetV9.md)
+- New code goes into `java/mu/`. `old-src/` is reference only, never on the source path, never buildable.
+
 ## Code style
 
 ### Formatting guidelines
@@ -98,73 +105,57 @@ New code belongs in a fresh source tree; the pre-rewrite implementation is **kep
 mod.hjson           mod metadata (main: mu.MUMain)
 libs/               game jar used as compileOnly dependency (gitignored, CI downloads it)
 .github/workflows/  CI: downloads BE jar, runs ./gradlew deploy
-old-src/            pre-v9-rewrite sources + resources (see below)
+old-src/            pre-v9-rewrite sources + resources (structure: ai-artifacts/OldSrc.md)
 assets/             location for resources like bundles or sprites
 java/mu/            intended location for the new v9 sources
+ai-artifacts/       AI-facing docs, class trees, task tracking (see below)
 ```
 
-### `old-src/` structure (47 Java files, ~4 000 LOC, package root `mu`)
+Full `old-src/` directory tree is described in `ai-artifacts/OldSrc.md` - read it when porting or
+referencing pre-v9 code.
+
+## ai-artifacts
+
+AI-facing documentation. Nothing in here is loaded automatically - this section is the
+index, so read the file named in the task you are on.
 
 ```
-old-src/
-├── resources/
-│   ├── bundles/            localization: bundle.properties (en), bundle_ru, bundle_vi
-│   └── subtitles           subtitle randomizer data
-└── java/mu/
-    ├── MUMain.java         mod entry point (extends mindustry.mod.Mod), hooks ClientLoadEvent
-    ├── EditorVars.java     global mutable singletons: editor, view, ui, state, dialog, jsManager,
-    │                       allMods + JSON class tags + package list for Rhino JS import
-    ├── mods/               settings-toggleable patches of vanilla dialogs (each extends MUMod:
-    │   │                   settingName + enable()/disable()/update() driven by Core.settings)
-    │   ├── MUMod.java          abstract base of the mini-plugin framework
-    │   ├── SettingsDialogMod   injects the mod's settings category (ui.settings.addCategory)
-    │   ├── RulesDialogMod      patches CustomRulesDialog: hidden rules, revealed blocks,
-    │   │                       better banned-content dialogs, planet background dialogs
-    │   ├── ResizeDialogMod     patch of MapResizeDialog: minSize=1, maxSize=Integer.MAX_VALUE
-    │   └── EditorDialogMod     swaps Vars.editor / Vars.ui.editor for the modded editor
-    ├── editor/             the mod's parallel editor implementation
-    │   ├── MUMapEditor         extends MapEditor; mode system + own undo/redo stack,
-    │   │                       reflection into EditorRenderer.updateBlock/updateStatic
-    │   ├── MUMapEditorDialog   extends MapEditorDialog; shadows private view/menu fields,
-    │   │                       overrides build() and save()
-    │   ├── MUMapView           extends MapView; replaces input handling (clears private
-    │   │                       listeners via reflection)
-    │   ├── EditorState         serializable editor session state
-    │   ├── EditorMode          mode interface; NavigationMode (pan/zoom) and BlocksMode
-    │   ├── EditorOperation / EditorOperationStack    undo/redo (superseded by v9 OperationStack)
-    │   └── blocks/             block-editing subsystem used by BlocksMode
-    │       ├── BlocksMode          block editing mode (brush, pick, selection)
-    │       ├── TileData            per-tile snapshot used by operations
-    │       ├── tools/              BlocksTool, BlocksBrushTool, BlocksPickTool
-    │       ├── brushes/            BlocksBrush, RectBrush
-    │       ├── actions/            BlocksAction, BlocksDrawAction, BlocksSelectionAction,
-    │       │                       BlocksCliffsAction   (undo/redo steps)
-    │       └── operations/         BlocksSelectionOperation, BlocksTilesOperation
-    ├── ui/                 data-driven UI layer
-    │   ├── EditorUI             builds floating windows from WindowData, hosts them over the view
-    │   ├── Window               movable/resizable window widget
-    │   ├── data/                JSON-serialized UI DSL: WindowData, TableData, CellData,
-    │   │                        ButtonData, UIObjectData
-    │   └── dialogs/             BetterBannedContentDialog, PlanetBackgroundDialog,
-    │                            UIExplorerDialog (in-mod file browser)
-    └── utils/              helpers
-        ├── ChunkedGridBits     compact chunked bitset for large-map selections
-        ├── MUReflect           reflection helpers used everywhere (private field access)
-        ├── MUJson              JSON class tags / singleton handling for editor state
-        ├── MUFiles             moves saved maps into subfolders
-        ├── MUAnnotations       internal annotations (e.g. singletons)
-        ├── JSManager           imports mod packages into the Rhino JS console
-        ├── PlanetBackgroundDrawer  draws the selected planet background in the editor
-        ├── UpdateChecker       checks GitHub releases for a newer mod version
-        └── SubtitleRandomizer  randomizes the mod's subtitle (network fetch)
+ai-artifacts/
+├── OldSrc.md               old-src/ directory tree + per-file notes (reference only)
+├── decisions/              long-form reasoning behind key decisions
+│   └── TargetV9.md             why we target the v9 branch over stock compatibility
+├── tasks/                  current and future tasks, and everything related to them
+├── mindustry-docs/
+│   └── MindustryClassTree.md   class tree of Mindustry + list of terms/systems used by it
+├── arc-docs/
+│   └── ArcClassTree.md         class tree of Arc + list of terms/systems used by Arc
+└── mu-docs/
+    └── MUClassTree.md          class tree of this mod + list of terms/systems used by it
 ```
 
-## Agent skills
+Each `...ClassTree.md` holds a class tree plus a list of terms/systems specific to that
+codebase. Entries in those lists are empty for now; when one gets filled in, it becomes a
+separate `.md` file in the same folder explaining that topic from scratch
+(the `Element` class in Arc, for example, should lead to `arc-docs/Element.md` explaining how
+Arc's UI works).
 
-### Skills configuration
+`OldSrc.md` is reference material only - it does not get an entry list.
+`decisions/` holds the reasoning behind the key decisions above - the decision itself is
+listed in `AGENTS.md`, the "why" lives here.
+`tasks/` holds task descriptions, notes and artifacts; unrelated to the docs folders.
 
-This repo's engineering skills are localized into `.opencode/skills/`. The single source of truth for workflow, folders, naming, triage roles, domain layout, and project examples is `.opencode/skills-config.md`. Read it whenever a skill mentions the issue tracker, a path, or a project-specific example.
+### How to work with ai-artifacts
 
-### Regeneration
+Write direction depends on what you were asked to do:
 
-Localized skill copies were generated by `/advanced-setup-skills`. Re-run it after updating the global skills or changing the config file.
+- **Researching code, writing docs, or creating a task** -> **write into `ai-artifacts/`.**
+  Put the class tree entries, term explainers, decision write-ups and task files where the
+  index above says they belong. Don't just report findings in chat and leave the files stale;
+  the file is the deliverable.
+- **Writing the mod's code from `ai-artifacts/`** -> **read from those files** and treat them
+  as the source of context for the task. If you discover additional info worth keeping while
+  working, **ask the user before writing it** - do not silently edit docs that other work may
+  depend on. Same applies to corrections: surface what looks outdated instead of rewriting it.
+
+Reading is always allowed; writing is either prompted by a research/doc/task request, or
+gated on asking first.

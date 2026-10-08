@@ -1,7 +1,3 @@
-## Old code
-
-old-src
-
 ## VSCode
 
 .vscode
@@ -18,3 +14,8 @@ bin/
 
 libs/
 build/
+build.sh
+
+## Windows ADS junk
+*:Zone.Identifier
+.opencode/

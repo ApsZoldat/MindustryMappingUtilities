@@ -51,12 +51,12 @@ public class UpdateChecker{
         dialog.buttons.button("@ok", Icon.ok, () -> {
             dialog.hide();
             String releaseUrl = release.getString("url");
-            ui.mods.githubImportMod(mod.getRepo(), mod.isJava(), releaseUrl.substring(releaseUrl.lastIndexOf("/") + 1));
+            ui.mods.githubImportMod(mod.getRepo(), mod.isJava(), releaseUrl.substring(releaseUrl.lastIndexOf("/") + 1), true);
         });
         dialog.keyDown(KeyCode.enter, () -> {
             dialog.hide();
             String releaseUrl = release.getString("url");
-            ui.mods.githubImportMod(mod.getRepo(), mod.isJava(), releaseUrl.substring(releaseUrl.lastIndexOf("/") + 1));
+            ui.mods.githubImportMod(mod.getRepo(), mod.isJava(), releaseUrl.substring(releaseUrl.lastIndexOf("/") + 1), true);
         });
         dialog.keyDown(KeyCode.escape, dialog::hide);
         dialog.keyDown(KeyCode.back, dialog::hide);

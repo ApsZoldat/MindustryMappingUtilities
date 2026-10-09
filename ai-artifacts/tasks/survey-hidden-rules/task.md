@@ -34,9 +34,10 @@ to the hidden-checks port. "Maybe, or maybe not" - candidates only, no code.
 ## Acceptance criteria
 
 - `RulesSurvey.md` classifies 100% of `Rules` + `TeamRule` public fields
-  (~125 total - count it from source, don't trust this number) exactly once
-  each as rendered / candidate / excluded (with reason) - no field unaccounted
-  for.
+  (counted from source: 118 + 24 = 142, the ~125 estimate was low) exactly once
+  each as rendered / ported (the `rules-dialog-module` list, kept as its own
+  section per user decision) / candidate / excluded (with reason) - no field
+  unaccounted for.
 - Every candidate row states: field symbol, type, proposed UI, bundle-key
   availability, and a one-line rationale.
 - The ranked sections (obvious/debatable/reject) each have reasoning, not just

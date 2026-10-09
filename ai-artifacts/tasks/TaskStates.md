@@ -36,6 +36,6 @@ second opinion pending; user may jump in here too) - needs-testing - done (user-
 |---|---|---|---|---|
 | mu-module-framework | done | - | verified: rename, init loop, failure notice | 2026-10-09 |
 | mu-settings-category | needs-review | mu-module-framework | next: review (settings category + MU.modules toggles) | 2026-10-09 |
-| rules-dialog-module | ready-to-implement | mu-module-framework | next: implement (needs MUModule + init loop) | 2026-10-09 |
-| survey-hidden-rules | in-progress | - | next: survey doc in progress | 2026-10-09 |
+| rules-dialog-module | needs-review | mu-module-framework | next: review (module + notes.md; CI/BE Env caveat in notes) | 2026-10-09 |
+| survey-hidden-rules | needs-review | - | next: review the survey doc (no code) | 2026-10-09 |
 | rules-numbered-teams | inbox | - | stub, deferred from rules-dialog-module; needs create-tasks pass | 2026-10-09 |

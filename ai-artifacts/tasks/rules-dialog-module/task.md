@@ -2,14 +2,14 @@
 
 ## Goal
 
-Port `old-src/java/mu/mods/RulesDialogMod.java` into `java/mu/RulesDialogModule.java`
+Port `old-src/java/mu/mods/RulesDialogMod.java` into `java/mu/modules/RulesDialogModule.java`
 (a `MUModule`), adding the normally-hidden rule checks to every
 `CustomRulesDialog` instance. Only hidden checks - banned-content-dialog
 improvements and planet background are explicitly out of scope.
 
 ## Scope
 
-- `java/mu/RulesDialogModule.java` (new)
+- `java/mu/modules/RulesDialogModule.java` (new)
 - `java/mu/MU.java` (instantiate + register the module)
 - `assets/bundles/bundle.properties` (English rule labels, `.info` tooltips, env
   descriptions, `rules.title.miscellaneous`)
@@ -83,7 +83,8 @@ improvements and planet background are explicitly out of scope.
   write `rules.teams.get(team)` values.
 - Typing in the dialog's search field filters the added rows like native rows;
   repeated searches do not duplicate rows.
-- Setting `mu_hidden_rules` false + restart removes all added rows; other
+- Setting `mu_hidden_rules` false hides all added rows (live, next rebuild);
+  `mu_rules_dialog` false + restart skips the module entirely; other
   dialogs in the game still show theirs (per-dialog independence).
 - Simulating a reflection failure on one dialog (rename a field in a scratch
   build): that dialog gets no rows, the failure is logged once at init, the

@@ -14,13 +14,13 @@ public class MU extends Mod{
 
     public MU(){
         Events.on(EventType.ClientLoadEvent.class, e -> {
-            //module registration goes here - dialog instances exist by the time this event fires
-            //modules.add(new ExampleModule());
+            //Module registration goes here - dialog instances exist by the time this event fires
+            modules.add(new RulesDialogModule());
 
-            //the settings category reads MU.modules synchronously, so it must be registered after the lines above
+            //The settings category reads MU.modules synchronously, so it must be registered after the lines above
             SettingsDialogMod.enable();
 
-            Log.info("[MU] Initializing Mapping Utilities modules");
+            Log.info("[MU] Initializing Mapping Utilities modules...");
 
             Seq<String> failed = new Seq<>();
 

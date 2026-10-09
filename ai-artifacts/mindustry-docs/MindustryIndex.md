@@ -92,7 +92,7 @@ editor/data/ - per-map asset manager (global data in `Vars.state.data`, a
 ### Related outside editor/
 
 - `game/Rules` - everything configurable; serialized into the rules tag; `editor`
-  flag marks editor mode
+  flag marks editor mode; field-by-field dialog coverage: [RulesSurvey.md](RulesSurvey.md)
 - `game/Gamemode` - `Gamemode.editor.apply(rules)` produces editor rules
 - `core/GameState` - `state.data` (DataManager), `state.mapLocales`, `state.rules`,
   `state.world`

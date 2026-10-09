@@ -1,5 +1,7 @@
 package mu;
 
+import arc.*;
+import arc.scene.ui.layout.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.ui.dialogs.SettingsMenuDialog.*;
@@ -43,12 +45,14 @@ public class SettingsDialogMod{
 
         @Override
         public void add(SettingsTable table){
-            table.add(title).color(Pal.accent).padTop(20f).padRight(100f).padBottom(-3f).left().pad(5f);
+            float width = Math.min(500f, Core.graphics.getWidth() / 1.2f / Scl.scl(1f));
+
+            table.add(title).color(Pal.accent).padTop(20f).minWidth(width).fillX().left();
             table.row();
-            table.image().color(Pal.accent).height(3f).padRight(100f).left().fillX().padBottom(5f);
+            table.image().color(Pal.accent).height(3f).minWidth(width).fillX().padBottom(5f);
             table.row();
             if(!bottomText.isEmpty()){
-                table.add(bottomText).color(Pal.lightishGray).padRight(100f).left().padBottom(5f);
+                table.add(bottomText).color(Pal.lightishGray).minWidth(width).fillX().padBottom(5f).left().wrap();
                 table.row();
             }
         }

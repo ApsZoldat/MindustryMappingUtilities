@@ -43,6 +43,10 @@ There are too many things to list, but here are some highlights:
 - Short method/variable names (multipleLongWords should be avoided if it's possible to do so reasonably, especially for variables)
 - Use wildcard imports - `import some.package.*` - for everything. This makes incorrect class usage more obvious (*e.g. arc.util.Timer vs java.util.Timer*) and leads to cleaner-looking code.
 
+### Comments and logging
+- Inline `//` comments are sentences: start with a capital letter and put one space after the slashes - `// Like this`, not `//like this`.
+- Every log message carries this mod's `[MU] ` prefix: `Log.info("[MU] ...")`, `Log.err("[MU] ...")`.
+
 ### Do not use incompatible Java features (java.util.function, java.awt, java.lang.Objects).
 Android and RoboVM (iOS) do not support many of Java 8's features, such as the packages `java.util.function`, `java.util.stream` or `forEach` in collections. Do not use these in your code.
 If you need to use functional interfaces, use the ones in `arc.func`, which are more or less the same with different naming schemes.
@@ -171,10 +175,13 @@ source that would correct them.
 - `WaveInfoDialog.md` - waves editor: staged commit, WaveGraph rebuilding.
 - `Editor.md` - read before patching the editor: entry points, UI/state hooks, what silently breaks.
 - `Maps.md` - read before working with map files: listing/loading, reading rules/waves, saving from editor state.
+- `RulesSurvey.md` - rules coverage audit: which Rules/TeamRule fields the rules dialog renders, ported rows, ranked candidates. Read before extending rules UI.
 
 **mu-docs/** - this mod (`java/mu/`, `old-src/`).
 - `MUIndex.md` - entry point for mod-specific docs as the rewrite progresses.
 - `Running.md` - read before building, installing, or launching the mod for testing.
+- `Modules.md` - the MUModule system: registration, init/failure contract, module keys,
+  RulesDialogModule guards. Read before adding or renaming a module.
 
 ### How to work with ai-artifacts
 

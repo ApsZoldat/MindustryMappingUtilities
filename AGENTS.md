@@ -142,6 +142,8 @@ source that would correct them.
 
 **decisions/** - the "why" behind the key decisions above.
 - `TargetV9.md` - why we target v9 APIs only, with no stock compatibility.
+- `MUModules.md` - module philosophy: atomic `MUModule` units, init-failure
+  disables for the session with a notice, toggles are restart-to-apply.
 
 **arc-docs/** - Arc source (`../Mindustry/arc/arc-core/src/arc/`).
 - `ArcIndex.md` - class tree: which Arc files/packages matter here. Read first when touching Arc code.
@@ -225,8 +227,14 @@ still lets you compile and run the mod without the checkout.
 
 ## When to read what
 
-Check the file map above first - open a doc only if its line matches your task. The
-relevant `...Index.md` maps which source files matter; otherwise read source.
+**On a task: the task folder's `Refs` list comes first.** Read `task.md` + `notes.md`,
+then only the docs and source files they cite - rely on those. Reach for the file map
+below (or the index docs) only when a step needs something `Refs` does not cover; read
+source when a doc does not answer it.
+
+Off a task (general research): check the file map above first - open a doc only if its
+line matches your question. The relevant `...Index.md` maps which source files matter;
+otherwise read source.
 
 - **Rewriting or porting old code:** `OldSrc.md` for what it did, *then* the current
   target's source for what you are patching. `OldSrc.md` never describes the current API.

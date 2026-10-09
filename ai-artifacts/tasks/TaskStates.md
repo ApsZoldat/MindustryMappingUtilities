@@ -34,3 +34,8 @@ second opinion pending; user may jump in here too) - needs-testing - done (user-
 
 | Task | State | Depends on | Blocker / next | Updated |
 |---|---|---|---|---|
+| mu-module-framework | ready-to-implement | - | next: implement | 2026-10-09 |
+| mu-settings-category | blocked | mu-module-framework | waiting on module registry (MUMain.modules) | 2026-10-09 |
+| rules-dialog-module | blocked | mu-module-framework | waiting on MUModule + init loop | 2026-10-09 |
+| survey-hidden-rules | ready-to-implement | - | next: implement (research only) | 2026-10-09 |
+| rules-numbered-teams | inbox | - | stub, deferred from rules-dialog-module; needs create-tasks pass | 2026-10-09 |

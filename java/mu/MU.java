@@ -14,20 +14,11 @@ public class MU extends Mod{
 
     public MU(){
         Events.on(EventType.ClientLoadEvent.class, e -> {
-            modules.add(new MUModule("test-fail", true){
-                @Override public void init(){ throw new RuntimeException("boom"); }
-            });
-            modules.add(new MUModule("test-npe", true){
-                @Override public void init(){ throw new NullPointerException(); }
-            });
-            modules.add(new MUModule("test-off", false){
-                @Override public void init(){ Log.info("[MU] test-off MARKER"); }
-            });
-            modules.add(new MUModule("test-ok", true){
-                @Override public void init(){ Log.info("[MU] test-ok MARKER"); }
-            });
             //module registration goes here - dialog instances exist by the time this event fires
             //modules.add(new ExampleModule());
+
+            //the settings category reads MU.modules synchronously, so it must be registered after the lines above
+            SettingsDialogMod.enable();
 
             Log.info("[MU] Initializing Mapping Utilities modules");
 
@@ -59,7 +50,7 @@ public class MU extends Mod{
 
                 text.append("\nSee the log for the full stack traces.");
 
-                //show after load settles, like the game's own startup notices
+                // Show after load settles, like the game's own startup notices
                 Time.runTask(4f, () -> Vars.ui.showInfo(text.toString()));
             }
         });

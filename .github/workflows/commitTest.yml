@@ -40,7 +40,7 @@ jobs:
       - name: Retrieve downloaded BE jar file
         uses: actions/download-artifact@master
         with:
-          name: MindustryBE
+          name: Mindustry
           path: libs
       - name: Build mod jar
         run: ./gradlew deploy

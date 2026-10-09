@@ -12,8 +12,10 @@ description: Implement a ready-to-implement task from ai-artifacts/tasks/ and ha
   `ready-to-implement`; rewrite the table (one whole-table edit).
 - The chosen task must be `ready-to-implement` with deps `done` - otherwise stop and say
   why. Never start from `inbox` (unspecified) or `needs-info`.
-- Read `task.md` + `notes.md` (create `notes.md` if missing), its cited docs, and
-  AGENTS.md. Warn if a cited doc's `verified:` marker is behind `../Mindustry` HEAD -
+- Read `task.md` + `notes.md` (create `notes.md` if missing), then the docs and source
+  they cite under **Refs** - that list is the working context; rely on it first. Other
+  docs (AGENTS.md file map, index docs) only if a step needs something Refs does not
+  cover. Warn if a cited doc's `verified:` marker is behind `../Mindustry` HEAD -
   offer to run `sync-upstream` first.
 - **Baseline compile:** `./gradlew build` must pass before touching anything. This is
   the desktop-only gate - the full `deploy` runs in CI and the user checks it. Baseline

@@ -5,9 +5,13 @@ description: Review a task - cold-reader spec audit before implementation, or co
 
 # Reviewing a task
 
-You did not write what you are reviewing: dispatch a **read-only subagent with fresh
+You did not write what you are reviewing: dispatch **read-only subagents with fresh
 context** as the second opinion - always, in both modes - then verify each finding in
 the main session before acting on it. Never take a subagent finding on trust.
+
+When invoked by `create-tasks` (spec mode), the launch is a **parallel set of lenses**
+defined by that skill - dispatch them all at once with `background: true`. Standalone
+or in code mode, one cold reader suffices.
 
 ## Mode
 

@@ -7,12 +7,12 @@
 
 A mod feature that can meaningfully break on its own - reflection into game
 internals, patching UI structure, anything version-fragile - is a `MUModule`
-subclass (`java/mu/MUModule.java`). A module is atomic: it is either fully on or
+subclass (`java/mu/modules/MUModule.java`). A module is atomic: it is either fully on or
 fully off, and one module failing never affects another.
 
 Lifecycle (all of it - there is no runtime enable/disable):
 
-- At startup (`ClientLoadEvent`), MUMain runs each registered module's `init()`,
+- At startup (`ClientLoadEvent`), `MU` runs each registered module's `init()`,
   skipping modules whose setting is false.
 - If `init()` throws, the module is **disabled for this session only**: the error
   (full stack trace) goes to the log, and a startup dialog lists "the following
@@ -52,13 +52,13 @@ built its defaults first.
 ## Practical consequences
 
 - New fragile features ship as `MUModule` subclasses registered in
-  `MUMain.modules`; `init()` may throw, the framework handles the rest.
+  `MU.modules`; `init()` may throw, the framework handles the rest.
 - Do not add runtime enable/disable paths, hook-removal code, or revert
   functionality for module toggles.
 - Per-failure granularity inside a module (e.g. one `CustomRulesDialog` that
   cannot be reflected) is the module's own business: log and skip that piece,
   only fail `init()` when the module cannot do anything useful at all.
-- Settings-menu additions for modules are generated from `MUMain.modules`, not
+- Settings-menu additions for modules are generated from `MU.modules`, not
   hand-listed.
 
 See also: `ai-artifacts/tasks/mu-module-framework/task.md`,

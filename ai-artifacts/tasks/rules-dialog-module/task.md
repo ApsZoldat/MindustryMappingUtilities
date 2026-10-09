@@ -10,7 +10,7 @@ improvements and planet background are explicitly out of scope.
 ## Scope
 
 - `java/mu/RulesDialogModule.java` (new)
-- `java/mu/MUMain.java` (instantiate + register the module)
+- `java/mu/MU.java` (instantiate + register the module)
 - `assets/bundles/bundle.properties` (English rule labels, `.info` tooltips, env
   descriptions, `rules.title.miscellaneous`)
 

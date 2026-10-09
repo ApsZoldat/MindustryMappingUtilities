@@ -106,7 +106,7 @@ New code belongs in a fresh source tree; the pre-rewrite implementation is **kep
 ### Current repository layout
 
 ```
-mod.hjson           mod metadata (main: mu.MUMain)
+mod.hjson           mod metadata (main: mu.MU)
 libs/               game jar used as compileOnly dependency (gitignored, CI downloads it)
 .github/workflows/  CI: downloads BE jar, runs ./gradlew deploy
 old-src/            pre-v9-rewrite sources + resources (structure: ai-artifacts/OldSrc.md)

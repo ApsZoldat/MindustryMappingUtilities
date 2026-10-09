@@ -11,7 +11,7 @@ explicit default on every read - no holder class (Q6 decision).
 
 - `java/mu/SettingsDialogMod.java` (new - static `enable()` like old-src; NOT a
   `MUModule`, it is always enabled)
-- `java/mu/MUMain.java` (call `SettingsDialogMod.enable()` on `ClientLoadEvent`)
+- `java/mu/MU.java` (call `SettingsDialogMod.enable()` on `ClientLoadEvent`)
 - `assets/bundles/bundle.properties` (English `settings.*` keys only)
 
 ## Plan steps
@@ -22,13 +22,13 @@ explicit default on every read - no holder class (Q6 decision).
    the `title` field and overridable `add(SettingsTable)` (it does - see Refs).
 2. `ui.settings.addCategory("@settings.editor", Icon.editor, ...)` containing:
    - `Title("@settings.mu_mods", "@settings.mu_mods.info")`: for each
-     `MUMain.modules` entry a `checkPref(module.name, module.def, b -> ui.showInfo("@settings.mu_restart"))`
+     `MU.modules` entry a `checkPref(module.name, module.def, b -> ui.showInfo("@settings.mu_restart"))`
      - toggling shows the restart notice, both directions, no revert.
      `module.name`/`module.def` are the single source of truth (Q1).
    - `Title("@settings.rules_dialog")`: `checkPref("mu_hidden_rules", true)`,
      `checkPref("mu_env_settings", true)` - feature toggles read by
      RulesDialogModule, instant effect (no restart), string literals.
-3. Register the category on `ClientLoadEvent` **after** `MUMain.modules` is
+3. Register the category on `ClientLoadEvent` **after** `MU.modules` is
    filled and **before** the module init loop (the category builder reads the
    registry synchronously - registering too early silently yields an empty
    module section).
@@ -43,7 +43,7 @@ explicit default on every read - no holder class (Q6 decision).
 ## Acceptance criteria
 
 - The settings menu shows the new category with two titled sections.
-- Toggling any module row (from `MUMain.modules`) shows the restart notice dialog
+- Toggling any module row (from `MU.modules`) shows the restart notice dialog
   and persists the value; the module list means future modules appear
   automatically.
 - `mu_hidden_rules` / `mu_env_settings` rows appear with default true when the key
@@ -71,7 +71,7 @@ explicit default on every read - no holder class (Q6 decision).
   `addCategory(String, Drawable, Cons<SettingsTable>)`, `checkPref(String, boolean, Boolc)`,
   `SettingsTable.Setting` (`public String title`, `Setting(String)`, `add(SettingsTable)`).
 - v9 `/root/projects/Mindustry/core/src/mindustry/core/UI.java` - `showInfo(String)`.
-- `ai-artifacts/tasks/mu-module-framework/task.md` - `MUMain.modules` registry.
+- `ai-artifacts/tasks/mu-module-framework/task.md` - `MU.modules` registry.
 - `ai-artifacts/tasks/rules-dialog-module/task.md` - consumer of the feature toggles.
 
 ## Open questions

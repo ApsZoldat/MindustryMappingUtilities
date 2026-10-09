@@ -6,7 +6,7 @@ name: "mapping-utilities"
 
 author: "ApsZoldat"
 
-main: "mu.MUMain"
+main: "mu.MU"
 
 description: 
     '''

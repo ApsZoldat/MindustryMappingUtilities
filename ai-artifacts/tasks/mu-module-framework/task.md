@@ -2,15 +2,15 @@
 
 ## Goal
 
-`MUModule` abstraction + MUMain lifecycle: every module is an atomic unit whose
+`MUModule` abstraction + MU lifecycle: every module is an atomic unit whose
 `init()` runs once at startup; a failing module is disabled for the session (logged,
 listed in a startup notice), never affecting other modules. Toggles in settings are
 restart-to-apply - there is no runtime enable/disable.
 
 ## Scope
 
-- `java/mu/MUModule.java` (new)
-- `java/mu/MUMain.java` (module registry + init loop + failure notice)
+- `java/mu/modules/MUModule.java` (new, package `mu.modules`)
+- `java/mu/MU.java` (module registry + init loop + failure notice)
 - No settings UI here, no concrete modules (those are dependent tasks).
 
 ## Plan steps
@@ -19,9 +19,9 @@ restart-to-apply - there is no runtime enable/disable.
    `public final boolean def` set via constructor, `public abstract void init()`
    (may throw), and `public boolean enabled()` = `settings.getBool(name, def)`.
    The setting key string lives in each subclass's constructor via `super(...)`.
-2. `MUMain`: a `public static Seq<MUModule> modules` registry, filled on
+2. `MU`: a `public static Seq<MUModule> modules` registry, filled on
    `ClientLoadEvent` (dialog instances exist by then - old-src did the same).
-   MUMain itself instantiates and adds the modules; dependent tasks append their
+   MU itself instantiates and adds the modules; dependent tasks append their
    `modules.add(new ...)` lines here.
 3. Init loop: for each module - `if(!module.enabled()) continue;` (a disabled
    module is skipped entirely, no init call; this is the only place

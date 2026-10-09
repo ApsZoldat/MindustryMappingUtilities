@@ -37,7 +37,7 @@ from WSL to the Windows host's mods folder.
 - Game build must satisfy `minGameVersion: 159` (`mod.hjson`) - a recent BE/v9 build.
 - In the Mods dialog the mod is listed as **mapping-utilities**. It is `hidden: true`,
   which only means: no mod *content* is loaded (`Mods.loadContent` skips hidden mods) and
-  its dialog state shows as multiplayer-compatible - the `mu.MUMain` code still runs. So
+  its dialog state shows as multiplayer-compatible - the `mu.MU` code still runs. So
   verify by the **editor behaving differently**, not by content appearing.
 - After changing the jar, restart the game (mods load at startup).
 - Remove/disable: delete the jar from the mods folder, or uncheck it in the Mods dialog

@@ -184,14 +184,15 @@ public class RulesDialogModule extends MUModule{
             table.left().defaults().growX().left().pad(5);
             table.row();
 
-            envCheck(table, "@rules.env.terrestrial", Env.terrestrial, "@rules.env.terrestrial.description", rules);
-            envCheck(table, "@rules.env.space", Env.space, "@rules.env.space.description", rules);
-            envCheck(table, "@rules.env.underwater", Env.underwater, "@rules.env.underwater.description", rules);
-            envCheck(table, "@rules.env.spores", Env.spores, "@rules.env.spores.description", rules);
-            envCheck(table, "@rules.env.scorching", Env.scorching, "@rules.env.scorching.description", rules);
-            envCheck(table, "@rules.env.groundOil", Env.groundOil, "@rules.env.groundOil.description", rules);
-            envCheck(table, "@rules.env.groundWater", Env.groundWater, "@rules.env.groundWater.description", rules);
-            envCheck(table, "@rules.env.oxygen", Env.oxygen, "@rules.env.oxygen.description", rules);
+            envCheck(table, "@rules.env.any", Environments.any, "@rules.env.any.description", rules);
+            envCheck(table, "@rules.env.terrestrial", Environments.of(Env.terrestrial), "@rules.env.terrestrial.description", rules);
+            envCheck(table, "@rules.env.space", Environments.of(Env.space), "@rules.env.space.description", rules);
+            envCheck(table, "@rules.env.underwater", Environments.of(Env.underwater), "@rules.env.underwater.description", rules);
+            envCheck(table, "@rules.env.spores", Environments.of(Env.spores), "@rules.env.spores.description", rules);
+            envCheck(table, "@rules.env.scorching", Environments.of(Env.scorching), "@rules.env.scorching.description", rules);
+            envCheck(table, "@rules.env.groundOil", Environments.of(Env.groundOil), "@rules.env.groundOil.description", rules);
+            envCheck(table, "@rules.env.groundWater", Environments.of(Env.groundWater), "@rules.env.groundWater.description", rules);
+            envCheck(table, "@rules.env.oxygen", Environments.of(Env.oxygen), "@rules.env.oxygen.description", rules);
         }).fillX();
 
         dialog.addCloseButton();
@@ -199,9 +200,9 @@ public class RulesDialogModule extends MUModule{
     }
 
     /** One checkbox + description row, toggling the immutable {@link Rules#env} set (with an {@code any}-safe rebuild on uncheck). */
-    void envCheck(Table table, String text, Env env, String description, Rules rules){
+    void envCheck(Table table, String text, Environments env, String description, Rules rules){
         CheckBox box = new CheckBox(text);
-        box.setChecked(rules.env.has(env));
+        box.setChecked(rules.env.containsAny(env));
         box.left();
         box.changed(() -> {
             if(box.isChecked()){

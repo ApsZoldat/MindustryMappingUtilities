@@ -113,7 +113,7 @@ referencing pre-v9 code.
 
 ## Mindustry / Arc source
 
-Ground truth is source code, in this order:
+Ground truth is source code (avoid searching online docs), in this order:
 
 1. `java/mu/` - this mod's new code.
 2. `../Mindustry` - sibling checkout, branch `v9`. **Both projects live in this one

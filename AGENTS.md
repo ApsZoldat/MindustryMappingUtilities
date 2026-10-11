@@ -10,7 +10,7 @@ Instructions for AI agents working on this repository.
     - Mindustry V9 has the entirety of Arc included in its repo, instead of being an external dependency.
 - **[Mindustry Mapping Utilities](https://github.com/ApsZoldat/MindustryMappingUtilities)** - This mod for Mindustry, aims to improve map editor's convenience and possibilities.
 
-### How does Arc differ from libGDX?
+### Arc vs libgdx
 
 There are too many things to list, but here are some highlights:
 
@@ -41,7 +41,7 @@ There are too many things to list, but here are some highlights:
 - Do not use braceless `if/else` statements. `if(x) statement else statement2` should **never** be done. In very specific situations, having braceless if-statements on one line is allowed: `if(cond) return;` would be valid.
 - Prefer single-line javadoc `/** @return for example */` instead of multiline javadoc whenever possible
 - Short method/variable names (multipleLongWords should be avoided if it's possible to do so reasonably, especially for variables)
-- Use wildcard imports - `import some.package.*` - for everything. This makes incorrect class usage more obvious (*e.g. arc.util.Timer vs java.util.Timer*) and leads to cleaner-looking code.
+- Use wildcard imports - `import some.package.*` - for everything.
 
 ### Comments and logging
 - Inline `//` comments are sentences: start with a capital letter and put one space after the slashes - `// Like this`, not `//like this`.
@@ -53,16 +53,12 @@ If you need to use functional interfaces, use the ones in `arc.func`, which are 
 
 The same applies to any class *outside* of the standard `java.[n]io` / `java.net` / `java.util` packages: Most of them are not supported.
 `java.awt` is one of these packages: do not use it, ever. It is not supported on any platform, even desktop - the entire package is removed during JRE minimization.
-In general, if you are using IntelliJ, you should be warned about platform incompatiblities.
 
-> **Note for this mod:** these rules are written for the game's multiplatform constraints.
-> The v9 target is Java 17, but keep following them (especially `arc.func` instead of
-> `java.util.function`, and no `java.awt`) so the code stays consistent with the Mindustry/Arc
-> codebase it patches into.
+**Note for this mod:** these rules are written for the game's multiplatform constraints.
+The v9 target is Java 17, but keep following them (especially `arc.func` instead of `java.util.function`, and no `java.awt`)
 
 ### Use `arc` collections and classes when possible.
 Instead of using `java.util.List`, `java.util.HashMap`, and other standard Java collections, use `Seq`, `ObjectMap` and other equivalents from `arc.struct`.
-Why? Because that's what the rest of the codebase uses, and the standard collections have a lot of cruft and usability issues associated with them.
 In the rare case that concurrency is required, you may use the standard Java classes for that purpose (e.g. `CopyOnWriteArrayList`).
 
 What you'll usually need to change:
@@ -93,19 +89,10 @@ Unless a block of code is very large or used in more than 1-2 places, don't spli
 
 Binding constraints. Violating one of these makes a task wrong - when in doubt, follow them.
 
-- Target the Mindustry **`v9` branch**, including APIs that only exist there. Stock (current release) compatibility is not a goal right now - it can be added later, when v9 releases. Reasoning: [`ai-artifacts/decisions/TargetV9.md`](ai-artifacts/decisions/TargetV9.md)
+- The mod is currently being **rewritten for Mindustry v9**. Target the Mindustry **`v9` branch** found in `../Mindustry` and `libs/Mindustry.jar` (use `../Mindustry` whenever possible), including APIs that only exist there. Stock (current release) compatibility is not a goal.
 - New code goes into `java/mu/`. `old-src/` is reference only, never on the source path, never buildable.
 
 ---
-
-## This mod is being rewritten for Mindustry v9
-
-The mod is currently being **rewritten for Mindustry v9** (`../Mindustry`, branch `v9`,
-Java 17 / Gradle 9).
-
-Reasoning: adapting to Mindustry's API changes, reimagining lots of old code and implementing new features.
-
-New code belongs in a fresh source tree; the pre-rewrite implementation is **kept for reference in `old-src/`** (committed, but do not treat it as buildable - `build.gradle.kts` compiles the new `java/` + `assets/` layout, so `old-src/` is never on the source path).
 
 ### Current repository layout
 
@@ -116,93 +103,11 @@ libs/               game jar used as compileOnly dependency (gitignored, CI down
 old-src/            pre-v9-rewrite sources + resources (structure: ai-artifacts/OldSrc.md)
 assets/             location for resources like bundles or sprites
 java/mu/            intended location for the new v9 sources
-ai-artifacts/       AI-facing docs, class trees, task tracking (see below)
+ai-docs/            AI-facing docs, class trees, task tracking (see below)
 ```
 
-Full `old-src/` directory tree is described in `ai-artifacts/OldSrc.md` - read it when porting or
+Full `old-src/` directory tree is described in `ai-artifacts/old-src.md` - read it when porting or
 referencing pre-v9 code.
-
----
-
-## AI artifacts
-
-AI-facing documentation in `ai-artifacts/`. Nothing in here is loaded automatically - this file map is the
-index: every doc with a one-line "read when". Open the file named in the task you are on.
-
-Each `X-docs/` folder holds content files plus `XIndex.md`, a curated class tree of the
-source it covers. Trees are curation, not dumps: only what this mod touches, with
-relationships (extends/patches/reflects) and purpose per entry - the full tree is
-derivable with `find`/`glob`, and stale hand-maintained entries make agents skip the
-source that would correct them.
-
-### File map
-
-**Top level**
-- `OldSrc.md` - porting or referencing pre-v9 code: old-src/ tree + per-file intent.
-- `tasks/` - one folder per task (`<name>/task.md`, `notes.md`) plus `TaskStates.md`, the
-  state table + pipeline header. Read that header before touching any task.
-- `upstream.md` - last-synced Anuken/Mindustry v9 commit; state file of the
-  `sync-upstream` skill.
-
-**decisions/** - the "why" behind the key decisions above.
-- `TargetV9.md` - why we target v9 APIs only, with no stock compatibility.
-- `MUModules.md` - module philosophy: atomic `MUModule` units, init-failure
-  disables for the session with a notice, toggles are restart-to-apply.
-
-**arc-docs/** - Arc source (`../Mindustry/arc/arc-core/src/arc/`).
-- `ArcIndex.md` - class tree: which Arc files/packages matter here. Read first when touching Arc code.
-- `Element.md` - working with UI elements: Actor->Element renames, draw pipeline, invalidation, hit/touch rules.
-- `Scene.md` - scene structure, input entry, focus, dialog stacking, resize behavior.
-- `Events.md` - wiring listeners: dispatch phases, touch focus, concrete listener semantics.
-- `Actions.md` - using actions: lifecycle, pooling, composition, deltas vs libGDX.
-- `Drawable.md` - drawables/styles: the family, how to obtain one, how styles consume them.
-- `Table.md` - laying out tables: cell model, Arc-only builder DSL, invalidation quirks.
-- `Coordinates.md` - read before touching positions/sizes/scaling: spaces, conversions, Scl.
-- `UI.md` - read before building or modifying UI: dialog anatomy, Table DSL, input wiring, gotchas.
-
-**mindustry-docs/** - Mindustry source (`../Mindustry/core/src/mindustry/`).
-- `MindustryIndex.md` - class tree: editor/dialogs/map-io subset relevant here. Read first when patching Mindustry.
-- `MapEditor.md` - the editor model: state, key methods, undo entry points, gotchas.
-- `MapEditorDialog.md` - the editor screen: build()-on-show rebuild, sub-dialog fields, lifecycle, save().
-- `MapView.md` - editor canvas: camera/zoom, input handling, reflection-worthy private fields.
-- `EditorTool.md` - the tool enum: shared mutable state, modes, keybinds, gotchas.
-- `EditorRenderer.md` - chunked editor renderer: shared game shader, cache invalidation entry points.
-- `EditorUndo.md` - how undo works: EditorTile recording, swap-based DrawOperation, OperationStack.
-- `MapFiles.md` - how maps are stored: MSAV format, tags as source of truth, MapIO/SaveIO chains.
-- `MapAssets.md` - v9 per-map data packs: DataManager, ordinal-coupled views, global-state mutation traps.
-- `MapGenerateDialog.md` - generate filters: applied vs stored mode, preview threading, filter semantics.
-- `MapObjectivesDialog.md` - objectives graph: live commit model, canvas sync, reflection-based field UI registry.
-- `WaveInfoDialog.md` - waves editor: staged commit, WaveGraph rebuilding.
-- `Editor.md` - read before patching the editor: entry points, UI/state hooks, what silently breaks.
-- `Maps.md` - read before working with map files: listing/loading, reading rules/waves, saving from editor state.
-- `RulesSurvey.md` - rules coverage audit: which Rules/TeamRule fields the rules dialog renders, ported rows, ranked candidates. Read before extending rules UI.
-
-**mu-docs/** - this mod (`java/mu/`, `old-src/`).
-- `MUIndex.md` - entry point for mod-specific docs as the rewrite progresses.
-- `Running.md` - read before building, installing, or launching the mod for testing.
-- `Modules.md` - the MUModule system: registration, init/failure contract, module keys,
-  RulesDialogModule guards. Read before adding or renaming a module.
-
-### How to work with ai-artifacts
-
-**Before writing or correcting any file in `ai-artifacts/`, load the `index-docs` skill**
-(`.opencode/skills/index-docs/SKILL.md`) - it holds the writing rules: verify against
-source, audience, length budgets, naming/linking, staleness. This section says *whether*
-you may write; the skill says *how*.
-
-Write direction depends on what you were asked to do:
-
-- **Researching code, writing docs, or creating a task** -> **write into `ai-artifacts/`.**
-  Put the class tree entries, term explainers, decision write-ups and task files where the
-  file map above says they belong, and add a map line for every new file. Don't just report
-  findings in chat and leave the files stale; the file is the deliverable.
-- **Writing the mod's code from `ai-artifacts/`** -> **read from those files** and treat them
-  as the source of context for the task. If you discover additional info worth keeping while
-  working, **ask the user before writing it** - do not silently edit docs that other work may
-  depend on. Same applies to corrections: surface what looks outdated instead of rewriting it.
-
-Reading is always allowed; writing is either prompted by a research/doc/task request, or
-gated on asking first.
 
 ---
 
@@ -217,7 +122,7 @@ Ground truth is source code, in this order:
     - Arc: `../Mindustry/arc/arc-core/src/arc/` (e.g. `scene/Element.java`, `scene/ui/layout/Table.java`)
 3. `old-src/` - pre-v9 code, for intent only, never the current API.
 
-`ai-artifacts/` is a cache over (2) and (3), not a replacement. If a doc and the source
+`ai-docs/` is a cache over (2) and (3), not a replacement. If a doc and the source
 disagree, **the source is right and the doc is stale** - say so, don't quietly follow the doc.
 
 The checkout sits outside this project, so a permission prompt when reading it is not the
@@ -229,40 +134,3 @@ git clone -b v9 https://github.com/Anuken/Mindustry.git ../Mindustry
 
 Only decline the task if it genuinely cannot proceed without source research - `libs/`
 still lets you compile and run the mod without the checkout.
-
----
-
-## When to read what
-
-**On a task: the task folder's `Refs` list comes first.** Read `task.md` + `notes.md`,
-then only the docs and source files they cite - rely on those. Reach for the file map
-below (or the index docs) only when a step needs something `Refs` does not cover; read
-source when a doc does not answer it.
-
-Off a task (general research): check the file map above first - open a doc only if its
-line matches your question. The relevant `...Index.md` maps which source files matter;
-otherwise read source.
-
-- **Rewriting or porting old code:** `OldSrc.md` for what it did, *then* the current
-  target's source for what you are patching. `OldSrc.md` never describes the current API.
-- **"How does this system work?"** (Arc UI layout, events, rendering, coordinate handling):
-  docs first - this is the knowledge source alone does not give you. If empty, read source
-  and write it.
-- **"What does this specific thing do?"** (signature, semantics, does it exist in v9):
-  source first.
-- **Reflection into private fields** (this mod does a lot of this): always read current
-  source first. A field renamed in v9 fails silently or returns null, not loudly.
-- **Running the task pipeline** (syncing upstream, creating/implementing/reviewing/
-  testing tasks): the `sync-upstream`, `create-tasks`, `implement`, `review`, `test`
-  skills; states + transitions in the `TaskStates.md` header.
-- **About to build UI or touch coordinates:** `arc-docs/UI.md` and
-  `arc-docs/Coordinates.md` (file map).
-- **Stuck after two reads of the same source:** stop and ask, rather than re-reading and
-  guessing.
-
-Writing, as in the section above: research/docs/tasks -> write into `ai-artifacts/`;
-coding -> read, and ask before writing anything new you discover. Worth writing is
-v9-only API differences, non-obvious structure, gotchas, and why something is the way it
-is - cite path + symbol name (never line numbers) and the branch it was observed on.
-Not worth writing: code excerpts, anything one `read` already reveals, anything local to
-one task (that goes in `tasks/`).

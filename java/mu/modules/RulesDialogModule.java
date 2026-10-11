@@ -23,18 +23,18 @@ public class RulesDialogModule extends MUModule{
 
     @Override
     public void init(){
-        Seq<CustomRulesDialog> hooked = new Seq<>();
+        int hooked = 0;
 
-        hookDialog(hooked, "editor map info", () -> findDialog(Vars.ui.editor, "infoDialog", "ruleInfo"));
-        hookDialog(hooked, "editor playtest", () -> findDialog(Vars.ui.editor, "playtestDialog", "dialog"));
-        hookDialog(hooked, "custom game", () -> findDialog(Vars.ui.custom, "dialog", "dialog"));
-        hookDialog(hooked, "pause menu", () -> findDialog(Vars.ui.paused, "rulesDialog"));
+        if(hookDialog("editor map info", () -> findDialog(Vars.ui.editor, "infoDialog", "ruleInfo"))) ++hooked;
+        if(hookDialog("editor playtest", () -> findDialog(Vars.ui.editor, "playtestDialog", "dialog"))) ++hooked;
+        if(hookDialog("custom game", () -> findDialog(Vars.ui.custom, "dialog", "dialog"))) ++hooked;
+        if(hookDialog("pause menu", () -> findDialog(Vars.ui.paused, "rulesDialog"))) ++hooked;
 
-        if(hooked.size == 0){
+        if(hooked == 0){
             throw new RuntimeException("No rules dialogs found");
         }
 
-        Log.info("[MU] Hooked " + hooked.size + " rules dialogs");
+        Log.info("[MU] Hooked " + hooked + " rules dialogs");
     }
 
     /** Walks a reflection path from a dialog root to a rules dialog; a renamed field throws here, at init. */
@@ -46,12 +46,11 @@ public class RulesDialogModule extends MUModule{
         return (CustomRulesDialog)out;
     }
 
-    /** Resolves one dialog and registers this dialog's rebuild closure; discovery failures log and skip that dialog only. */
-    void hookDialog(Seq<CustomRulesDialog> out, String name, Prov<CustomRulesDialog> finder){
+    /** Resolves one dialog and registers this dialog's rebuild closure; returns whether the hook succeeded. */
+    boolean hookDialog(String name, Prov<CustomRulesDialog> finder){
         try{
             CustomRulesDialog dialog = finder.get();
             if(dialog == null) throw new NullPointerException("dialog is null");
-            if(out.contains(dialog, true)) return;
 
             boolean[] failed = {false};
 
@@ -66,22 +65,23 @@ public class RulesDialogModule extends MUModule{
                 }
             });
 
-            out.add(dialog);
             Log.info("[MU] Hooked " + name + " rules dialog");
+            return true;
         }catch(Throwable t){
             Log.err("[MU] Failed to hook " + name + " rules dialog", t);
+            return false;
         }
     }
 
     /** Builds this dialog's added rows: the settings gate, two guards, reused vanilla categories, the miscellaneous block, then the team walk. */
     void setup(CustomRulesDialog dialog){
-        //Hidden-rules setting, read live so toggling applies on the next rebuild without a restart
+        // Hidden-rules setting, read live so toggling applies on the next rebuild without a restart
         if(!settings.getBool("mu_hidden_rules", true)) return;
 
         Rules rules = Reflect.get(dialog, "rules");
-        //A never-shown dialog has no rules yet, and its closure would still run for other dialogs' rebuilds
+        // A never-shown dialog has no rules yet, and its closure would still run for other dialogs' rebuilds
         if(rules == null) return;
-        //Fresh builds clear categoryNames, so the misc category marks this dialog as already injected
+        // Fresh builds clear categoryNames, so the misc category marks this dialog as already injected
         if(dialog.categoryNames.contains("miscellaneous")) return;
 
         category(dialog, "waves");
@@ -161,7 +161,7 @@ public class RulesDialogModule extends MUModule{
             }
             if(collapser == null || label == null) continue;
 
-            //Search may hide whole team tables, shifting positions; match labels so a skipped team never shifts the rest
+            // Search may hide whole team tables, shifting positions; match labels so a skipped team never shifts the rest
             while(pos < Team.baseTeams.length && !Team.baseTeams[pos].coloredName().equals(label)) pos++;
             if(pos >= Team.baseTeams.length) break;
 
@@ -184,15 +184,15 @@ public class RulesDialogModule extends MUModule{
             table.left().defaults().growX().left().pad(5);
             table.row();
 
-            envCheck(table, "@rules.env.any", Environments.any, "@rules.env.any.description", rules);
-            envCheck(table, "@rules.env.terrestrial", Environments.of(Env.terrestrial), "@rules.env.terrestrial.description", rules);
-            envCheck(table, "@rules.env.space", Environments.of(Env.space), "@rules.env.space.description", rules);
-            envCheck(table, "@rules.env.underwater", Environments.of(Env.underwater), "@rules.env.underwater.description", rules);
-            envCheck(table, "@rules.env.spores", Environments.of(Env.spores), "@rules.env.spores.description", rules);
-            envCheck(table, "@rules.env.scorching", Environments.of(Env.scorching), "@rules.env.scorching.description", rules);
-            envCheck(table, "@rules.env.groundOil", Environments.of(Env.groundOil), "@rules.env.groundOil.description", rules);
-            envCheck(table, "@rules.env.groundWater", Environments.of(Env.groundWater), "@rules.env.groundWater.description", rules);
-            envCheck(table, "@rules.env.oxygen", Environments.of(Env.oxygen), "@rules.env.oxygen.description", rules);
+            envCheck(table, "any", Environments.any, rules);
+            envCheck(table, "terrestrial", Environments.of(Env.terrestrial), rules);
+            envCheck(table, "space", Environments.of(Env.space), rules);
+            envCheck(table, "underwater", Environments.of(Env.underwater), rules);
+            envCheck(table, "spores", Environments.of(Env.spores), rules);
+            envCheck(table, "scorching", Environments.of(Env.scorching), rules);
+            envCheck(table, "groundOil", Environments.of(Env.groundOil), rules);
+            envCheck(table, "groundWater", Environments.of(Env.groundWater), rules);
+            envCheck(table, "oxygen", Environments.of(Env.oxygen), rules);
         }).fillX();
 
         dialog.addCloseButton();
@@ -200,15 +200,15 @@ public class RulesDialogModule extends MUModule{
     }
 
     /** One checkbox + description row, toggling the immutable {@link Rules#env} set (with an {@code any}-safe rebuild on uncheck). */
-    void envCheck(Table table, String text, Environments env, String description, Rules rules){
-        CheckBox box = new CheckBox(text);
+    void envCheck(Table table, String flagName, Environments env, Rules rules){
+        CheckBox box = new CheckBox("@rules.env." + flagName);
         box.setChecked(rules.env.containsAny(env));
         box.left();
         box.changed(() -> {
             if(box.isChecked()){
                 rules.env = rules.env.with(env);
             }else if(rules.env.isAny()){
-                //Removing from 'any' throws; rebuild every registered flag instead, minus this one
+                // Removing from 'any' throws; rebuild every registered flag instead, minus this one
                 Env[] all = Env.all.toArray(Env.class);
                 rules.env = Environments.of(all).without(env);
             }else{
@@ -218,7 +218,7 @@ public class RulesDialogModule extends MUModule{
         table.add(box);
         table.row();
 
-        Label label = table.add(description).get();
+        Label label = table.add(bundle.get("@rules.env." + flagName + ".description")).get();
         label.setWidth(600f);
         label.setWrap(true);
         table.row();

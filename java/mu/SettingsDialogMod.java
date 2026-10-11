@@ -16,7 +16,7 @@ import static mindustry.Vars.*;
  */
 public class SettingsDialogMod{
     public static void enable(){
-        ui.settings.addCategory("@settings.editor", Icon.editor, table -> {
+        ui.settings.addCategory("@settings.mapping_utilities", Icon.editor, table -> {
             table.pref(new Title("@settings.mu_modules", "@settings.mu_modules.info"));
 
             for(MUModule module : MU.modules){

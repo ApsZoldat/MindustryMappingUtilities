@@ -1,5 +1,5 @@
 # Task: mu-settings-dialog
-Status: ready
+Status: implemented
 Mindustry commit: 5d45d9ad95
 
 ## Goal
@@ -44,5 +44,12 @@ Create `java/mu/ui/dialogs/MUSettingsDialog.java` — a custom `BaseDialog` cont
 | 15 | Reflection code placement? | Inline in `ClientLoadEvent` handler |
 | 16 | Where to build UI? | `build()` method called via `shown(this::build)` in constructor |
 
+## Deviations
+| # | Member or AC | Spec said | Implemented | Reason |
+|---|--------------|-----------|-------------|--------|
+| D1 | `MUSettingsDialog` imports | api.md fixed the import list (`arc.*`, `arc.scene.ui.*`, `arc.scene.ui.layout.*`, `mindustry.gen.*`, `mindustry.ui.dialogs.*`, `static mindustry.Vars.*`) | added `mindustry.graphics.Pal`, `mu.MU`, `mu.modules.*` | Compiler-forced: `Pal` lives in `mindustry.graphics` (not `arc.graphics`); `build()` references `MU.modules`/`MUModule`, which the listed imports do not cover. No signature or behavior change. |
+| D2 | `MU.java` imports | api.md sketch implied existing imports cover `ui`, `Table`, `Icon`, `TextButton` | added `arc.scene.ui.TextButton`; `Table`/`Icon` resolved via wildcard imports (`arc.scene.ui.layout.*`, `mindustry.gen.*`); `ui` referenced as `Vars.ui`, matching the file's existing fully-qualified style | Compiler-forced: none of these symbols were in scope. No signature or behavior change. |
+
 ## Open questions and assumptions
-- (none)
+- A1 [assumption] `MUSettingsDialog.build()` section headers: plain accent-colored label + divider rows with `fillX()`, replacing the old `Title` class rendering (decision 6 drops `Title`). Width is not clamped to `min(500f, width/1.2/Scl)` as in `Title` — cosmetic only, no behavioral difference.
+- A2 [assumption] `MU.java` button survival: reflection grabs `menu` once; a `menu.update(...)` callback re-adds the button whenever it is missing. Forced by engine behavior: `SettingsMenuDialog.rebuildMenu()` calls `menu.clearChildren()` on every settings open AND on back-from-category, so a one-shot add would make the button vanish (breaking AC7/CH7). The per-frame check allocates nothing.

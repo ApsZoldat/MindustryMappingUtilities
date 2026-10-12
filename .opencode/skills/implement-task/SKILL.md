@@ -37,7 +37,7 @@ Do not pass a gate until its condition holds.
 |---|---|
 | G1 | Preconditions ok (Step 0) |
 | G2 | Engine symbols re-verified (Step 2) |
-| G3 | Skeleton compiles (Step 3) |
+| G3 | Skeleton compiles and the user confirmed it (Step 3) |
 | G4 | No STUB markers left and the project compiles (Step 4) |
 | G5 | Spec conformity check passed (Step 5) |
 
@@ -46,7 +46,7 @@ Do not pass a gate until its condition holds.
 1. The task name comes from the arguments. If missing, list `ai-tasks/` and ask which one.
 2. Read `ai-tasks/<name>/task.md`. If Status is `ready`, continue. If Status is `implementing`, resume (remaining work = classes that still contain STUB markers). If it is anything else, stop and tell the user to finish the package with /new-task.
 3. docs.md must have an empty Unverified section. Otherwise stop.
-4. Find the build command in AGENTS.md. If there is none, ask the user once and remember it for this run.
+4. The build command is `./gradlew jar`, unless AGENTS.md specifies a different one. It only compiles and packages. Never launch the game.
 5. Compare the Mindustry commit in docs.md with the current one: `git -C ../Mindustry rev-parse --short HEAD`. A mismatch means the verified table may be stale: do Step 2 in full and say so in the report.
 6. Run a read-only `git status`. If files the task touches already have uncommitted changes, warn the user and ask whether to proceed.
 7. Set Status `implementing`.
@@ -71,6 +71,7 @@ For every row of the verified table in docs.md, confirm the symbol still exists 
 3. Every body is a stub: `throw new UnsupportedOperationException("STUB");` or the simplest default return value with a trailing `// STUB` comment. The marker must be greppable.
 4. Compile.
 5. Fix only skeleton errors (imports, typos, visibility). If an error shows that api.md itself is wrong (a type does not exist, a signature cannot compile), use the deviation protocol or stop.
+6. PAUSE. Report briefly: created and modified files, the compile result, and any deviation the skeleton needed. Do not start Step 4 until the user explicitly confirms. On resume, if any class already has a real implementation (no STUB), treat the skeleton as confirmed and do not ask again.
 
 ## Step 4: Implement (G4)
 
@@ -134,7 +135,7 @@ The report names the code, the affected IDs, and a recommended resolution.
 
 For each row, replace the high-level Steps with concrete ones using the real UI as implemented:
 
-- how to build and launch (from AGENTS.md);
+- how to build (`./gradlew jar`) and how to launch the game with the built jar (from AGENTS.md);
 - menu paths, button labels and dialog titles exactly as in the code;
 - exact inputs and expected on-screen results;
 - where to look in the log, with the exact message text if the code logs it.

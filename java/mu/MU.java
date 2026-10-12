@@ -3,19 +3,21 @@ package mu;
 import arc.Events;
 import arc.struct.*;
 import arc.util.*;
-import arc.scene.ui.TextButton;
+import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import mindustry.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
+import mindustry.ui.*;
+import mindustry.ui.dialogs.*;
 import mu.modules.*;
 import mu.ui.dialogs.*;
 
 import static arc.Core.*;
 
 public class MU extends Mod{
-    /** All registered modules; filled on {@link EventType.ClientLoadEvent}, then initialized once. */
+    /** All registered modules. Filled on {@link MU#registerModules()} */
     public static Seq<MUModule> modules = new Seq<>();
 
     /** Singleton instance of the settings dialog; created once at startup. */
@@ -23,29 +25,15 @@ public class MU extends Mod{
 
     public MU(){
         Events.on(EventType.ClientLoadEvent.class, e -> {
-            // Module registration
-            modules.add(new RulesDialogModule());
+            registerModules();
 
-            // Settings dialog injection
             settingsDialog = new MUSettingsDialog();
 
-            try{
-                Table menu = Reflect.get(Vars.ui.settings, "menu");
-                TextButton button = menu.button("@mapping_utilities", Icon.editor, settingsDialog::show).marginLeft(8f).get();
-                menu.row();
+            injectSettingsDialog("@mapping_utilities", settingsDialog);
 
-                Vars.ui.settings.shown(() -> {
-                    if(!menu.getChildren().contains(button)){
-                        menu.add(button).marginLeft(8f);
-                        menu.row();
-                    }
-                });
-            }catch(Exception t){
-                Log.err("[MU] Failed to add Mapping Utilities button to the settings menu", t);
-            }
-
+            // TODO: a separate method and maybe create names for modules in bundles
             // Module initialization
-
+            
             Log.info("[MU] Initializing Mapping Utilities modules...");
 
             Seq<String> failed = new Seq<>();
@@ -82,5 +70,29 @@ public class MU extends Mod{
                 Time.runTask(4f, () -> Vars.ui.showInfo(text.toString()));
             }
         });
+    }
+
+    /** Registers modules in {@link MU#modules} */
+    void registerModules(){
+        modules.add(new RulesDialogModule());
+    }
+
+    /** Injects a button opening a dialog into vanilla's settings */
+    void injectSettingsDialog(String buttonTitle, BaseDialog dialog){
+        try{
+            Table menu = Reflect.get(Vars.ui.settings, "menu");
+            TextButton button = menu.button(buttonTitle, Icon.editor, Styles.flatt, Vars.iconMed, dialog::show).marginLeft(8f).get();
+            menu.row();
+
+            Vars.ui.settings.shown(() -> {
+                if(!menu.getChildren().contains(button)){
+                    menu.add(button).marginLeft(8f);
+                    menu.row();
+                }
+            });
+            Log.info("[MU] Injected " + bundle.get(buttonTitle) + " button into the settings menu");
+        }catch(Exception t){
+            Log.err("[MU] Failed to add " + bundle.get(buttonTitle) + " button to the settings menu", t);
+        }
     }
 }

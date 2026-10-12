@@ -4,7 +4,6 @@ import arc.func.*;
 import arc.graphics.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
-import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
 import mindustry.game.*;
@@ -75,14 +74,11 @@ public class RulesDialogModule extends MUModule{
 
     /** Builds this dialog's added rows: the settings gate, two guards, reused vanilla categories, the miscellaneous block, then the team walk. */
     void setup(CustomRulesDialog dialog){
-        // Hidden-rules setting, read live so toggling applies on the next rebuild without a restart
         if(!settings.getBool("mu_hidden_rules", true)) return;
 
         Rules rules = Reflect.get(dialog, "rules");
         // A never-shown dialog has no rules yet, and its closure would still run for other dialogs' rebuilds
         if(rules == null) return;
-        // Fresh builds clear categoryNames, so the misc category marks this dialog as already injected
-        if(dialog.categoryNames.contains("miscellaneous")) return;
 
         category(dialog, "waves");
         dialog.check("@rules.hidespawns", b -> rules.hideSpawns = b, () -> rules.hideSpawns);
@@ -128,7 +124,7 @@ public class RulesDialogModule extends MUModule{
         }
     }
 
-    /** A color swatch row opening the color picker (vanilla ambientLight pattern), search-gated like the built-in builders. */
+    /** A color picker, search-gated. */
     void colorRow(CustomRulesDialog dialog, Color color, String text){
         if(!bundle.get(text.substring(1)).toLowerCase().contains(dialog.ruleSearch)) return;
 
@@ -141,7 +137,7 @@ public class RulesDialogModule extends MUModule{
         }, () -> Vars.ui.picker.show(color, color::set)).left().width(300f).row();
     }
 
-    /** Adds the cheat/ai core spawn checks inside each base team's collapsers, walking the tables vanilla built in its team loop. */
+    /** Adds the cheat/ai core spawn checks inside each base team's collapsers. */
     void teamRules(CustomRulesDialog dialog, Rules rules){
         int index = dialog.categoryNames.indexOf("teams");
         if(index == -1) return;
@@ -154,19 +150,13 @@ public class RulesDialogModule extends MUModule{
             if(!(cell.get() instanceof Table teamTable)) continue;
 
             Collapser collapser = null;
-            String label = null;
             for(Cell<?> c : teamTable.getCells()){
                 if(c.get() instanceof Collapser col) collapser = col;
-                if(c.get() instanceof TextButton btn && label == null) label = btn.getLabel().getText().toString();
             }
-            if(collapser == null || label == null) continue;
+            if(collapser == null) continue;
 
-            // Search may hide whole team tables, shifting positions; match labels so a skipped team never shifts the rest
-            while(pos < Team.baseTeams.length && !Team.baseTeams[pos].coloredName().equals(label)) pos++;
-            if(pos >= Team.baseTeams.length) break;
-
-            Rules.TeamRule rule = rules.teams.get(Team.baseTeams[pos]);
-            pos++;
+            // Vanilla builds one table per Team.baseTeams entry, in order, and search filters all teams identically, so the Nth collapser is baseTeams[N]
+            Rules.TeamRule rule = rules.teams.get(Team.baseTeams[pos++]);
 
             dialog.current = Reflect.get(collapser, "table");
             dialog.check("@rules.cheat", b -> rule.cheat = b, () -> rule.cheat);
@@ -201,12 +191,13 @@ public class RulesDialogModule extends MUModule{
 
     /** One checkbox + description row, toggling the immutable {@link Rules#env} set (with an {@code any}-safe rebuild on uncheck). */
     void envCheck(Table table, String flagName, Environments env, Rules rules){
-        CheckBox box = new CheckBox("@rules.env." + flagName);
-        box.setChecked(rules.env.containsAny(env));
-        box.left();
-        box.changed(() -> {
-            if(box.isChecked()){
-                rules.env = rules.env.with(env);
+        table.check("@rules.env." + flagName, b -> {
+            if(b){
+                if(rules.env.isAny()){
+                    rules.env = env;
+                }else{
+                    rules.env = rules.env.with(env);
+                }
             }else if(rules.env.isAny()){
                 // Removing from 'any' throws; rebuild every registered flag instead, minus this one
                 Env[] all = Env.all.toArray(Env.class);
@@ -214,13 +205,10 @@ public class RulesDialogModule extends MUModule{
             }else{
                 rules.env = rules.env.without(env);
             }
-        });
-        table.add(box);
+        }).checked(env == Environments.any ? rules.env.isAny() : rules.env.containsAny(env)).left();
         table.row();
 
-        Label label = table.add(bundle.get("@rules.env." + flagName + ".description")).get();
-        label.setWidth(600f);
-        label.setWrap(true);
+        table.add("@rules.env." + flagName + ".description").width(600f).wrap();
         table.row();
     }
 }

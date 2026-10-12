@@ -80,6 +80,28 @@ If using a list, make it a static variable and clear it every time it is used. R
 This is situational, but in essence, what it means is to avoid using any sort of getters and setters unless absolutely necessary. Public or protected fields should suffice for most things.
 If something needs to be encapsulated in the future, IntelliJ can handle it with a few clicks.
 
+### Use method chaining for UI code.
+When writing Scene2D UI code, chain `Cell` methods instead of creating intermediate variables. Do not do:
+```java
+Label text = new Label("hello");
+table.add(text);
+table.row();
+CheckBox check = new CheckBox("world");
+table.add(check);
+```
+Do this instead:
+```java
+table.add("hello");
+table.row();
+table.check("world", v -> {...});
+```
+Never use backslashes to split chained calls across lines; break lines at dots instead:
+```java
+table.add("hello")
+     .width(100f)
+     .pad(5f);
+```
+
 ### Do not create methods unless necessary.
 Unless a block of code is very large or used in more than 1-2 places, don't split it up into a separate method. Making unnecessary methods only creates confusion, and may slightly decrease performance.
 

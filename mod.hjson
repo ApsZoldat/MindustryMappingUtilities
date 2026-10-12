@@ -34,9 +34,9 @@ description:
 
 repo: "ApsZoldat/MindustryMappingUtilities"
 
-version: 1.9
+version: 2.0
 
-minGameVersion: 159
+minGameVersion: 161
 
 java: true
 

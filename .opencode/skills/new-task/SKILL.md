@@ -70,6 +70,18 @@ There is NO round limit. Never move to the next phase or finish on your own. Onc
 - Check the facts you cite before you write them to disk.
 - One run produces exactly one package. If the scope grows beyond what one executor session can hold (rough heuristic: more than a few new classes or more than one or two screens), say so in one line, name the parts that could be separate tasks, and ask the user to narrow the scope. Do not split it into several packages yourself.
 
+Keep a global count of questions in format:
+
+Q1: (Question)
+- A) ... (Recommended - ...)
+- B) ...
+- C)
+
+Or, if question does not have discrete answers:
+
+Q2: (QuestionZ)
+- Recommended: 
+
 ## Step 3: Phase 1, requirements
 
 Areas, in this order: goal and scope, user-visible behavior and UI, acceptance criteria, edge cases and failure behavior, manual verification.

@@ -3,7 +3,7 @@ package mu.modules;
 import static arc.Core.*;
 
 /**
- * An atomic, restart-to-apply feature unit: its setting key and default come from the subclass constructor via {@code super(name, def)}.
+ * An atomic feature unit: its setting key and default come from the subclass constructor via {@code super(name, def)}.
  */
 public abstract class MUModule{
     /** The setting key that enables this module. */

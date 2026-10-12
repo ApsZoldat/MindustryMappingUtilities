@@ -10,7 +10,7 @@ import static mindustry.Vars.*;
 
 public class MUSettingsDialog extends BaseDialog{
     public MUSettingsDialog(){
-        super("@settings.mapping_utilities");
+        super("@mu_settings");
         addCloseButton();
         shown(this::build);
     }

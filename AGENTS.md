@@ -42,8 +42,6 @@ There are too many things to list, but here are some highlights:
 - Prefer single-line javadoc `/** @return for example */` instead of multiline javadoc whenever possible
 - Short method/variable names (multipleLongWords should be avoided if it's possible to do so reasonably, especially for variables)
 - Use wildcard imports - `import some.package.*` - for everything.
-
-### Comments and logging
 - Inline `//` comments are sentences: start with a capital letter and put one space after the slashes - `// Like this`, not `//like this`.
 - Every log message carries this mod's `[MU] ` prefix: `Log.info("[MU] ...")`, `Log.err("[MU] ...")`.
 
@@ -81,7 +79,7 @@ This is situational, but in essence, what it means is to avoid using any sort of
 If something needs to be encapsulated in the future, IntelliJ can handle it with a few clicks.
 
 ### Use method chaining for UI code.
-When writing Scene2D UI code, chain `Cell` methods instead of creating intermediate variables. Do not do:
+When writing Scene2D UI code, chain `Cell` methods instead of creating intermediate variables when possible. Do not do:
 ```java
 Label text = new Label("hello");
 table.add(text);
@@ -116,7 +114,7 @@ Binding constraints. Violating one of these makes a task wrong - when in doubt, 
 
 ---
 
-### Current repository layout
+## Current repository layout
 
 ```
 mod.hjson           mod metadata (main: mu.MU)
@@ -128,8 +126,12 @@ java/mu/            intended location for the new v9 sources
 ai-docs/            AI-facing docs, class trees, task tracking (see below)
 ```
 
-Full `old-src/` directory tree is described in `ai-artifacts/old-src.md` - read it when porting or
+### AI docs
+
+- Full `old-src/` directory tree is described in `ai-docs/old-src.md` - read it when porting or
 referencing pre-v9 code.
+- Non-obvious Arc behaviors are documented in `ai-docs/arc.md` - read it when working with Arc classes.
+- Conceptual notes on the editor system are located in `ai-docs/mindustry-editor.md` - read it for a basic understanding of the editor.
 
 ---
 
